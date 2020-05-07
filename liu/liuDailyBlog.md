@@ -6,10 +6,23 @@
 #### Work Done:
 
 **prototype setup**
-Set up a prototype with a Leopard HD camera and a Velodyne VLP16 LiDAR. The system is installed with Ubuntu 18.04 with CUDA 10.0, TensorFlow-GPU, and ROS Melodic.
+Set up a prototype with a Leopard HD camera and a Velodyne VLP16 LiDAR. 
+
+* System Configurations
+	* Ubuntu 18.04
+	* CUDA 10.0
+  * TensorFlow 1.14.0
+  * OpenCV 3.3.1
+  * ROS 1.0 Melodic
+  * ...
 
 **demos on the image/LiDAR point cloud processing**
-Prepare four demos:
+* Four demos: 
+  * Object detection on USB camera
+  * LiDAR point cloud capturing and viewing
+  * LiDAR point cloud segmentation
+  * Calibration of LiDAR and camera
 
+**Report Link:** https://docs.google.com/document/d/14qHXLcrpSZkLaF3EGXZMHhy75IStIEFUl-iIESRkvUw/edit?usp=sharing
 
 #### To Do List:
