@@ -5,8 +5,7 @@
 ### May 4 to May 7, 2020
 #### Work Done:
 
-**Prototype Setup**
-set up a prototype with a Leopard HD camera and a Velodyne VLP16 LiDAR. 
+**Prototype Setup: **set up a prototype with a Leopard HD camera and a Velodyne VLP16 LiDAR. 
 * system configurations
 	* Ubuntu 18.04
 	* CUDA 10.0
