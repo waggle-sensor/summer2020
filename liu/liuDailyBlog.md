@@ -5,10 +5,9 @@
 ### May 4 to May 7, 2020
 #### Work Done:
 
-**prototype setup**
-Set up a prototype with a Leopard HD camera and a Velodyne VLP16 LiDAR. 
-
-* System Configurations
+**Prototype Setup**
+set up a prototype with a Leopard HD camera and a Velodyne VLP16 LiDAR. 
+* system configurations
 	* Ubuntu 18.04
 	* CUDA 10.0
   * TensorFlow 1.14.0
@@ -16,13 +15,16 @@ Set up a prototype with a Leopard HD camera and a Velodyne VLP16 LiDAR.
   * ROS 1.0 Melodic
   * ...
 
-**demos on the image/LiDAR point cloud processing**
-* Four demos: 
-  * Object detection on USB camera
+**Demos on the image/LiDAR point cloud processing**
+* four demos: 
+  * object detection on USB camera
   * LiDAR point cloud capturing and viewing
   * LiDAR point cloud segmentation
-  * Calibration of LiDAR and camera
+  * calibration of LiDAR and camera
 
 **Report Link:** https://docs.google.com/document/d/14qHXLcrpSZkLaF3EGXZMHhy75IStIEFUl-iIESRkvUw/edit?usp=sharing
 
 #### To Do List:
+* solve the sychronization issue of message from Velodyne LiDAR
+* get the calibration result of LiDAR point cloud and camera image
+* try more state-of-the-art works on LiDAR/Camera data processing to understand the system requirements
