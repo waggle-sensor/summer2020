@@ -27,3 +27,18 @@
 * solve the sychronization issue of message from Velodyne LiDAR
 * get the calibration result of LiDAR point cloud and camera image
 * try more state-of-the-art works on LiDAR/Camera data processing to understand the system requirements
+
+### May 8, 2020
+#### Work Done: 
+Solve the sychronization issue of message from Velodyne LiDAR. It turns out to be the problem of the driver. Right now the message -/velodyne_points- has the time read from the system clock. **Time sychronization** can be an important issue when multiple sensors need to be used together for some applications. Two things to consider for time sychronization. One is the sychronization granunarity (second/millisecond/microsecond levels), which is mainly determined by the application. The other is how to get "true" time, potential solution is NTP-based or GPS/GNSS-based. 
+
+* system requirements to enable Waggle for multi-sensor processing
+ * time sychronization
+ * concurrent access to the sensor data (multi-process access the same sensor at the same time)
+ * frequency issue: different sensor has different FPS, for example camera has 30 or 60 FPS, LiDAR has 10 FPS. The time to capture a frame/point cloud data from the sensor also vary within a small range. How to manage these issues?
+ * to be added .......
+
+#### To Do List:
+* calibration result of LiDAR point cloud and camera image
+* set up application on transforming point cloud to panorama image
+* set up application on using point cloud or the panorama from LiDAR for object detection
