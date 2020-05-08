@@ -32,7 +32,7 @@
 #### Work Done: 
 Solve the sychronization issue of message from Velodyne LiDAR. It turns out to be the problem of the driver. Right now the message -/velodyne_points- has the time read from the system clock. **Time sychronization** can be an important issue when multiple sensors need to be used together for some applications. Two things to consider for time sychronization. One is the sychronization granunarity (second/millisecond/microsecond levels), which is mainly determined by the application. The other is how to get "true" time, potential solution is NTP-based or GPS/GNSS-based. 
 
-* system requirements to enable Waggle for multi-sensor processing
+**system requirements to enable Waggle for multi-sensor processing**
  * time sychronization
  * concurrent access to the sensor data (multi-process access the same sensor at the same time)
  * frequency issue: different sensor has different FPS, for example camera has 30 or 60 FPS, LiDAR has 10 FPS. The time to capture a frame/point cloud data from the sensor also vary within a small range. How to manage these issues?
