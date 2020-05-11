@@ -52,13 +52,12 @@ depends on SpConv1.0 (https://github.com/traveller59/spconv/tree/8da6f967fb9a054
 
 ### May 11, 2020
 #### Work Done: 
-Solve  
 
 **object detection using LiDAR point cloud**
 
 Set up dependencies including SpConv1.0 and cmake for PCDet. Issue comes out when install other requirements including numba, tensorboardX, easydict, pyyaml, scikit-image, and tqdm. Use conda install numpy. Issues remain when install others.Issues with the Jetson TX2 board. On another NVIDIA GPU clsuter machine, successfully set up the PCDet.
 
-**system dependency:** an important issue for the deployment of multi-sensor applications.
+**system dependency:** an important issue for the deployment of multi-sensor applications. For deep learning-based applications, CUDA, TensorFlow, Torch, cmake, gcc/g++, and other libraries' version need to configure in advance.
 
 #### To Do List:
 * Solve the issue on Jetson TX2 and get the object detection using point cloud
