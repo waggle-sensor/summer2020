@@ -62,3 +62,13 @@ Set up dependencies including SpConv1.0 and cmake for PCDet. Issue comes out whe
 #### To Do List:
 * Solve the issue on Jetson TX2 and get the object detection using point cloud
 * experiments with some results to show the time synchronization, concurrency issues with ROS
+
+### May 12, 2020
+#### Work Done: 
+
+**attend the SAGE workshop**
+Understand the vision of the SAGE project and its deliverable plan. The presentations have covered questions like how to prepare dataset with labels for the training of DNN models, SAGE programming model with scheudling APIs, edge code repository, the data path from edge to cloud, training data collection, and SAGE data object storage.
+
+#### To Do List:
+* Learn related slides and try to understand the objective as well as specific tasks of system support for multi-sensor processing at the edge 
+* Set up apps for experiments for using ROS in multi-sensor processing
