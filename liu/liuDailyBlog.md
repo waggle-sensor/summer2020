@@ -66,8 +66,7 @@ Set up dependencies including SpConv1.0 and cmake for PCDet. Issue comes out whe
 ### May 12, 2020
 #### Work Done: 
 
-**attend the SAGE workshop**
-Understand the vision of the SAGE project and its deliverable plan. The presentations have covered questions like how to prepare dataset with labels for the training of DNN models, SAGE programming model with scheudling APIs, edge code repository, the data path from edge to cloud, training data collection, and SAGE data object storage.
+**attend the SAGE workshop:** Understand the vision of the SAGE project and its deliverable plan. The presentations have covered questions like how to prepare dataset with labels for the training of DNN models, SAGE programming model with scheudling APIs, edge code repository, the data path from edge to cloud, training data collection, and SAGE data object storage.
 
 #### To Do List:
 * Learn related slides and try to understand the objective as well as specific tasks of system support for multi-sensor processing at the edge 
