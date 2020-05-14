@@ -71,3 +71,14 @@ Set up dependencies including SpConv1.0 and cmake for PCDet. Issue comes out whe
 #### To Do List:
 * Learn related slides and try to understand the objective as well as specific tasks of system support for multi-sensor processing at the edge 
 * Set up apps for experiments for using ROS in multi-sensor processing
+
+### May 13, 2020
+#### Work Done:
+work on experiments of several process (ROS node) subscribe to the same image/point cloud data. Proflile the memory footprint, CPU usage, GPU usage, and power consumption.
+
+**object detection using LiDAR point cloud:** set up point cloud-based object detection demo (PCDet) on a GPU cluster. The training data includes image, calibration data, point cloud, and label.
+![image](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/PCDet.jpg)
+
+#### To Do List:
+* Finish the experiments in ROS and get a analysis report
+* Get a design/plan of the work on optimization
