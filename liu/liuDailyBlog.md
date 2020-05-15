@@ -82,3 +82,12 @@ work on experiments of several process (ROS node) subscribe to the same image/po
 #### To Do List:
 * Finish the experiments in ROS and get a analysis report
 * Get a design/plan of the work on optimization
+
+
+### May 14, 2020
+#### Work Done:
+Discuss to get the plan for the next two weeks. There will be two specific things: compare the performace in terms of latency, accuracy time, etc of Docker with ROS under Real-Time Kernel and generic kernel; data sharing of images/messages between dockers. After that, I have built a Docker image with ROS based on the image containing machine learning tools.
+
+#### To Do List:
+* Implement Real-Time Kernel on Jetson board
+* Do experiments using generic kernel with applications running on Docker with ROS
