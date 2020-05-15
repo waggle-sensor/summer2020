@@ -91,3 +91,12 @@ Discuss to get the plan for the next two weeks. There will be two specific thing
 #### To Do List:
 * Implement Real-Time Kernel on Jetson board
 * Do experiments using generic kernel with applications running on Docker with ROS
+
+### May 15, 2020
+#### Work Done:
+ * Set up Real-time kernel patch for Ubuntu 18.04 on Nvidia Jetson TX2. (Ref link: https://stackoverflow.com/questions/51669724/install-rt-linux-patch-for-ubuntu)
+ * Set up object detection demo using image in the Docker image
+ * Experiments to see the performance of obejct detection demo on generic kernel
+
+#### To Do List:
+* 
