@@ -99,4 +99,12 @@ Discuss to get the plan for the next two weeks. There will be two specific thing
  * Experiments to see the performance of obejct detection demo on generic kernel
 
 #### To Do List:
-* 
+* Set up generic kernel on Nvidia AGX Xavier board
+* Explore the measure tools for the profiling of the application
+
+## Week 3 (May 18 to May 22)
+#### Work Done:
+ * Set up 
+
+#### To Do List:
+* Set up generic kernel on Nvidia AGX Xavier board
