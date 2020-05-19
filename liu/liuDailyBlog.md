@@ -103,8 +103,12 @@ Discuss to get the plan for the next two weeks. There will be two specific thing
 * Explore the measure tools for the profiling of the application
 
 ## Week 3 (May 18 to May 22)
+
+### May 18, 2020
 #### Work Done:
- * Set up 
+ * Set up the docker container with ROS and object detection demo, the set up notes can be find at https://docs.google.com/document/d/1cW1deiGM4HMRzKKOMZVZCw9Ns_-ZDOfSTMaQvUUyjaA/edit?usp=sharing
+ * Flash Nvidia AGX Xavier with Ubuntu 18.04 and RT-kernel
 
 #### To Do List:
 * Set up generic kernel on Nvidia AGX Xavier board
+* Get applications running within the Docker
