@@ -112,3 +112,11 @@ Discuss to get the plan for the next two weeks. There will be two specific thing
 #### To Do List:
 * Set up generic kernel on Nvidia AGX Xavier board
 * Get applications running within the Docker
+
+### May 19, 2020
+#### Work Done:
+ * Face a no space issue after buinding the Docker image on Jetson TX2 board. On another Intel-based device, make the docker image but the architecture is x86-64, which cannot run on Jetson AGX Xavier (arm64). Get a new Nvidia AGX Xavier and launch the docker container and commit the changes to a new docker image named plugin-tensorflow-ros. There is another issue come out. which shows that "CUDA driver is not sufficient with run environment".
+
+#### To Do List:
+* Solve the CUDA drivier version issue
+* Get applications running within the Docker
