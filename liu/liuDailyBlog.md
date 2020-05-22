@@ -123,8 +123,17 @@ Discuss to get the plan for the next two weeks. There will be two specific thing
 
 ### May 20, 2020
 #### Work Done:
- * Try to install all ROS-related packdges on base docker image from Nvidia (https://ngc.nvidia.com/catalog/containers/nvidia:l4t-tensorflow). The CUDA driver issue is solved. 
+ * Try to install all ROS-related packdges on base docker image from Nvidia (https://ngc.nvidia.com/catalog/containers/nvidia:l4t-tensorflow). The CUDA driver issue is solved. Another issue realted to OpenCV 4.x comes out, which is because the OpenCV 4.x requires C++ 11+ support. The demo can works with CUDA 10.0 and OpenCV 3.3.1 on Jetson TX2.
 
 #### To Do List:
 * Get applications running within the Docker
 * Try install generic kernel patch into Nvidia Jetson AGX board
+
+### May 21, 2020
+#### Work Done:
+ * Try to solve the OpenCV 4.x dependency issue
+ * Implement the new docker image from Nvidia on Jetson AGX and built ROS into it
+ * Try to install generic kernel on the Nvidia Jetson AGX Xavier,
+
+#### To Do List:
+* Get applications 
