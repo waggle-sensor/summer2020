@@ -133,7 +133,103 @@ Discuss to get the plan for the next two weeks. There will be two specific thing
 #### Work Done:
  * Try to solve the OpenCV 4.x dependency issue
  * Implement the new docker image from Nvidia on Jetson AGX and built ROS into it
- * Try to install generic kernel on the Nvidia Jetson AGX Xavier,
+ * Try to install generic kernel on the Nvidia Jetson AGX Xavier
+
+OpenCV4 issue with ROS:
+```
+nvidia@nvidia-desktop:~$ sudo docker run -it plugin-tensorflow-ros /bin/bash
+[sudo] password for nvidia: 
+root@e2e7604628c5:/# roslaunch darknet_ros 
+darknet_ros.launch      object_detection.test   
+darknet_ros_gdb.launch  yolo_v3.launch          
+root@e2e7604628c5:/# roslaunch darknet_ros 
+darknet_ros.launch      object_detection.test   
+darknet_ros_gdb.launch  yolo_v3.launch          
+root@e2e7604628c5:/# roslaunch darknet_ros darknet_ros.launch 
+... logging to /root/.ros/log/5ab37520-9c47-11ea-a3ab-0242ac110002/roslaunch-e2e7604628c5-211.log
+Checking log directory for disk usage. This may take a while.
+Press Ctrl-C to interrupt
+Done checking log file disk usage. Usage is <1GB.
+
+started roslaunch server http://e2e7604628c5:35317/
+
+SUMMARY
+========
+
+PARAMETERS
+ * /darknet_ros/actions/camera_reading/name: /darknet_ros/chec...
+ * /darknet_ros/config_path: /root/catkin_ws/s...
+ * /darknet_ros/image_view/enable_console_output: True
+ * /darknet_ros/image_view/enable_opencv: True
+ * /darknet_ros/image_view/wait_key_delay: 1
+ * /darknet_ros/publishers/bounding_boxes/latch: False
+ * /darknet_ros/publishers/bounding_boxes/queue_size: 1
+ * /darknet_ros/publishers/bounding_boxes/topic: /darknet_ros/boun...
+ * /darknet_ros/publishers/detection_image/latch: True
+ * /darknet_ros/publishers/detection_image/queue_size: 1
+ * /darknet_ros/publishers/detection_image/topic: /darknet_ros/dete...
+ * /darknet_ros/publishers/object_detector/latch: False
+ * /darknet_ros/publishers/object_detector/queue_size: 1
+ * /darknet_ros/publishers/object_detector/topic: /darknet_ros/foun...
+ * /darknet_ros/subscribers/camera_reading/queue_size: 1
+ * /darknet_ros/subscribers/camera_reading/topic: /camera/rgb/image...
+ * /darknet_ros/weights_path: /root/catkin_ws/s...
+ * /darknet_ros/yolo_model/config_file/name: yolov2-tiny.cfg
+ * /darknet_ros/yolo_model/detection_classes/names: ['person', 'bicyc...
+ * /darknet_ros/yolo_model/threshold/value: 0.3
+ * /darknet_ros/yolo_model/weight_file/name: yolov2-tiny.weights
+ * /rosdistro: melodic
+ * /rosversion: 1.14.5
+
+NODES
+  /
+    darknet_ros (darknet_ros/darknet_ros)
+
+auto-starting new master
+process[master]: started with pid [221]
+ROS_MASTER_URI=http://localhost:11311
+
+setting /run_id to 5ab37520-9c47-11ea-a3ab-0242ac110002
+process[rosout-1]: started with pid [232]
+started core service [/rosout]
+process[darknet_ros-2]: started with pid [238]
+[ INFO] [1590164093.347287816]: [YoloObjectDetector] Node started.
+[ INFO] [1590164093.363454414]: [YoloObjectDetector] Xserver is not running.
+[ INFO] [1590164093.375057429]: [YoloObjectDetector] init().
+YOLO V3
+layer     filters    size              input                output
+    0 CUDA Error: CUDA driver version is insufficient for CUDA runtime version
+CUDA Error: CUDA driver version is insufficient for CUDA runtime version: Resource temporarily unavailable
+[darknet_ros-2] process has died [pid 238, exit code 255, cmd /root/catkin_ws/devel/lib/darknet_ros/darknet_ros camera/rgb/image_raw:=/camera/rgb/image_raw __name:=darknet_ros __log:=/root/.ros/log/5ab37520-9c47-11ea-a3ab-0242ac110002/darknet_ros-2.log].
+log file: /root/.ros/log/5ab37520-9c47-11ea-a3ab-0242ac110002/darknet_ros-2*.log
+^C[rosout-1] killing on exit
+[master] killing on exit
+shutting down processing monitor...
+... shutting down processing monitor complete
+```
+Nvidia Jetson docker link issue:
+```
+nvidia@nvidia-desktop:/usr/local/cuda-10.2/targets/aarch64-linux/lib$ sudo nvidia-container-cli -k -d /dev/tty info
+
+-- WARNING, the following logs are for debugging purposes only --
+
+I0522 15:58:24.937181 20852 nvc.c:281] initializing library context (version=1.1.1, build=e5d6156aba457559979597c8e3d22c5d8d0622db)
+I0522 15:58:24.937470 20852 nvc.c:255] using root /
+I0522 15:58:24.937503 20852 nvc.c:256] using ldcache /etc/ld.so.cache
+I0522 15:58:24.937540 20852 nvc.c:257] using unprivileged user 65534:65534
+W0522 15:58:24.938437 20852 nvc.c:171] failed to detect NVIDIA devices
+I0522 15:58:24.939162 20853 nvc.c:191] loading kernel module nvidia
+E0522 15:58:24.940468 20853 nvc.c:193] could not load kernel module nvidia
+I0522 15:58:24.940512 20853 nvc.c:203] loading kernel module nvidia_uvm
+E0522 15:58:24.941286 20853 nvc.c:205] could not load kernel module nvidia_uvm
+I0522 15:58:24.941325 20853 nvc.c:211] loading kernel module nvidia_modeset
+E0522 15:58:24.942163 20853 nvc.c:213] could not load kernel module nvidia_modeset
+I0522 15:58:24.943107 20854 driver.c:101] starting driver service
+E0522 15:58:24.943938 20854 driver.c:161] could not start driver service: load library failed: libnvidia-ml.so.1: cannot open shared object file: no such file or directory
+I0522 15:58:24.944365 20852 driver.c:196] driver service terminated successfully
+nvidia-container-cli: initialization error: driver error: failed to process request
+```
 
 #### To Do List:
-* Get applications 
+* Try to solve the OpenCV4 issue and Nvidia Docker issue
+* Try to get generic kernel patch
