@@ -120,3 +120,11 @@ Discuss to get the plan for the next two weeks. There will be two specific thing
 #### To Do List:
 * Solve the CUDA drivier version issue
 * Get applications running within the Docker
+
+### May 20, 2020
+#### Work Done:
+ * Try to install all ROS-related packdges on base docker image from Nvidia (https://ngc.nvidia.com/catalog/containers/nvidia:l4t-tensorflow). The CUDA driver issue is solved. 
+
+#### To Do List:
+* Get applications running within the Docker
+* Try install generic kernel patch into Nvidia Jetson AGX board
