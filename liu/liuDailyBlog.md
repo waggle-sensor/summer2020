@@ -245,8 +245,8 @@ nvidia-container-cli: initialization error: driver error: failed to process requ
 |      3     |      AGX Xavier2      |  16.04 | 10.0 |   3.2  |   1.14.0   |
 |      4     | Intel Fog (CPU-based) |  18.04 |   -  |  4.2.0 |   1.14.0   |
 
- * Try the Yolov3 object detection demo (ROS Darknet: https://github.com/leggedrobotics/darknet_ros) on Ubuntu18.04+OpenCV3.3+CUDA10.0, Ubuntu18.04+OpenCV4+CUDA10.2. 
- * Try Tensroflow object detection demo (https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/camera.html) on these devices
+ * Try the Yolov3 object detection demo (ROS Darknet: https://github.com/leggedrobotics/darknet_ros) on machine 1 and 2. 
+ * Try Tensroflow object detection demo (https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/camera.html) on all four machines
 
 #### To Do List:
 * Investigate system level ttols for profiling the application running on real-time/generic kernel
