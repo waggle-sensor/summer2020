@@ -237,12 +237,14 @@ nvidia-container-cli: initialization error: driver error: failed to process requ
 ### May 22, 2020
 #### Work Done:
 * Flash several edge devices for experiments. Below is the table containing the linux and library version.
+
 | Machine ID |         Device        | Ubuntu | CUDA | OpenCV | TensorFlow |
 |:----------:|:---------------------:|:------:|:----:|:------:|:----------:|
 |      1     |       Jetson TX2      |  18.04 | 10.0 |  3.2.0 |   1.15.0   |
 |      2     |      AGX Xavier1      |  18.04 | 10.2 |  4.1.1 |   2.0.0    |
 |      3     |      AGX Xavier2      |  16.04 | 10.0 |   3.2  |   1.14.0   |
 |      4     | Intel Fog (CPU-based) |  18.04 |   -  |  4.2.0 |   1.14.0   |
+
  * Try the Yolov3 object detection demo (ROS Darknet: https://github.com/leggedrobotics/darknet_ros) on Ubuntu18.04+OpenCV3.3+CUDA10.0, Ubuntu18.04+OpenCV4+CUDA10.2. 
  * Try Tensroflow object detection demo (https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/camera.html) on these devices
 
