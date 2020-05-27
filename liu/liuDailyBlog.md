@@ -256,8 +256,6 @@ nvidia-container-cli: initialization error: driver error: failed to process requ
 #### Work Done:
 * Solve several issues of running object detection demo in Docker+ROS, including cv_bridge with python3 issue, OpenCV4 with ROS issue, and cv_bridge with OpenCV4 issue. Details can be found at [ROS-Docker-Setup.pdf](https://github.com/waggle-sensor/summer2020/blob/master/liu/ROS-Docker%20Setup.pdf).
 
-https://docs.google.com/viewer?url=${https://github.com/waggle-sensor/summer2020/blob/master/liu/ROS-Docker%20Setup.pdf}
-
 * Try RT kernel patch and generic kernel patch on AGX Xavier device
 
 #### To Do List:
