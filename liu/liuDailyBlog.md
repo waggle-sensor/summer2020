@@ -263,7 +263,7 @@ nvidia-container-cli: initialization error: driver error: failed to process requ
 
 ### May 27, 2020
 #### Work Done:
-* Solve dependency issues of running Darknet in Docker ROS and build the complete Docker image, currently the application is ready and the Docker image has been pushed onto Docker Hub. The command to pull the Docker image (18GB):
+* Solve dependency issues of running Darknet in Docker ROS and build the complete Docker image, currently the application is ready and the Docker image has been pushed onto Docker Hub. Some library versions that work well with ROS 1.0 Melodic are: CUDA 10.2, OpenCV 3.4.0, and TensorFlow 1.15.2. The command to pull the Docker image (18GB):
 ```
 docker pull liangkailiu/plugin-tensorflow-ros:v5
 ```
