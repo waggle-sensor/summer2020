@@ -260,3 +260,15 @@ nvidia-container-cli: initialization error: driver error: failed to process requ
 
 #### To Do List:
 * Set up system level tools like perf, htop, and strace for profiling the application running on real-time/generic kernel
+
+### May 27, 2020
+#### Work Done:
+* Solve dependency issues of running Darknet in Docker ROS and build the complete Docker image, currently the application is ready and the Docker image has been pushed onto Docker Hub. The command to pull the Docker image (18GB):
+```
+docker pull liangkailiu/plugin-tensorflow-ros:v5
+```
+* Discuss with Raj and try RT kernel patch kernel patch on AGX Xavier device. The challenge is to find a propriate linux kernel with low latency or real-time patch but can build on arm64 architecture.
+
+#### To Do List:
+* Try and solve the issues while building premptive kernel patch for Nvidia AGX Xavier 
+* Set up system level tools like perf, htop, and strace for profiling the application running on real-time/generic kernel
