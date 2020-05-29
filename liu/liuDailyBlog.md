@@ -272,3 +272,12 @@ docker pull liangkailiu/plugin-tensorflow-ros:v5
 #### To Do List:
 * Try and solve the issues while building premptive kernel patch for Nvidia AGX Xavier 
 * Set up system level tools like perf, htop, and strace for profiling the application running on real-time/generic kernel
+
+### May 28, 2020
+#### Work Done:
+* Try to build RT-kernel using corss-compile on an x86 machine (Ref: https://medium.com/@r7vme/real-time-kernel-for-nvidia-agx-xavier-b660e107a211) but gets some errors when impleemtning on Jetson AGX. The issues may be caused on the JetPack versions. 
+* Finish the data sharing between Docker containers using ROS. There are two types of data sharing: between containers on the same device; between containers on two Jetson device. Setup details can be found at: https://docs.google.com/document/d/14_v1tB89duOA5YHmGE8Q24396NS8CckfU07jGvw7fPk/edit?usp=sharing. 
+
+#### To Do List:
+* Solve the issue of building RT kernel on Nvidia Jetson AGX
+* Start the comparison experiments on Docker+ROS with generic/RT kernels
