@@ -1,4 +1,4 @@
-##Setup ROS communications between Docker containers:
+## Setup ROS communications between Docker containers:
 
 Run Docker containers with “--network host”, containers created on the same machine will be assigned the same IP address as the host.
 
