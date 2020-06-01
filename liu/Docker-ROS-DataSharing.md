@@ -2,6 +2,8 @@
 
 Run Docker containers with “--network host”, containers created on the same machine will be assigned the same IP address as the host.
 
+![image](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/Docker-ROS-demo.png)
+
 ### [Run ROS across multiple machines](http://wiki.ros.org/ROS/Tutorials/MultipleMachines)
 Note: two machines should be able to ping each other
 
