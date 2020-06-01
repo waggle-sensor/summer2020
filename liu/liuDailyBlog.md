@@ -285,6 +285,7 @@ docker pull liangkailiu/plugin-tensorflow-ros:v5
 ### May 29, 2020
 #### Work Done:
 * Prepare demo for the data sharing of ROS messages between Docker containers. Setup details can be found at: https://docs.google.com/document/d/14_v1tB89duOA5YHmGE8Q24396NS8CckfU07jGvw7fPk/edit?usp=sharing. The feature of data sharing between Docker containers is finished.
+* Clean up notes for setting up ROS in Docker and achieving data sharing in Docker with ROS. The notes for Docker ROS setup can be found at [here](https://github.com/waggle-sensor/summer2020/blob/master/liu/Docker-ROS-Setup.md) and the notes for data sharing in Docker with ROS can be found at [here](https://github.com/waggle-sensor/summer2020/blob/master/liu/Docker-ROS-DataSharing.md).
 
 #### To Do List:
 * Solve the issue of building RT kernel on Nvidia Jetson AGX
