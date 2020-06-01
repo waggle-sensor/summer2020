@@ -281,3 +281,11 @@ docker pull liangkailiu/plugin-tensorflow-ros:v5
 #### To Do List:
 * Solve the issue of building RT kernel on Nvidia Jetson AGX
 * Start the comparison experiments on Docker+ROS with generic/RT kernels
+
+### May 29, 2020
+#### Work Done:
+* Prepare demo for the data sharing of ROS messages between Docker containers. Setup details can be found at: https://docs.google.com/document/d/14_v1tB89duOA5YHmGE8Q24396NS8CckfU07jGvw7fPk/edit?usp=sharing. The feature of data sharing between Docker containers is finished.
+
+#### To Do List:
+* Solve the issue of building RT kernel on Nvidia Jetson AGX
+* Experiments of the latency, system resource utilization, energy, etc of the data sharing demo
