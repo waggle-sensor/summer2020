@@ -252,6 +252,8 @@ nvidia-container-cli: initialization error: driver error: failed to process requ
 * Investigate system level tools for profiling the application running on real-time/generic kernel
 * Get generic kernel patch into Nvidia Jetson AGX board
 
+## Week 4 (May 26 to May 29)
+
 ### May 26, 2020
 #### Work Done:
 * Solve several issues of running object detection demo in Docker+ROS, including cv_bridge with python3 issue, OpenCV4 with ROS issue, and cv_bridge with OpenCV4 issue. Details can be found at [ROS-Docker-Setup.pdf](https://github.com/waggle-sensor/summer2020/blob/master/liu/ROS-Docker%20Setup.pdf).
@@ -286,6 +288,17 @@ docker pull liangkailiu/plugin-tensorflow-ros:v5
 #### Work Done:
 * Prepare demo for the data sharing of ROS messages between Docker containers. Setup details can be found at: https://docs.google.com/document/d/14_v1tB89duOA5YHmGE8Q24396NS8CckfU07jGvw7fPk/edit?usp=sharing. The feature of data sharing between Docker containers is finished.
 * Clean up notes for setting up ROS in Docker and achieving data sharing in Docker with ROS. The notes for Docker ROS setup can be found at [here](https://github.com/waggle-sensor/summer2020/blob/master/liu/Docker-ROS-Setup.md) and the notes for data sharing in Docker with ROS can be found at [here](https://github.com/waggle-sensor/summer2020/blob/master/liu/Docker-ROS-DataSharing.md).
+
+#### To Do List:
+* Solve the issue of building RT kernel on Nvidia Jetson AGX
+* Experiments of the latency, system resource utilization, energy, etc of the data sharing demo
+
+## Week 5 (June 1 to June 5)
+
+### June 1, 2020
+#### Work Done:
+* Sprint 3 meeting to determine the plan of work for next two weeks
+* Prepare slides for the presentation to LBNL about the data sharing using Docker and ROS 1.0. Check out the slides [here](https://github.com/waggle-sensor/summer2020/blob/master/liu/Meeting%20slides%20-%20LBNL%20-%2006:01:20.pdf). 
 
 #### To Do List:
 * Solve the issue of building RT kernel on Nvidia Jetson AGX
