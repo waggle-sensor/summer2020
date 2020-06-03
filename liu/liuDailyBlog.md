@@ -303,3 +303,12 @@ docker pull liangkailiu/plugin-tensorflow-ros:v5
 #### To Do List:
 * Solve the issue of building RT kernel on Nvidia Jetson AGX
 * Experiments of the latency, system resource utilization, energy, etc of the data sharing demo
+
+### June 2, 2020
+#### Work Done:
+* Set up experiemnts for the Docker ROS demo. Docker stat and top command will be used to measure the system resource. Latency with the breakdown will be recorded based on the ROS message header.
+* Try setting up of RT kernel based on [Nvidia L4T](https://docs.nvidia.com/jetson/l4t/index.html#page/Tegra%2520Linux%2520Driver%2520Package%2520Development%2520Guide%2Fkernel_custom.html).
+
+#### To Do List:
+* Build RT kernel on Nvidia Jetson AGX
+* Porformance profiling of the data sharing demo
