@@ -96,3 +96,7 @@ CONFIG_PREEMPT_COUNT=y
 nvidia@tegra-ubuntu:~/devel/nvidia-jetson-rt$ uname -a
 Linux tegra-ubuntu 4.4.38-rt49-rt #1 SMP PREEMPT RT Fri Jan 5 01:04:27 +03 2018 aarch64 aarch64 aarch64 GNU/Linux
 ```
+
+## Reference:
+[1] [Real-Time Linux for Jetson TX2](https://github.com/kozyilmaz/nvidia-jetson-rt/blob/master/docs/README.03-realtime.md#copy-binaries-to-l4t-for-deployment)
+[2] [Kernel Customization](https://docs.nvidia.com/jetson/l4t/index.html#page/Tegra%2520Linux%2520Driver%2520Package%2520Development%2520Guide%2Fkernel_custom.html)
