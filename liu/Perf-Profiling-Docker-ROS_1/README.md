@@ -16,7 +16,7 @@ $ sudo docker pull liangkailiu/plugin-tensorflow-ros:v5
 
 ### Profiling tools:
  * docker stats: container system resources utilization profiling
- * perf: ROS profiling
+ * linux perf: ROS profiling (syscall level)
  * top: ROS profiling
 
 ### Power modes on Jetson AGX Xavier:
