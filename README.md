@@ -8,3 +8,4 @@ create a folder named per your lastname.
 example of a student space organization. Please follow it in organizing your 
 space.
 
+New here?  Check out the [getting started](getting_started.md) readme.
