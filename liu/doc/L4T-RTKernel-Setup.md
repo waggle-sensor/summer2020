@@ -102,3 +102,4 @@ Linux tegra-ubuntu 4.4.38-rt49-rt #1 SMP PREEMPT RT Fri Jan 5 01:04:27 +03 2018 
  - [Kernel Customization](https://docs.nvidia.com/jetson/l4t/index.html#page/Tegra%2520Linux%2520Driver%2520Package%2520Development%2520Guide%2Fkernel_custom.html)
  - https://github.com/jtagxhub/jetpack-agx-build
  - https://forums.developer.nvidia.com/t/preempt-rt-patch-on-jetson-kernel/65766/9
+ - https://orenbell.com/?p=436
