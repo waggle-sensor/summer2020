@@ -1,4 +1,4 @@
-### Try RT kernel test based on https://wiki.linuxfoundation.org/realtime/documentation/howto/tools/rt-tests.
+## RT kernel test
 
 ```
 sudo apt-get install build-essential libnuma-dev
@@ -41,3 +41,6 @@ T: 5 ( 8570) P:80 I:200 C:  18635 Min:      4 Act:    7 Avg:    7 Max:      46
 T: 6 ( 8571) P:80 I:200 C:  18623 Min:      4 Act:    6 Avg:    7 Max:      43
 T: 7 ( 8572) P:80 I:200 C:  18611 Min:      4 Act:    6 Avg:    7 Max:      50
 ```
+
+### Reference
+ * https://wiki.linuxfoundation.org/realtime/documentation/howto/tools/rt-tests.
