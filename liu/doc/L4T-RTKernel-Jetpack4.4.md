@@ -69,6 +69,7 @@ Several attributes including target board, your release, your user and password 
  * user: nvidia
  * password: nvidia
  * device IP: 192.168.55.1 (this is the IP address the Jetson assigns to itself in the Ethernet-over-USB mini-network)
+
 [!image](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/Screenshot%20from%202020-06-08%2011-01-25.png)
 
 Setup Xavier/Linux_for_Tegra, toolchain, and kernel source:
