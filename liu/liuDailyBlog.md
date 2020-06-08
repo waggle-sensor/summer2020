@@ -451,7 +451,7 @@ I0605 05:22:37.257125 8689 driver.c:231] driver service terminated successfully
 
 ### June 5, 2020
 #### Work Done:
-* Collecting logs of docker stats, tegrastats, latency, and top outputs. Seven power modes are covered. The logs can be found under Perf-Profiling-Docker-ROS_1 folder.
+* Collecting logs of docker stats, tegrastats, latency, and top outputs. Seven power modes are covered. The logs can be found under [Perf-Profiling-Docker-ROS_1](https://github.com/waggle-sensor/summer2020/tree/master/liu/Perf-Profiling-Docker-ROS_1) folder.
 * Build RT kernel which is compatible with Jetpack 4.4 and flash the AGX Xavier board with Jetpack4.4. Now the Docker ROS demo can run on top of the RT kernel. The details forsetting up RT kernel with Jetpack 4.4 can be found at: https://github.com/waggle-sensor/summer2020/blob/master/liu/doc/L4T-RTKernel-Jetpack4.4.md.
 
 #### To Do List:
