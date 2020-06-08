@@ -325,7 +325,7 @@ git clone git://git.kernel.org/pub/scm/utils/rt-tests/rt-tests.git
 cd rt-tests
 git checkout stable/v1.0
 make all
-make install
+sudo make install
 ```
 The output of the generic kernel test:
 ```
