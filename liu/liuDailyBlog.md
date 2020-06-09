@@ -463,9 +463,12 @@ I0605 05:22:37.257125 8689 driver.c:231] driver service terminated successfully
 ### June 8, 2020
 #### Work Done:
 * Analysis the log file of Docker ROS profiling. For Nvidia AGX Xavier, power mode 0 has the best performance in terms of end-to-end latency for Yolo-v3. 
+  
 ![image](https://github.com/waggle-sensor/summer2020/blob/master/liu/Perf-Profiling-Docker-ROS_1/Xavier-Yolov3-latency.png)
 * The comparison of RT kernel and generic kernel for Yolo-v3 in end-to-end latency:
+  
 ![image](https://github.com/waggle-sensor/summer2020/blob/master/liu/Perf-Profiling-Docker-ROS_1/Xavier-Yolov3-rt.png)
+
 The RT kernel looks help tp narrow the variability of the end-to-end latency.
 
 #### To Do List:
