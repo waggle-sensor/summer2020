@@ -474,3 +474,13 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
 #### To Do List:
 * Collect logs for comparison of generic kernel and RT kernel
 * Analysis the logs of Docker ROS profiling and wrork on the report
+
+### June 9, 2020
+#### Work Done:
+ * Set up pressure test within Docker image. Three ROS applications are running concurrently to show the impact of RT kernel on latency compared with generic kernel.
+
+![image](https://github.com/waggle-sensor/summer2020/blob/master/liu/Perf-Profiling-Docker-ROS_1/RT-pressure-test/ros-pressure-test.png)
+
+#### To Do List:
+* Collect logs for pressure test of generic kernel and RT kernel
+* Analysis the logs of Docker ROS profiling and wrork on the report
