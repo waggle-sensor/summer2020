@@ -46,12 +46,19 @@ def main():
     data_6 = np.loadtxt('6_power_mode/latency.log')
 
     data_0 = np.multiply(data_0,1000)
+    print(data_0.max(),data_0.min(),data_0.mean())
     data_1 = np.multiply(data_1,1000)
+    print(data_1.max(),data_1.min(),data_1.mean())
     data_2 = np.multiply(data_2,1000)
+    print(data_2.max(),data_2.min(),data_2.mean())
     data_3 = np.multiply(data_3,1000)
+    print(data_3.max(),data_3.min(),data_3.mean())
     data_4 = np.multiply(data_4,1000)
+    print(data_4.max(),data_4.min(),data_4.mean())
     data_5 = np.multiply(data_5,1000)
+    print(data_5.max(),data_5.min(),data_5.mean())
     data_6 = np.multiply(data_6,1000)
+    print(data_6.max(),data_6.min(),data_6.mean())
 
     # Choose how many bins you want here
     num_bins = 100
@@ -119,7 +126,7 @@ def main():
     plt.xlabel('ms',fontsize=12,fontweight='bold')
     plt.ylabel('CDF', fontsize=12, fontweight='bold')
 
-    plt.savefig('Xavier-Yolov3-latency.png', bbox_inches = "tight")
+    # plt.savefig('Xavier-Yolov3-latency.png', bbox_inches = "tight")
     plt.show()
 
 if __name__ == '__main__':

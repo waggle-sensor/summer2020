@@ -41,7 +41,9 @@ def main():
     data_1 = np.loadtxt('0_power_mode/latency-rt.log')
 
     data_0 = np.multiply(data_0,1000)
+    print(data_0.max(),data_0.min(),data_0.mean())
     data_1 = np.multiply(data_1,1000)
+    print(data_1.max(),data_1.min(),data_1.mean())
 
     # Choose how many bins you want here
     num_bins = 100
@@ -79,7 +81,7 @@ def main():
     plt.xlabel('ms',fontsize=12,fontweight='bold')
     plt.ylabel('CDF', fontsize=12, fontweight='bold')
 
-    plt.savefig('Xavier-Yolov3-rt.png', bbox_inches = "tight")
+    # plt.savefig('Xavier-Yolov3-rt.png', bbox_inches = "tight")
     plt.show()
 
 if __name__ == '__main__':
