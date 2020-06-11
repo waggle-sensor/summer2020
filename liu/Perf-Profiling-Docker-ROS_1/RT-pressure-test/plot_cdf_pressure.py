@@ -81,7 +81,7 @@ def main():
     plt.xlabel('ms',fontsize=12,fontweight='bold')
     plt.ylabel('CDF', fontsize=12, fontweight='bold')
 
-    plt.savefig('Yolov3-Pressure-test.png', bbox_inches = "tight")
+    # plt.savefig('Yolov3-Pressure-test.png', bbox_inches = "tight")
     plt.show()
 
 if __name__ == '__main__':
