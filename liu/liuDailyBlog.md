@@ -484,3 +484,12 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
 #### To Do List:
 * Collect logs for pressure test of generic kernel and RT kernel
 * Analysis the logs of Docker ROS profiling and wrork on the report
+
+### June 10, 2020
+#### Work Done:
+ * Analysis the collected logs and finish the report of performance profiling of Docker with ROS 1.0.
+ * Finish the pressure test of generic and RT kernel.
+ * Get a report of the profiling and comparison which can be found at: https://docs.google.com/document/d/1BfV9DGxCD2j4dc4xnyDAW_lXKolOHIhrRf_qeNgDhKM/edit?usp=sharing.
+
+#### To Do List:
+* Discuss with Raj and others for feedbacks. Complete the analysis report based on the feedbacks.
