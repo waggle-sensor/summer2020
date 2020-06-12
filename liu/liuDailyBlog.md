@@ -493,3 +493,12 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
 
 #### To Do List:
 * Discuss with Raj and others for feedbacks. Complete the analysis report based on the feedbacks.
+
+### June 11, 2020
+#### Work Done:
+ * Analysis the collected logs and compare generic / RT kernels
+ * Do experiments and evaluate the overhead of usb camera in latency
+ * Write the analysis report of the Docker ROS profiling
+
+#### To Do List:
+* Add more analysis for power analysis and dig inside about the RT kernel and how it works
