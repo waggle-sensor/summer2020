@@ -502,3 +502,12 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
 
 #### To Do List:
 * Add more analysis for power analysis and dig inside about the RT kernel and how it works
+
+### June 12, 2020
+#### Work Done:
+ * Work on the report based on the comments
+ * Demo the report to SAGE group and discuss about the future works
+
+#### To Do List:
+* Add more analysis for power analysis using tegrastats
+* Dig inside about the RT kernel and how it works and do more comparison
