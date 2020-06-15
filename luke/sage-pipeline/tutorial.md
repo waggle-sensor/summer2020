@@ -129,15 +129,25 @@ This format can be easily changed by modifying the `output_metadata_file` method
 
 The performance of the script is mainly limited to hard drive speed and the performance of Python OpenCV functions.
 
+The first output given by the script will be a line like this:
+
 ```
 [LocalImageCollection] Computing brightness values for 1353 images
 ```
+
+Computing brightness values takes a significant amount of time because for every image in the set, the script has to load it and then compute the sum of all the "V" values for every pixel in that image. (If performance at this stage becomes an issue, it would be wise to change the algorithm that finds this brightness value. There are likely better, less computationally-expensive ways to compare the brightnesses of images than having to sum all their pixel values.)
+
+After this step is complete, the script will output this:
 
 ```
 [LocalImageCollection] Finished computing brightness values
 [LocalImageCollection] Day and night peaks: [887667971.4333334]
 [LocalImageCollection] There is only one peak in this brightness data
 ```
+
+This particular output tells us that we have given it a dataset that is predominantly day-time images, since it found only one peak in the image set.
+
+Next, the script tags images with foreground count values. This operation re-loads every image and gives it to its assigned background subtractor (either day or night if the image set has two defined peaks or just the default one if the image set has only one peak). It then takes the inference of the background subtractor model, which is a foreground mask, applies an OpenCV `MORPH_CLOSE` operation on the mask to reduce noise in the mask, and then computes the sum of the remaining pixels, which represent areas in the image that are foreground blobs.
 
 ```
 [Tagging] Tagging images with foreground count values
@@ -146,12 +156,18 @@ The performance of the script is mainly limited to hard drive speed and the perf
 ...
 ```
 
+The script will then prompt the user with the lowest percentiles of foreground counts, the images that are most likely containing just background:
+
 ```
 ----- Bottom Brightnesses -----
 10%: 42685
 25%: 229626
 50%: 610775
 ```
+
+This information is given to assist the user in selecting a threshold. If the user believes at least half of the images are background images (after looking through a sample of images), he or she should select a threshold at the value `610775` or higher. (In the future it might be useful to completely automate this process by adding a command line option that allows the user to tag the lowest X percent of images in the set.)
+
+After the user provides a threshold value, the script will continue on its merry way, tagging every image with a foreground count value lower than the selected threshold:
 
 ```
 Select a threshold for filtering background images: 229626
@@ -173,6 +189,8 @@ Select a threshold for filtering background images: 229626
 [LocalImageCollection] Saving collection (../car-data/001e06117b45/)
 [JSON Writing] Dumping 337 background image paths into a JSON metadata file (../car-data/001e06117b45/metadata.json)
 ```
+
+It will then write these tags to a JSON file in the root folder of the images.
 
 
 
