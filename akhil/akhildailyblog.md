@@ -13,7 +13,8 @@ I familiarized my self with Chameleon systems and went through some documentatio
 
 ### Tuesday June 16, 2020
 #### Meetings, Out of work:
-
+* 1pm meeting meeting with Jake and Kate
+* 4:30pm - 5:10pm meeting with Raj and Jake
 #### Work done
 I started looking over the Sage project and its architecture
 Notes about Sage:
@@ -24,3 +25,14 @@ Notes about Sage:
 * Data and Code Repositories - Sage Data Repository (contains all data from sensor and AI@Edge), Edge Code Repository (Library of AI@Edge code that can be run on Waggle software stack)
 * Utilities - Virtual Waggle (environment for edge computing code for the Waggle framework), Bench-top Waggle Driver (user can control physical attributes of Waggle node)
 * Support infrastructure - Chameleon (large scale testbed that includes cloud controlled hardware), Beehive (cloud endpoint)
+
+
+
+Notes about Docker
+* Docker places processes that are running on a system into a container. A container runs the process in its own environment and contains its own file system.
+
+I went over the learning agreement with Raj and Jake and learned the project goals and what is expected of me. 
+
+
+#### Issues/Errors/To Do:
+- Continue familiarizing myself with Sage, Docker, and Chameleon
