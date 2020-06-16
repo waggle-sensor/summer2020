@@ -514,7 +514,7 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
 
 ## Week 7 (June 15 to June 19)
 
-### June 12, 2020
+### June 15, 2020
 #### Work Done:
  * Discuss with Raj about the analysis report and next step for the project
  * Work on the power analysis of the Docker ROS image
