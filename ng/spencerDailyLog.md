@@ -12,4 +12,10 @@
 
 **Tuesday, June 16**
 
-* Continue looking at Sage codebase, Agile Scrum, and Docker documentation
+* Attended second day of orientation and small group check-in
+* Finished remaining courses in TMS
+* Attended sprint retrospective meeting
+* Looked at SAGE and Waggle component documentation in various repositories
+* Attended workshop on scientific writing
+* Began reading/watching materials on Agile Scrum
+* Set up accounts on Miro and Jira
