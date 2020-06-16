@@ -511,3 +511,14 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
 #### To Do List:
 * Add more analysis for power analysis using tegrastats
 * Dig inside about the RT kernel and how it works and do more comparison
+
+## Week 7 (June 15 to June 19)
+
+### June 15, 2020
+#### Work Done:
+ * Discuss with Raj about the analysis report and next step for the project
+ * Work on the power analysis of the Docker ROS image
+
+#### To Do List:
+ * Analysis of the power dissipation
+ * RT kernel comparison and understand the results of the system utilization
