@@ -522,3 +522,13 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
 #### To Do List:
  * Analysis of the power dissipation
  * RT kernel comparison and understand the results of the system utilization
+
+### June 16, 2020
+#### Work Done:
+ * Check the issure with power mode 0 of Docker ROS profiling. It turns out to be a wrong value of the GPU utilization/frequency.
+ * Check the logs with the analysis results in the report
+ * Analysis logs collected from tegrastats for power dissipation
+
+#### To Do List:
+ * RT kernel comparison and understand the results of the system utilization
+ * Figure out how to configue scheudling policy at runtime
