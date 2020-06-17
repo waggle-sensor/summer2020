@@ -31,8 +31,23 @@ Notes about Sage:
 Notes about Docker
 * Docker places processes that are running on a system into a container. A container runs the process in its own environment and contains its own file system.
 
-I went over the learning agreement with Raj and Jake and learned the project goals and what is expected of me. 
+I went over the learning agreement with Raj and Jake and learned the project goals and what is expected of me.
 
 
 #### Issues/Errors/To Do:
 - Continue familiarizing myself with Sage, Docker, and Chameleon
+
+### Wednesday June 17, 2020
+#### Meetings, Out of work:
+- 11am - 12am Weekly Seminar Meeting
+#### Work done
+* I watched two videos reguarding the Agile Scrum process
+Notes on Agile Scrum:
+* very collaborative and adapting workflow
+* Scrum is not a waterfall project. No dividing work into phases (design, code, etc)
+* Scrum has "sprint" phases
+* every sprint is about 2 weeks and a demo is presented at the end of each sprint
+* teams that use Scrum should be diverse
+* 3 types of people in scrum teams: product owner, scrum development team, and scrum master
+* Product Backlog - List of things to do from product owner -> goals of current sprint
+*  
