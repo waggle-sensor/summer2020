@@ -36,12 +36,13 @@ I went over the learning agreement with Raj and Jake and learned the project goa
 
 #### Issues/Errors/To Do:
 - Continue familiarizing myself with Sage, Docker, and Chameleon
+- Figure out why I cannot connect to the Sage Chameleon project
 
 ### Wednesday June 17, 2020
 #### Meetings, Out of work:
 - 11am - 12am Weekly Seminar Meeting
 #### Work done
-* I watched two videos reguarding the Agile Scrum process
+I watched two videos reguarding the Agile Scrum process
 Notes on Agile Scrum:
 * very collaborative and adapting workflow
 * Scrum is not a waterfall project. No dividing work into phases (design, code, etc)
@@ -50,4 +51,4 @@ Notes on Agile Scrum:
 * teams that use Scrum should be diverse
 * 3 types of people in scrum teams: product owner, scrum development team, and scrum master
 * Product Backlog - List of things to do from product owner -> goals of current sprint
-*  
+I went through tutorials that physically introduced me to Chameleon and Docker. It turns out the previous days I wasn't fully added to Chameleon project. So now I added my own Application Credential. I also used openstack to connect my laptop to Chameleon.
