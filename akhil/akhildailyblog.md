@@ -52,3 +52,7 @@ Notes on Agile Scrum:
 * 3 types of people in scrum teams: product owner, scrum development team, and scrum master
 * Product Backlog - List of things to do from product owner -> goals of current sprint
 I went through tutorials that physically introduced me to Chameleon and Docker. It turns out the previous days I wasn't fully added to Chameleon project. So now I added my own Application Credential. I also used openstack to connect my laptop to Chameleon.
+I downloaded and configured docker and docker compose on my machine.
+
+#### Issues/Errors/To Do:
+- Connect my computer to bee-hive server and setup Virtual Waggle
