@@ -48,7 +48,7 @@ Rosdep install is equivalent to:
 ```
 Then build the darnet ros package:
 ```
-# catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_BUILD_TYPE=Release
+# catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_BUILD_TYPE=Release -DCATKIN_WHITELIST_PACKAGES=""
 ```
 Download weights:
 ```
