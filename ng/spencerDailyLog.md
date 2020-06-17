@@ -19,3 +19,11 @@
 * Attended workshop on scientific writing
 * Began reading/watching materials on Agile Scrum
 * Set up accounts on Miro and Jira
+
+**Wednesday, June 17**
+
+* Attended workshop for summer students
+* Met with Sean and Raj to discuss my background and specific research projects for the summer
+* Finished reading/watching documentation on Agile Scrum and Docker
+* Reviewed example scientific applications of Sage 
+* Reviewed past and current features on Jira and Miro
