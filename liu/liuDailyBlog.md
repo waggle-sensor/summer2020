@@ -532,3 +532,14 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
 #### To Do List:
  * RT kernel comparison and understand the results of the system utilization
  * Figure out how to configue scheudling policy at runtime
+
+### June 17, 2020
+#### Work Done:
+ * Measure the cv_bridge overhead to the process of image capturing
+ * Meeting with Raj and Kazutoma to discuss the linux kernel configuration and time breakdown of CPU, GPU, memory
+ * Analysis logs collected from tegrastats for power dissipation
+
+#### To Do List:
+ * Using the API to configure the schduling policy and priority of process at runtime
+ * Do research on the syscall for requesting GPU resources from CPU and try to get the time breakdown
+ * Get the power analysis results 
