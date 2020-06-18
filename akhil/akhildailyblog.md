@@ -56,3 +56,11 @@ I downloaded and configured docker and docker compose on my machine.
 
 #### Issues/Errors/To Do:
 - Connect my computer to bee-hive server and setup Virtual Waggle
+
+### Thurday June 18, 2020
+#### Meetings, Out of Work:
+none
+#### Work done
+I worked on creating a local connection to beehave and configured virtual waggle. In this process I researched Docker and Docker-Compose. I continued to research on how to create multiple Docker containers with docker-compose.  
+#### Issues/Errors/To Do:
+- connect and create multiple instances of virtual waggle within docker containers on the cloud 
