@@ -187,11 +187,13 @@ Pressure test results:
 | Generic 	| 5595 	| 17109 	| 4780 	| 2877 	| 4621 	| 34982 	|
 | RT 	| 5855 	| 14919 	| 4690 	| 2466 	| 4817 	| 32747 	|
 
-Pure Yolov3 results:
+Single test with Yolov3 results:
 | Power (mW) 	| CPU 	| GPU 	| SoC 	| DDR 	| SYS 	| Sum 	|
 |:-:	|:-:	|:-:	|:-:	|:-:	|:-:	|-	|
 | Generic 	| 2330 	| 18525 	| 4602 	| 2911 	| 4620 	| 32988 	|
 | RT 	| 2312 	| 19050 	| 4962 	| 2756 	| 4885 	| 33965 	|
+
+![image](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/kernel-pressure-single-power.png)
 
 
 ## Reference
