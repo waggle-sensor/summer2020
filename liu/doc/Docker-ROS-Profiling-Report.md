@@ -10,6 +10,8 @@ NVIDIA Jetson AGX Xavier is used to conduct all the experiments. Here are the sy
 
 Four ROS applications are set up for the experiments:  YOLO v3 based object detection, MobileNet-SSD v1 based object detection, image classification, and MNIST handwritten digit classification. Besides, several tools are used to collect the logs to measure the latency, CPU/GPU/memory utilization, and energy consumption. The docker stats command is used to get the CPU and memory usage of the running container. NVIDIA Jetson tegrastats is used to collect the usage and frequency of CPU, GPU, memory, etc. 
 
+<center>
+
 | Property 	| Jetson AGX-1 	| Jetson AGX-2 	|
 |:-:	|:-:	|:-:	|
 | Kernel 	| 4.9.140-tegra 	| 4.9.140-rt93-tegra 	|
@@ -18,6 +20,8 @@ Four ROS applications are set up for the experiments:  YOLO v3 based object dete
 | OpenCV 	| 3.4.0 	| 3.4.0 	|
 | TensorFlow 	| 1.15.2 	| 1.15.2 	|
 | ROS 	| 1.0 (Melodic) 	| 1.0 (Melodic) 	|
+
+</center>
 
 The setup notes can be found at: https://github.com/waggle-sensor/summer2020/tree/master/liu. 
 
@@ -81,7 +85,7 @@ CDF with Power Modes             |  CDF with USB camera and image file
 
 ### Yolov3 object detection
 
-![image](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/yolov3_cdf_rt.png =250x)
+<img src="https://github.com/waggle-sensor/summer2020/blob/master/liu/image/yolov3_cdf_rt.png" alt="drawing" width="500" class="center"/>
 
 | Kernels 	| CPU (% / freq) 	| GPU (% / freq) 	| Memory (%) 	|
 |:-:	|:-:	|:-:	|:-:	|
