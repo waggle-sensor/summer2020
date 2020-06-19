@@ -126,7 +126,7 @@ def main():
     plt.xlabel('ms',fontsize=12,fontweight='bold')
     plt.ylabel('CDF', fontsize=12, fontweight='bold')
 
-    # plt.savefig('Xavier-Yolov3-latency.png', bbox_inches = "tight")
+    plt.savefig('Xavier-Yolov3-latency.png', bbox_inches = "tight")
     plt.show()
 
 if __name__ == '__main__':
