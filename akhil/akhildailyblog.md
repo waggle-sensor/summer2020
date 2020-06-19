@@ -61,6 +61,12 @@ I downloaded and configured docker and docker compose on my machine.
 #### Meetings, Out of Work:
 none
 #### Work done
-I worked on creating a local connection to beehave and configured virtual waggle. In this process I researched Docker and Docker-Compose. I continued to research on how to create multiple Docker containers with docker-compose.  
-#### Issues/Errors/To Do:
-- connect and create multiple instances of virtual waggle within docker containers on the cloud 
+I worked on creating a local connection to beehive and configured virtual waggle. In this process I researched Docker and Docker-Compose. I continued to research on how to create multiple Docker containers with docker-compose. I started working on why the registration container isn't responding.
+
+Things I tested:
+sudo docker update --restart=no <container_id>
+docker logs --tail 50 --follow --timestamps container_id
+
+#### Issues/Errors/To Do/Questions:
+- connect and create multiple instances of virtual waggle within docker containers on the cloud
+- registration container always restarting
