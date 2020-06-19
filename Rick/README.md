@@ -5,8 +5,13 @@
 
 <br>
 
+## ProjectUpdates
+* This repo contains slides from my weekly update meetings.
+
 ## log
 * Inside this directory, you will find my daily schedules, which document what I worked on each day during summer.
+
+<br>
 
 ## DataPrep
 * DataPrep is an assortment of python scripts used to build the dataset. This folder is not organized for recreating the dataset but merely was a dump for my work while making the dataset. THIS FOLDER'S CODE DOES NOT NEED TO BE READ IN ORDER TO UNDERSTAND THE PROJECT (save yourself the time).
