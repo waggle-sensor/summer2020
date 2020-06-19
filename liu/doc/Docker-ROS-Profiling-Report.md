@@ -102,6 +102,8 @@ The average power dissipation at runtime:
 | mode 5 	| 1369 	| 6958 	| 2480 	| 2245 	| 3988 	| 17040 	|
 | mode 6 	| 1326 	| 6997 	| 2483 	| 2271 	| 3999 	| 17076 	|
 
+![image](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/power-breakdown.png)
+
 
 ## 4. Comparisons of Generic/RT Kernels
 
