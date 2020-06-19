@@ -10,8 +10,6 @@ NVIDIA Jetson AGX Xavier is used to conduct all the experiments. Here are the sy
 
 Four ROS applications are set up for the experiments:  YOLO v3 based object detection, MobileNet-SSD v1 based object detection, image classification, and MNIST handwritten digit classification. Besides, several tools are used to collect the logs to measure the latency, CPU/GPU/memory utilization, and energy consumption. The docker stats command is used to get the CPU and memory usage of the running container. NVIDIA Jetson tegrastats is used to collect the usage and frequency of CPU, GPU, memory, etc. 
 
-<center>
-
 | Property 	| Jetson AGX-1 	| Jetson AGX-2 	|
 |:-:	|:-:	|:-:	|
 | Kernel 	| 4.9.140-tegra 	| 4.9.140-rt93-tegra 	|
@@ -20,8 +18,6 @@ Four ROS applications are set up for the experiments:  YOLO v3 based object dete
 | OpenCV 	| 3.4.0 	| 3.4.0 	|
 | TensorFlow 	| 1.15.2 	| 1.15.2 	|
 | ROS 	| 1.0 (Melodic) 	| 1.0 (Melodic) 	|
-
-</center>
 
 The setup notes can be found at: https://github.com/waggle-sensor/summer2020/tree/master/liu/doc. 
 
@@ -80,6 +76,32 @@ CDF with Power Modes             |  CDF with USB camera and image file
 
 ### 3.3 Power Dissipation
 
+An example of the tegrastats output:
+```
+RAM 10881/31919MB (lfb 4230x4MB) SWAP 0/15959MB (cached 0MB) CPU [17%@1190,17%@1190,18%@1190,25%@1190,17%@1336,15%@1340,23%@1543,15%@1574] EMC_FREQ 55%@2133 GR3D_FREQ 95%@1377 APE 150 MTS fg 0% bg 10% AO@48C GPU@54.5C Tdiode@53.25C PMIC@100C AUX@46C CPU@49C thermal@49.45C Tboard@47C GPU 18401/18525 CPU 2301/2330 SOC 4602/4602 CV 0/0 VDDRQ 2914/2911 SYS5V 4632/4620
+```
+
+The description of the power values:
+| Rail Name 	| Description 	|
+|:-:	|:-:	|
+| Channel 0: GPU 	| GPU power rail 	|
+| Channel 1: CPU 	| CPU power rail 	|
+| Channel 2: SOC 	| SoC power rail 	|
+| Channel 0: CV 	| CV power rail 	|
+| Channel 1: VDDRQ 	| DDR power rail 	|
+| Channel 2: SYS5V 	| System 5V power rail 	|
+
+The average power dissipation at runtime:
+| Power (mW) 	| CPU 	| GPU 	| SoC 	| DDR 	| SYS 	| Sum 	|
+|:-:	|:-:	|:-:	|:-:	|:-:	|:-:	|-	|
+| mode 0 	| 2330 	| 18525 	| 4602 	| 2911 	| 4620 	| 32988 	|
+| mode 1 	| 510 	| 2375 	| 1550 	| 1196 	| 3210 	| 8841 	|
+| mode 2 	| 768 	| 5075 	| 2011 	| 2004 	| 3630 	| 13488 	|
+| mode 3 	| 952 	| 7429 	| 2816 	| 2336 	| 4039 	| 17572 	|
+| mode 4 	| 983 	| 7389 	| 2594 	| 2332 	| 4034 	| 17332 	|
+| mode 5 	| 1369 	| 6958 	| 2480 	| 2245 	| 3988 	| 17040 	|
+| mode 6 	| 1326 	| 6997 	| 2483 	| 2271 	| 3999 	| 17076 	|
+
 
 ## 4. Comparisons of Generic/RT Kernels
 
@@ -87,10 +109,17 @@ CDF with Power Modes             |  CDF with USB camera and image file
 
 <img src="https://github.com/waggle-sensor/summer2020/blob/master/liu/image/yolov3_cdf_rt.png" alt="drawing" width="500" class="center"/>
 
+System resource utilization:
 | Kernels 	| CPU (% / freq) 	| GPU (% / freq) 	| Memory (%) 	|
 |:-:	|:-:	|:-:	|:-:	|
 | Generic 	| 70.02 / 2265 	| 99 / 1377  	| 3.58 	|
 | RT 	| 55.31 / 2265 	| 99 / 1377 	| 3.44 	|
+
+Power dissipation:
+| Power (mW) 	| CPU 	| GPU 	| SoC 	| DDR 	| SYS 	| Sum 	|
+|:-:	|:-:	|:-:	|:-:	|:-:	|:-:	|-	|
+| Generic 	| 2330 	| 18525 	| 4602 	| 2911 	| 4620 	| 32988 	|
+| RT 	| 2312 	| 19050 	| 4962 	| 2756 	| 4885 	| 33965 	|
 
 ### 4.2 Cyclictest
 
@@ -150,8 +179,21 @@ Data Pipeline             |  CDF under generic and RT kernel
 
 ### 5.3 Power Dissipation
 
+Pressure test results:
+| Power (mW) 	| CPU 	| GPU 	| SoC 	| DDR 	| SYS 	| Sum 	|
+|:-:	|:-:	|:-:	|:-:	|:-:	|:-:	|-	|
+| Generic 	| 2330 	| 18525 	| 4602 	| 2911 	| 4620 	| 32988 	|
+| RT 	| 2312 	| 19050 	| 4962 	| 2756 	| 4885 	| 33965 	|
+
+Pure Yolov3 results:
+| Power (mW) 	| CPU 	| GPU 	| SoC 	| DDR 	| SYS 	| Sum 	|
+|:-:	|:-:	|:-:	|:-:	|:-:	|:-:	|-	|
+| Generic 	| 2330 	| 18525 	| 4602 	| 2911 	| 4620 	| 32988 	|
+| RT 	| 2312 	| 19050 	| 4962 	| 2756 	| 4885 	| 33965 	|
+
 
 ## Reference
  - https://docs.nvidia.com/jetson/archives/l4t-archived/l4t-3231/index.html#page/Tegra%20Linux%20Driver%20Package%20Development%20Guide/AppendixTegraStats.html
  - https://docs.nvidia.com/jetson/l4t/index.html#page/Tegra%20Linux%20Driver%20Package%20Development%20Guide/power_management_jetson_xavier.html
  - https://wiki.linuxfoundation.org/realtime/documentation/howto/tools/cyclictest/start
+ - https://docs.nvidia.com/jetson/archives/l4t-archived/l4t-322/index.html#page/Tegra%2520Linux%2520Driver%2520Package%2520Development%2520Guide%2Fpower_management_jetson_xavier.html%23wwpID0E0LF0HA
