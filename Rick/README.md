@@ -3,7 +3,7 @@
 ## ImgSeqLoader
 * This directory contains code for the data loader I made for my model that forecasts solar radiation amounts. This data loader feeds in three sets of time-sequenced images from three different cameras. The data loader navigates the folder structure (as shown below) and grabs the correct called images and deletes from memory the old images from memory.
 
-![Data File Struct](Rick/Images/DataLoaderDirPic.png)
+![](Rick/Images/DataLoaderDirPic.png)
 Format: ![Alt Text](Data File Strucutre)                                                                                          
                                                                                           
 
