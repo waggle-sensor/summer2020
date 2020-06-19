@@ -183,9 +183,9 @@ Data Pipeline             |  CDF under generic and RT kernel
 
 Pressure test results:
 | Power (mW) 	| CPU 	| GPU 	| SoC 	| DDR 	| SYS 	| Sum 	|
-|:-:	|:-:	|:-:	|:-:	|:-:	|:-:	|-	|
-| Generic 	| 2330 	| 18525 	| 4602 	| 2911 	| 4620 	| 32988 	|
-| RT 	| 2312 	| 19050 	| 4962 	| 2756 	| 4885 	| 33965 	|
+|:-:	|:-:	|:-:	|:-:	|:-:	|:-:	|:-:	|
+| Generic 	| 5595 	| 17109 	| 4780 	| 2877 	| 4621 	| 34982 	|
+| RT 	| 5855 	| 14919 	| 4690 	| 2466 	| 4817 	| 32747 	|
 
 Pure Yolov3 results:
 | Power (mW) 	| CPU 	| GPU 	| SoC 	| DDR 	| SYS 	| Sum 	|
