@@ -81,7 +81,7 @@ CDF with Power Modes             |  CDF with USB camera and image file
 
 ### Yolov3 object detection
 
-![image](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/yolov3_cdf_rt.png)
+![image](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/yolov3_cdf_rt.png =250x)
 
 | Kernels 	| CPU (% / freq) 	| GPU (% / freq) 	| Memory (%) 	|
 |:-:	|:-:	|:-:	|:-:	|
@@ -126,10 +126,11 @@ T: 7 ( 8572) P:80 I:200 C:  18611 Min:      4 Act:    6 Avg:    7 Max:      50
 
 ## Pressure Test under Generic / RT Kernels
 
-![image](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/pressure-test.png)
+Data Pipeline             |  CDF under generic and RT kernel
+:-------------------------:|:-------------------------:
+![](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/pressure-test.png)  |  ![](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/pressure_test_cdf.png)
 
 ### End-to-End Latency
-![image](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/pressure_test_cdf.png)
 
 | Kernel 	| Max (ms) 	| Min (ms) 	| max-min (ms) 	| Average (ms) 	|
 |:-:	|:-:	|:-:	|:-:	|:-:	|
