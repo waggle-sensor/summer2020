@@ -23,7 +23,7 @@ Four ROS applications are set up for the experiments:  YOLO v3 based object dete
 
 </center>
 
-The setup notes can be found at: https://github.com/waggle-sensor/summer2020/tree/master/liu. 
+The setup notes can be found at: https://github.com/waggle-sensor/summer2020/tree/master/liu/doc. 
 
 ## 3. Yolov3 under different power modes
 
