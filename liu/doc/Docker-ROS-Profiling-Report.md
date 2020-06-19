@@ -1,10 +1,10 @@
 # Docker ROS Analysis Report
 
-## Overview
+## 1. Overview
 
 With the development of the Internet of things and artificial intelligence, terabytes of data is generated at the edge and needs to be processed in real-time. Edge computing has been proposed to address the latency and bandwidth issues. In this project, we set up experiments with Docker containers and ROS for real-time processing of sensor data. Several ROS applications including object detection, image classification, and handwritten digit classification are deployed to measure the latency, system utilization, and energy consumption of the devices.
 
-## Experiment setup
+## 2. Experiment setup
 
 NVIDIA Jetson AGX Xavier is used to conduct all the experiments. Here are the system configurations of the two Jetson AGX boards used for the experiments. Jetpack is used to flash the host system and we apply RT kernel patches to one of the boards. Inside the AGX board, Docker is used as the running environment for ROS applications.  I built a Docker image with ROS 1.0 running inside.  The versions for CUDA, OpenCV, TensorFlow, and ROS are shown in the above table.
 
@@ -25,7 +25,7 @@ Four ROS applications are set up for the experiments:  YOLO v3 based object dete
 
 The setup notes can be found at: https://github.com/waggle-sensor/summer2020/tree/master/liu. 
 
-## Yolov3 under different power modes
+## 3. Yolov3 under different power modes
 
 There are seven power modes in AGX Xavier, the detailed descriptions of power budget, online CPU cores, CPU/GPU maximum frequency, GPU TPC (Texture Processor Cluster), and etc are shown in Table 2. We can find the MAXN mode (mode 0) has the best performance.
 
@@ -43,7 +43,7 @@ There are seven power modes in AGX Xavier, the detailed descriptions of power bu
 | PVA maximal frequency 	| 1088 	| 0 	| 550 	| 760 	| 760 	| 760 	| 760 	|
 | Memory maximal frequency (MHz) 	| 2133 	| 1066 	| 1333 	| 1600 	| 1600 	| 1600 	| 1600 	|
 
-### End-to-End Latency
+### 3.1 End-to-End Latency
 
 For YOLO v3 based object detection, the message pipeline of the data sharing demo in ROS is shown in Figure 1. A router is used to collect devices because the transmission of ROS messages across multiple machines requires them to be under the same LAN.
 
@@ -67,7 +67,7 @@ CDF with Power Modes             |  CDF with USB camera and image file
 | 5 	| 195 	| 169 	| 26 	| 175 	|
 | 6 	| 217 	| 161 	| 56 	| 184 	|
 
-### System Resource Utilization
+### 3.2 System Resource Utilization
 | Power mode 	| CPU (% / freq) 	| GPU (% / freq) 	| Memory (%) 	|
 |:-:	|:-:	|:-:	|:-:	|
 | 0 	| 70.02 / 2263 	| 99 / 1377 	| 3.58 	|
@@ -78,12 +78,12 @@ CDF with Power Modes             |  CDF with USB camera and image file
 | 5 	| 62.64 / 1803 	| 99 / 905 	| 3.48 	|
 | 6 	| 54.83 / 2112 	| 99 / 905 	| 3.43 	|
 
-### Power Dissipation
+### 3.3 Power Dissipation
 
 
-## Comparisons of Generic/RT Kernels
+## 4. Comparisons of Generic/RT Kernels
 
-### Yolov3 object detection
+### 4.1 Yolov3 object detection
 
 <img src="https://github.com/waggle-sensor/summer2020/blob/master/liu/image/yolov3_cdf_rt.png" alt="drawing" width="500" class="center"/>
 
@@ -92,11 +92,11 @@ CDF with Power Modes             |  CDF with USB camera and image file
 | Generic 	| 70.02 / 2265 	| 99 / 1377  	| 3.58 	|
 | RT 	| 55.31 / 2265 	| 99 / 1377 	| 3.44 	|
 
-### Cyclictest
+### 4.2 Cyclictest
 
 Cyclictest accurately and repeatedly measures the difference between a thread's intended wake-up time and the time at which it actually wakes up in order to provide statistics about the system's latencies. It can measure latencies in real-time systems caused by the hardware, the firmware, and the operating system.
 
-#### Generic kernel
+#### 4.2.1 Generic kernel
 
 ```
 nvidia@nvidia-desktop:~/projects/rt-tests$ sudo ./cyclictest --mlockall --smp --priority=80 --interval=200 --distance=0
@@ -109,7 +109,7 @@ T: 2 ( 8139) P:80 I:200 C:  73004 Min:      7 Act:   39 Avg:   14 Max:    1076
 T: 3 ( 8140) P:80 I:200 C:  72989 Min:      6 Act:   48 Avg:   14 Max:     141
 ```
 
-#### RT kernel
+#### 4.2.2 RT kernel
 ```
 nvidia@nvidia-xavier-rt:~/projects/rt-tests$ uname -a
 Linux nvidia-xavier-rt 4.9.140-rt93-tegra #1 SMP PREEMPT RT Wed Jun 3 16:58:57 EDT 2020 aarch64 aarch64 aarch64 GNU/Linux
@@ -128,27 +128,27 @@ T: 6 ( 8571) P:80 I:200 C:  18623 Min:      4 Act:    6 Avg:    7 Max:      43
 T: 7 ( 8572) P:80 I:200 C:  18611 Min:      4 Act:    6 Avg:    7 Max:      50
 ```
 
-## Pressure Test under Generic / RT Kernels
+## 5. Pressure Test under Generic / RT Kernels
 
 Data Pipeline             |  CDF under generic and RT kernel
 :-------------------------:|:-------------------------:
 ![](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/pressure-test.png)  |  ![](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/pressure_test_cdf.png)
 
-### End-to-End Latency
+### 5.1 End-to-End Latency
 
 | Kernel 	| Max (ms) 	| Min (ms) 	| max-min (ms) 	| Average (ms) 	|
 |:-:	|:-:	|:-:	|:-:	|:-:	|
 | Generic 	| 1403 	| 117 	| 1286 	| 166 	|
 | RT 	| 258 	| 130 	| 128 	| 175 	|
 
-### System Resource Utilization
+### 5.2 System Resource Utilization
 
 | Kernels 	| CPU (% / freq) 	| GPU (% / freq) 	| Memory (%) 	|
 |:-:	|:-:	|:-:	|:-:	|
 | Generic 	| 250.6 / 2265 	| 99 / 1377  	| 12.82 	|
 | RT 	| 258.29 / 2265 	| 99 / 1377 	| 16.18 	|
 
-### Power Dissipation
+### 5.3 Power Dissipation
 
 
 ## Reference
