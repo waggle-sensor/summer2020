@@ -137,7 +137,7 @@ test_bottom_path_npy = working_dir + "/data_npy/test/bottom"
 
 test_flir_path_npy = working_dir + "/data_npy/test/flir"
 
-test_top_path_npy = working_dir + "/data_npy/val/top"
+test_top_path_npy = working_dir + "/data_npy/test/top"
 
 test_bottom_path = working_dir + "/data/test/bottom"
 test_bottom_low = test_bottom_path + "/low"
