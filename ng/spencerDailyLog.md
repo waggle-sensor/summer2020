@@ -44,3 +44,11 @@
 * Discussed how to move forward on the project with Luke
   * Began working on image classifier based on the Waggle plugin example
   * Asked for car dataset from Omar
+
+## Week 2
+
+**Monday, June 21**
+
+* Research sampling methods for machine learning and YOLOv3 documentation
+* Obtained car images, labels, and masks from Omar
+* Began writing Python script to parse and filter annotations in preparation for model training
