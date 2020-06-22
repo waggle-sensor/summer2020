@@ -88,6 +88,14 @@ convert_pic_seq(train_bottom_low,train_bottom_path_npy)
 convert_pic_seq(train_top_low,train_top_path_npy)
 convert_pic_seq(train_flir_low,train_flir_path_npy)
 
+convert_pic_seq(train_bottom_mid,train_bottom_path_npy)
+convert_pic_seq(train_top_mid,train_top_path_npy)
+convert_pic_seq(train_flir_mid,train_flir_path_npy)
+
+convert_pic_seq(train_bottom_high,train_bottom_path_npy)
+convert_pic_seq(train_top_high,train_top_path_npy)
+convert_pic_seq(train_flir_high,train_flir_path_npy)
+
 #----------------------------------#
 
 val_bottom_path_npy = working_dir + "/data_npy/val/bottom"
@@ -114,6 +122,14 @@ val_top_high = val_top_path + "/high"
 convert_pic_seq(val_bottom_low,val_bottom_path_npy)
 convert_pic_seq(val_top_low,val_top_path_npy)
 convert_pic_seq(val_flir_low,val_flir_path_npy)
+
+convert_pic_seq(val_bottom_mid,val_bottom_path_npy)
+convert_pic_seq(val_top_mid,val_top_path_npy)
+convert_pic_seq(val_flir_mid,val_flir_path_npy)
+
+convert_pic_seq(val_bottom_high,val_bottom_path_npy)
+convert_pic_seq(val_top_high,val_top_path_npy)
+convert_pic_seq(val_flir_high,val_flir_path_npy)
 
 #----------------------------------#
 
@@ -143,5 +159,13 @@ test_top_high = test_top_path + "/high"
 convert_pic_seq(test_bottom_low,test_bottom_path_npy)
 convert_pic_seq(test_top_low,test_top_path_npy)
 convert_pic_seq(test_flir_low,test_flir_path_npy)
+
+convert_pic_seq(test_bottom_mid,test_bottom_path_npy)
+convert_pic_seq(test_top_mid,test_top_path_npy)
+convert_pic_seq(test_flir_mid,test_flir_path_npy)
+
+convert_pic_seq(test_bottom_high,test_bottom_path_npy)
+convert_pic_seq(test_top_high,test_top_path_npy)
+convert_pic_seq(test_flir_high,test_flir_path_npy)
 
 #----------------------------------#
