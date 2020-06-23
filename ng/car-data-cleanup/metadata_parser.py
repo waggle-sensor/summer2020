@@ -64,8 +64,8 @@ def get_attr_dict(obj_xml, fields=None):
     attr_dict = dict()
 
     for i, attr in enumerate(attributes):
-        if "_" in attr and len(attr.split("_")) == 2:
-            k, v = attr.split("_")
+        if "_" in attr:
+            k, v = attr.split("_", 1)
             if fields is not None and k not in fields:
                 continue
             attr_dict[k] = v
@@ -85,7 +85,7 @@ def get_attr_dict(obj_xml, fields=None):
     return attr_dict
 
 
-def parse_metadata(files, fields):
+def parse_metadata(files):
     out_csv = open(OUTPUT + "make_model.csv", "w+", newline="")
     fields = [
         "file",
@@ -130,7 +130,7 @@ def parse_metadata(files, fields):
         for k, v in make_models.items():
             out.write(f"{k}: {v}\n")
 
-    with open(OUTPUT + "classes.txt", "w+") as out:
+    with open(OUTPUT + "cars.names", "w+") as out:
         for k in make_models.keys():
             out.write(f"{k}\n")
 
@@ -182,6 +182,7 @@ def read_file_as_list(filename):
 
 
 def generate_txt_labels(vehicle_md, classes):
+    os.mkdir(OUTPUT + "labels")
     for md_file in vehicle_md:
         root = get_root(md_file)
         path = DATA + root.find("folder").text + "/" + root.find("filename").text
@@ -210,7 +211,8 @@ def generate_txt_labels(vehicle_md, classes):
             line = f"{idx} {x_center / w} {y_center / h} {rect_w / w} {rect_h / h}"
             class_labels.append(line)
 
-        txt_path = path.replace(".jpg", ".txt")
+        txt_filename = root.find("filename").text.replace(".jpg", ".txt")
+        txt_path = OUTPUT + "labels/" + txt_filename
 
         if len(class_labels) > 0:
             with open(txt_path, "w+") as out:
@@ -229,10 +231,10 @@ def main():
 
     # draw_bounding_box(vehicle_md[4])
 
-    if not os.path.exists(OUTPUT + "classes.txt"):
-        parse_metadata(vehicle_md)
+    # if not os.path.exists(OUTPUT + "cars.names"):
+    parse_metadata(vehicle_md)
 
-    classes = read_file_as_list(OUTPUT + "classes.txt")
+    classes = read_file_as_list(OUTPUT + "cars.names")
     generate_txt_labels(vehicle_md, classes)
 
 
