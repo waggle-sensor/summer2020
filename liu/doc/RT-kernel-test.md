@@ -1,6 +1,6 @@
 ## RT kernel test
 
-Generic kernel:
+### Generic kernel:
 ```
 nvidia@nvidia-desktop:~$ uname -a
 Linux nvidia-desktop 4.9.140-tegra #1 SMP PREEMPT Wed Apr 8 18:15:20 PDT 2020 aarch64 aarch64 aarch64 GNU/Linux
@@ -33,14 +33,14 @@ top output:
    22 root      rt   0       0      0      0 S   0.0  0.0   0:00.00 migration/2 
    23 root      20   0       0      0      0 S   0.0  0.0   0:00.00 ksoftirqd/2
 ```
-RT kernel:
+### RT kernel:
 ```
 nvidia@nvidia-xavier-rt:~$ uname -a
 Linux nvidia-xavier-rt 4.9.140-rt93-tegra #1 SMP PREEMPT RT Sun Jun 7 23:08:52 EDT 2020 aarch64 aarch64 aarch64 GNU/Linux
 nvidia@nvidia-xavier-rt:~$ uname -r
 4.9.140-rt93-tegra
 ```
-top:
+top output:
 ```
   1 root      20   0  161656   8776   5820 S   0.0  0.0   0:20.63 systemd     
     2 root      20   0       0      0      0 S   0.0  0.0   0:00.04 kthreadd    
