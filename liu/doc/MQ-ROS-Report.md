@@ -1,4 +1,4 @@
-## An Introduction to Messaging Queuing Mechanisms and Robot Operating Systems
+## An Introduction to Messaging Queuing Mechanisms in Robot Operating Systems
 
 ### Message Queuing Mechanisms
 
