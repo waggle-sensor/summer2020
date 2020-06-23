@@ -1,5 +1,17 @@
 ## RT kernel test
 
+Generic kernel:
+```
+nvidia@nvidia-desktop:~$ uname -a
+Linux nvidia-desktop 4.9.140-tegra #1 SMP PREEMPT Wed Apr 8 18:15:20 PDT 2020 aarch64 aarch64 aarch64 GNU/Linux
+nvidia@nvidia-desktop:~$ uname -r
+4.9.140-tegra
+```
+RT kernel:
+```
+
+```
+
 ```
 sudo apt-get install build-essential libnuma-dev
 git clone git://git.kernel.org/pub/scm/utils/rt-tests/rt-tests.git
