@@ -52,3 +52,22 @@
 * Research sampling methods for machine learning and YOLOv3 documentation
 * Obtained car images, labels, and masks from Omar
 * Began writing Python script to parse and filter annotations in preparation for model training
+
+**Tuesday, June 22**
+
+* Created bounding box functions with OpenCV to verify annotation accuracy
+* Finished YOLOv3 text file label generation for main gate dataset
+* Obtained second dataset with make/model (also from Waggle)
+  * Wrote parser for second set's labels
+* Attended scientific writing seminar
+* Documented series of goals for the process:
+
+1. Label datasets of images with make/model and prepare in a format for YOLOv3
+2. Split up dataset for training, sampling, and testing (thinking of doing stratified sampling)
+3. Train ML model with YOLOv3 with selected images (and run against testing set to create a baseline)
+4. Run ML model on second set of images, using different sampling methods to choose images for retraining
+5. Retrain ML model
+6. Run ML model on testing images, seeing which sampling methods give the best results
+
+* Discussed steps going forward with Raj about potential datasets
+* Finished labeling scripts to generate file lists for make/model
