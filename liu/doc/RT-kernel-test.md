@@ -35,9 +35,43 @@ top output:
 ```
 RT kernel:
 ```
-
+nvidia@nvidia-xavier-rt:~$ uname -a
+Linux nvidia-xavier-rt 4.9.140-rt93-tegra #1 SMP PREEMPT RT Sun Jun 7 23:08:52 EDT 2020 aarch64 aarch64 aarch64 GNU/Linux
+nvidia@nvidia-xavier-rt:~$ uname -r
+4.9.140-rt93-tegra
+```
+top:
+```
+  1 root      20   0  161656   8776   5820 S   0.0  0.0   0:20.63 systemd     
+    2 root      20   0       0      0      0 S   0.0  0.0   0:00.04 kthreadd    
+    3 root      20   0       0      0      0 S   0.0  0.0   0:05.30 ksoftirqd/0 
+    4 root      -2   0       0      0      0 S   0.0  0.0   0:02.02 ktimersoft+ 
+    6 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 kworker/0:+ 
+    8 root      -2   0       0      0      0 S   0.0  0.0   0:03.92 rcu_preempt 
+    9 root      -2   0       0      0      0 S   0.0  0.0   0:01.64 rcu_sched   
+   10 root      -2   0       0      0      0 S   0.0  0.0   0:00.00 rcub/0      
+   11 root      -2   0       0      0      0 S   0.0  0.0   0:01.85 rcuc/0      
+   12 root      20   0       0      0      0 S   0.0  0.0   0:00.00 kswork      
+   13 root      rt   0       0      0      0 S   0.0  0.0   0:00.00 posixcputm+ 
+   14 root      rt   0       0      0      0 S   0.0  0.0   0:00.08 migration/0 
+   15 root      rt   0       0      0      0 S   0.0  0.0   0:00.00 watchdog/0  
+   16 root      20   0       0      0      0 S   0.0  0.0   0:00.00 cpuhp/0     
+   17 root      20   0       0      0      0 S   0.0  0.0   0:00.00 cpuhp/1     
+   18 root      rt   0       0      0      0 S   0.0  0.0   0:00.00 watchdog/1  
+   19 root      rt   0       0      0      0 S   0.0  0.0   0:00.08 migration/1 
+   20 root      -2   0       0      0      0 S   0.0  0.0   0:01.81 rcuc/1      
+   21 root      -2   0       0      0      0 S   0.0  0.0   0:01.97 ktimersoft+ 
+   22 root      20   0       0      0      0 S   0.0  0.0   0:03.90 ksoftirqd/1 
+   24 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 kworker/1:+ 
+   25 root      rt   0       0      0      0 S   0.0  0.0   0:00.00 posixcputm+ 
+   26 root      20   0       0      0      0 S   0.0  0.0   0:00.00 cpuhp/2     
+   27 root      rt   0       0      0      0 S   0.0  0.0   0:00.00 watchdog/2  
+   28 root      rt   0       0      0      0 S   0.0  0.0   0:00.08 migration/2 
+   29 root      -2   0       0      0      0 S   0.0  0.0   0:01.71 rcuc/2      
+   30 root      -2   0       0      0      0 S   0.0  0.0   0:01.98 ktimersoft+ 
 ```
 
+### Test setup
 ```
 sudo apt-get install build-essential libnuma-dev
 git clone git://git.kernel.org/pub/scm/utils/rt-tests/rt-tests.git
