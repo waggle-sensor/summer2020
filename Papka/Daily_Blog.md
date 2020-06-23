@@ -4,3 +4,6 @@ Week 1 (6/8- 6/12/2020)
 
 Week 2 (6/15- 6/19/2020)
 - I began to sort throught Ballpark images into three categories: flooded, no water, and some water.
+- I started to learn about WordPress and experiement with it's functions. 
+
+Week 3 (6/22-6/26/2020)

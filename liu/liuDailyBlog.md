@@ -542,4 +542,34 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
 #### To Do List:
  * Using the API to configure the schduling policy and priority of process at runtime
  * Do research on the syscall for requesting GPU resources from CPU and try to get the time breakdown
- * Get the power analysis results 
+ * Get the power analysis results
+
+### June 18, 2020
+#### Work Done:
+ * Analysis logs collected from tegrastats for power dissipation and finish the Docker ROS profiling report
+
+#### To Do List:
+ * Using the API to configure the schduling policy and priority of process at runtime
+ * Do research on the syscall for requesting GPU resources from CPU and try to get the time breakdown
+ * Get the power analysis results
+
+### June 19, 2020
+#### Work Done:
+ * Finish the Docker ROS profiling report with power analysis
+ * Use the API to configure the schduling policy and priority of process at runtime
+ * Discuss with Raj about the outline of the paper: A Framework/Architecture for Resource, Sensors and Data Sharing in Edge Computing Infrastructure.
+
+#### To Do List:
+ * Do research on the syscall for requesting GPU resources from CPU and try to get the time breakdown
+ * Investigate all the messaging sharing mechanisms (RabbitMQ, ZeroMQ, etc)
+
+## Week 8 (June 22 to June 26)
+
+### June 22, 2020
+#### Work Done:
+ * Try TensorFlow timeline tool to get the time breakdown of the yolov3 model inference
+ * Read papers and report about messaging queueing mechanisms and ROS designing
+
+#### To Do List:
+ * Do experiments to get the performance of yolov3 with scheduling polcies changed at runtime
+ * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing purpose
