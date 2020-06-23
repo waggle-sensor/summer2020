@@ -2,11 +2,11 @@
 
 ### Message Queuing Mechanisms
 
-rabbitmq
-activemq
-zeromq
+ - rabbitmq
+ - activemq
+ - zeromq
 
 ### Robot Operating Systems
 
-ros
-ros2
+ - ros
+ - ros2
