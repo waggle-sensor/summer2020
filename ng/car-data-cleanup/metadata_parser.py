@@ -2,6 +2,8 @@
 import os
 import glob
 import csv
+import cv2
+import imutils
 import lxml.etree as ET
 
 DATA = "/media/sng/My Passport/images/"
@@ -12,6 +14,12 @@ def get_metadata():
     md_path = DATA + "maingate_meta/*.xml"
     return glob.glob(md_path)
 
+
+def get_root(xml_file):
+    tree = ET.parse(xml_file)
+    return tree.getroot()
+
+
 # Filters files to those with vehicle data
 def filter_metadata(files, valid_names):
     # name_counts = dict()
@@ -19,8 +27,7 @@ def filter_metadata(files, valid_names):
     good_files = list()
 
     for md_xml in files:
-        tree = ET.parse(md_xml)
-        root = tree.getroot()
+        root = get_root(md_xml)
 
         useless = True
 
@@ -45,53 +52,69 @@ def filter_metadata(files, valid_names):
     return good_files
 
 
-def parse_metadata(files):
-    count = 0
+def get_attr_dict(obj_xml, fields=None):
+    attr_str = obj_xml.find(".//attributes").text
 
+    if attr_str == "" or attr_str is None:
+        return None
+
+    attr_str = attr_str.replace("_ ", "_")
+    attributes = attr_str.split(" ")
+
+    attr_dict = dict()
+
+    for i, attr in enumerate(attributes):
+        if "_" in attr and len(attr.split("_")) == 2:
+            k, v = attr.split("_")
+            if fields is not None and k not in fields:
+                continue
+            attr_dict[k] = v
+            if k in ("make", "model", "type", "use"):
+                if i + 3 >= len(attributes):
+                    continue
+
+                conf_pair = attributes[i + 3].split("_")
+                if len(conf_pair) != 2 or conf_pair[1] == "" or conf_pair[0][0] != "(":
+                    continue
+
+                try:
+                    conf_val = int(conf_pair[1])
+                    attr_dict[k + "_conf"] = conf_val
+                except ValueError:
+                    pass
+    return attr_dict
+
+
+def parse_metadata(files, fields):
     out_csv = open(OUTPUT + "make_model.csv", "w+", newline="")
-    fields = "file,vehicle,perspective,make,make_conf,model,model_conf,type,type_conf,use,use_conf".split(",")
+    fields = [
+        "file",
+        "vehicle",
+        "perspective",
+        "make",
+        "make_conf",
+        "model",
+        "model_conf",
+        "type",
+        "type_conf",
+        "use",
+        "use_conf",
+    ]
     writer = csv.DictWriter(out_csv, fieldnames=fields)
 
     writer.writeheader()
-
     make_models = dict()
 
     for md_xml in files:
-        tree = ET.parse(md_xml)
-        root = tree.getroot()
+        root = get_root(md_xml)
 
-        
         for obj in root.findall(".//object"):
-            attr_str = obj.find(".//attributes").text
-            
-            if attr_str == "" or attr_str is None:
+            attr_dict = get_attr_dict(obj, fields)
+
+            if attr_dict is None:
                 continue
 
-            attr_str = attr_str.replace("_ ", "_")
-            attributes = attr_str.split(" ")
-
-            attr_dict = {"file": md_xml}
-
-            for i, attr in enumerate(attributes):
-                if "_" in attr and len(attr.split("_")) == 2:
-                    k, v = attr.split("_")
-                    if k not in fields:
-                        continue
-                    attr_dict[k] = v
-                    if k in ("make", "model", "type", "use"):
-                        if i + 3 >= len(attributes):
-                            continue
-
-                        conf_pair = attributes[i + 3].split("_")
-                        if len(conf_pair) != 2 or conf_pair[1] == "" or conf_pair[0][0] != "(":
-                            continue
-
-                        try:
-                            conf_val = int(conf_pair[1])
-                            attr_dict[k + "_conf"] = conf_val
-                        except ValueError:
-                            pass
-
+            attr_dict["file"] = md_xml
             if len(attr_dict.keys()) > 1:
                 writer.writerow(attr_dict)
             if "make" in attr_dict.keys() and "model" in attr_dict.keys():
@@ -107,22 +130,110 @@ def parse_metadata(files):
         for k, v in make_models.items():
             out.write(f"{k}: {v}\n")
 
+    with open(OUTPUT + "classes.txt", "w+") as out:
+        for k in make_models.keys():
+            out.write(f"{k}\n")
+
+
+def get_rect_bounds(obj_xml):
+    poly = obj_xml.find(".//polygon")
+
+    if poly is None:
+        return None, None
+
+    max_x = float("-inf")
+    max_y = float("-inf")
+    min_x = float("inf")
+    min_y = float("inf")
+
+    for pt in poly.findall(".//pt"):
+        x = int(pt.find(".//x").text)
+        y = int(pt.find(".//y").text)
+
+        max_x = max(x, max_x)
+        min_x = min(x, min_x)
+        max_y = max(y, max_y)
+        min_y = min(y, min_y)
+
+    return (min_x, min_y), (max_x, max_y)
+
+
+def draw_bounding_box(md_file):
+    root = get_root(md_file)
+    path = DATA + root.find("folder").text + "/" + root.find("filename").text
+
+    img = cv2.imread(path)
+    for obj in root.findall(".//object"):
+        bot_left, top_right = get_rect_bounds(obj)
+
+        if bot_left is None:
+            continue
+
+        cv2.rectangle(img, bot_left, top_right, (0, 255, 0), 5)
+
+    disp_img = imutils.resize(img, width=1024)
+    cv2.imshow("Bounding box", disp_img)
+    cv2.waitKey(0)
+
 
 def read_file_as_list(filename):
     with open(filename, "r") as file_obj:
         return file_obj.read().split("\n")
 
+
+def generate_txt_labels(vehicle_md, classes):
+    for md_file in vehicle_md:
+        root = get_root(md_file)
+        path = DATA + root.find("folder").text + "/" + root.find("filename").text
+
+        img = cv2.imread(path)
+        h, w, _ = img.shape
+        class_labels = list()
+
+        for obj in root.findall(".//object"):
+            attr = get_attr_dict(obj)
+
+            if attr is None or not ("make" in attr.keys() and "model" in attr.keys()):
+                continue
+
+            class_name = f"{attr['make']} {attr['model']}"
+            if class_name not in classes:
+                continue
+
+            (x0, y0), (x1, y1) = get_rect_bounds(obj)
+            rect_h = y1 - y0
+            rect_w = x1 - x0
+            x_center = rect_w / 2 + x0
+            y_center = rect_h / 2 + y0
+
+            idx = classes.index(class_name)
+            line = f"{idx} {x_center / w} {y_center / h} {rect_w / w} {rect_h / h}"
+            class_labels.append(line)
+
+        txt_path = path.replace(".jpg", ".txt")
+
+        if len(class_labels) > 0:
+            with open(txt_path, "w+") as out:
+                out.write("\n".join(class_labels))
+
+
 def main():
     md = get_metadata()
-    
+
     valid_names = read_file_as_list("valid_names.txt")
-    
+
     if os.path.exists(OUTPUT + "good_meta.txt"):
         vehicle_md = read_file_as_list(OUTPUT + "good_meta.txt")
     else:
         vehicle_md = filter_metadata(md, valid_names)
 
-    parse_metadata(vehicle_md)
+    # draw_bounding_box(vehicle_md[4])
+
+    if not os.path.exists(OUTPUT + "classes.txt"):
+        parse_metadata(vehicle_md)
+
+    classes = read_file_as_list(OUTPUT + "classes.txt")
+    generate_txt_labels(vehicle_md, classes)
 
 
 if __name__ == "__main__":
