@@ -562,3 +562,14 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
 #### To Do List:
  * Do research on the syscall for requesting GPU resources from CPU and try to get the time breakdown
  * Investigate all the messaging sharing mechanisms (RabbitMQ, ZeroMQ, etc)
+
+## Week 8 (June 22 to June 26)
+
+### June 22, 2020
+#### Work Done:
+ * Try TensorFlow timeline tool to get the time breakdown of the yolov3 model inference
+ * Read papers and report about messaging queueing mechanisms and ROS designing
+
+#### To Do List:
+ * Do experiments to get the performance of yolov3 with scheduling polcies changed at runtime
+ * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing purpose
