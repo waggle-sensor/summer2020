@@ -7,6 +7,32 @@ Linux nvidia-desktop 4.9.140-tegra #1 SMP PREEMPT Wed Apr 8 18:15:20 PDT 2020 aa
 nvidia@nvidia-desktop:~$ uname -r
 4.9.140-tegra
 ```
+top output:
+```
+    1 root      20   0  161500   8880   6000 S   0.0  0.0   0:02.10 systemd     
+    2 root      20   0       0      0      0 S   0.0  0.0   0:00.01 kthreadd    
+    3 root      20   0       0      0      0 S   0.0  0.0   0:00.01 ksoftirqd/0 
+    4 root      20   0       0      0      0 S   0.0  0.0   0:00.00 kworker/0:0 
+    5 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 kworker/0:+ 
+    6 root      20   0       0      0      0 S   0.0  0.0   0:00.05 kworker/u1+ 
+    7 root      20   0       0      0      0 S   0.0  0.0   0:00.02 rcu_preempt 
+    8 root      20   0       0      0      0 S   0.0  0.0   0:00.01 rcu_sched   
+    9 root      20   0       0      0      0 S   0.0  0.0   0:00.00 rcu_bh      
+   10 root      rt   0       0      0      0 S   0.0  0.0   0:00.00 migration/0 
+   11 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 lru-add-dr+ 
+   12 root      rt   0       0      0      0 S   0.0  0.0   0:00.00 watchdog/0  
+   13 root      20   0       0      0      0 S   0.0  0.0   0:00.00 cpuhp/0     
+   14 root      20   0       0      0      0 S   0.0  0.0   0:00.00 cpuhp/1     
+   15 root      rt   0       0      0      0 S   0.0  0.0   0:00.00 watchdog/1  
+   16 root      rt   0       0      0      0 S   0.0  0.0   0:00.00 migration/1 
+   17 root      20   0       0      0      0 S   0.0  0.0   0:00.00 ksoftirqd/1 
+   18 root      20   0       0      0      0 S   0.0  0.0   0:00.02 kworker/1:0 
+   19 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 kworker/1:+ 
+   20 root      20   0       0      0      0 S   0.0  0.0   0:00.00 cpuhp/2     
+   21 root      rt   0       0      0      0 S   0.0  0.0   0:00.00 watchdog/2  
+   22 root      rt   0       0      0      0 S   0.0  0.0   0:00.00 migration/2 
+   23 root      20   0       0      0      0 S   0.0  0.0   0:00.00 ksoftirqd/2
+```
 RT kernel:
 ```
 
