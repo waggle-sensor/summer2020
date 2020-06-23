@@ -15,18 +15,29 @@ def get_root(xml_file):
     return tree.getroot()
 
 
-def get_freq(label_xml):
+def parse_labels(label_xml):
     root = get_root(label_xml)
 
-    make_models = dict()
+    labels = list()
 
     for annot in root.findall(".//annotation"):
-        filename = annot.find(".//filename").text
+        label = dict()
+        label["filename"] = annot.find("filename").text
+        
         obj = annot.find(".//object")
-        make, model = obj.find(".//name").text.split(" ", 1)
-        conf = float(obj.find(".//confidence").text)
+        label["make"], label["model"] = obj.find(".//name").text.split(" ", 1)
+        label["conf"] = float(obj.find(".//confidence").text)
+        
+        labels.append(label)
 
-        name = make + " " + model
+    return labels
+
+def get_freq(labels):
+    make_models = dict()
+
+    for label in labels:
+        name = label["make"] + " " + label["model"]
+
         if name not in make_models.keys():
             make_models[name] = 1
         else:
@@ -35,6 +46,26 @@ def get_freq(label_xml):
     with open(OUTPUT + "names2.txt", "w+") as out:
         for k, v in make_models.items():
             out.write(f"{k.lower()}: {v}\n")
+
+
+def generate_txt_labels(labels, classes):
+    filepaths = list()
+    for label in labels:
+        name = label["make"] + " " + label["model"]
+
+        if name.lower() in classes:
+            filepaths.append(DATA + label["filename"])
+            txt_filename = label["filename"].replace(".jpg", ".txt")
+            txt_path = OUTPUT + "labels/" + txt_filename
+
+            idx = classes.index(name.lower())
+            line = f"{idx} 0.5 0.5 1 1"
+            
+            with open(txt_path, "w+") as out:
+                out.write(line)
+    
+    with open(OUTPUT + "cars.data", "w+") as out:
+        out.write("\n".join(filepaths))
 
 
 def combine_names(f1, f2):
@@ -58,8 +89,12 @@ def combine_names(f1, f2):
 
 
 def main():
-    # get_freq(DATA + "labels.xml")
+    label_dicts = parse_labels(DATA + "labels.xml")
+    get_freq(label_dicts)
     combine_names(OUTPUT + "names.txt", OUTPUT + "names2.txt")
+
+    classes = open("topclasses.names", "r").read().split("\n")
+    generate_txt_labels(label_dicts, classes)
 
 
 if __name__ == "__main__":

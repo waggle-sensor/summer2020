@@ -182,7 +182,8 @@ def read_file_as_list(filename):
 
 
 def generate_txt_labels(vehicle_md, classes):
-    os.mkdir(OUTPUT + "labels")
+    os.makedirs(OUTPUT + "labels", exist_ok=True)
+    paths = list()
     for md_file in vehicle_md:
         root = get_root(md_file)
         path = DATA + root.find("folder").text + "/" + root.find("filename").text
@@ -200,7 +201,7 @@ def generate_txt_labels(vehicle_md, classes):
             class_name = f"{attr['make']} {attr['model']}"
             if class_name not in classes:
                 continue
-
+            
             (x0, y0), (x1, y1) = get_rect_bounds(obj)
             rect_h = y1 - y0
             rect_w = x1 - x0
@@ -215,9 +216,13 @@ def generate_txt_labels(vehicle_md, classes):
         txt_path = OUTPUT + "labels/" + txt_filename
 
         if len(class_labels) > 0:
+            print(path)
+            paths.append(path)
             with open(txt_path, "w+") as out:
                 out.write("\n".join(class_labels))
 
+    with open(OUTPUT + "cars.data", "a+") as out:
+        out.write("\n".join(paths))
 
 def main():
     md = get_metadata()
@@ -232,9 +237,9 @@ def main():
     # draw_bounding_box(vehicle_md[4])
 
     # if not os.path.exists(OUTPUT + "cars.names"):
-    parse_metadata(vehicle_md)
+    #   parse_metadata(vehicle_md)
 
-    classes = read_file_as_list(OUTPUT + "cars.names")
+    classes = read_file_as_list("topclasses.names")
     generate_txt_labels(vehicle_md, classes)
 
 
