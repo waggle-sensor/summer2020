@@ -71,3 +71,13 @@
 
 * Discussed steps going forward with Raj about potential datasets
 * Finished labeling scripts to generate file lists for make/model
+
+**Wednesday, June 23**
+
+* Ran a test run of the YOLOv3 scripts on the car datasets
+* Looked into Stanford car dataset for training instead of Waggle images
+  * Wrote script and found out there's at most 100 images per class, too few
+* Discussed changing to character recognition data with Nicola and Luke
+* Wrote scripts to label and clean Char74K dataset
+* Ran test run of YOLOv3 script on local computer (creating a checkpoint after one epoch)
+  * Will test on Lambda once I gain access
