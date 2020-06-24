@@ -1,629 +1,629 @@
-./make_model_dataset/Jul15_A_346_61927.jpg
-./make_model_dataset/Jul15_C_55_9562.jpg
-./waggle_maingate/maingate_pic/2092730989.jpg
-./make_model_dataset/Jul15_A_228_39190.jpg
-./make_model_dataset/Jul15_A_62_9865.jpg
-./make_model_dataset/Jul15_B_403_68693.jpg
-./make_model_dataset/Jul15_C_411_74958.jpg
-./waggle_maingate/maingate_pic/7821253820.jpg
-./waggle_maingate/maingate_pic/3461435596.jpg
-./waggle_maingate/maingate_pic/9194843727.jpg
-./make_model_dataset/Jul15_A_482_88662.jpg
-./make_model_dataset/Jul15_B_136_23251.jpg
-./make_model_dataset/Jul15_B_277_46922.jpg
-./make_model_dataset/Jul15_B_366_63145.jpg
-./make_model_dataset/Jul15_A_372_66052.jpg
-./make_model_dataset/Jul15_A_293_51439.jpg
-./make_model_dataset/Jul15_B_150_26364.jpg
-./make_model_dataset/Jul15_C_198_36048.jpg
-./make_model_dataset/Jul15_B_287_48530.jpg
-./make_model_dataset/Jul15_C_502_93263.jpg
-./make_model_dataset/Jul15_C_22_5123.jpg
-./make_model_dataset/Jul15_C_358_64684.jpg
-./make_model_dataset/Jul15_B_224_37756.jpg
-./make_model_dataset/Jul15_A_272_47409.jpg
-./make_model_dataset/Jul15_B_309_52129.jpg
-./make_model_dataset/Jul15_A_219_38041.jpg
-./make_model_dataset/Jul15_A_152_28188.jpg
-./make_model_dataset/Jul15_C_12_2522.jpg
-./make_model_dataset/Jul15_A_62_9869.jpg
-./make_model_dataset/Jul15_A_65_10483.jpg
-./make_model_dataset/Jul15_A_228_39193.jpg
-./make_model_dataset/Jul15_C_219_38580.jpg
-./make_model_dataset/Jul15_C_74_13035.jpg
-./make_model_dataset/Jul15_B_80_12381.jpg
-./make_model_dataset/Jul15_B_281_47571.jpg
-./make_model_dataset/Jul15_C_512_94879.jpg
-./make_model_dataset/Jul15_A_350_62512.jpg
-./make_model_dataset/Jul15_C_98_18383.jpg
-./waggle_maingate/maingate_pic/222537051.jpg
-./make_model_dataset/Jul15_A_218_37907.jpg
-./make_model_dataset/Jul15_B_480_83881.jpg
-./make_model_dataset/Jul15_B_286_48323.jpg
-./make_model_dataset/Jul15_C_177_33024.jpg
-./make_model_dataset/Jul15_C_43_7754.jpg
-./make_model_dataset/Jul15_C_37_6621.jpg
-./make_model_dataset/Jul15_C_189_34691.jpg
-./make_model_dataset/Jul15_C_525_97452.jpg
-./make_model_dataset/Jul15_C_22_5126.jpg
-./make_model_dataset/Jul15_C_178_33126.jpg
-./waggle_maingate/maingate_pic/2751857213.jpg
-./make_model_dataset/Jul15_C_547_101945.jpg
-./make_model_dataset/Jul15_A_118_21244.jpg
-./make_model_dataset/Jul15_A_273_47520.jpg
-./make_model_dataset/Jul15_A_118_21240.jpg
-./waggle_maingate/maingate_pic/7164809378.jpg
-./make_model_dataset/Jul15_A_424_75777.jpg
-./make_model_dataset/Jul15_A_77_12731.jpg
-./make_model_dataset/Jul15_C_70_12274.jpg
-./waggle_maingate/maingate_pic/4076075502.jpg
-./make_model_dataset/Jul15_C_231_40408.jpg
-./make_model_dataset/Jul15_A_216_37802.jpg
-./make_model_dataset/Jul15_B_235_39094.jpg
-./waggle_maingate/maingate_pic/6540020533.jpg
-./make_model_dataset/Jul15_C_14_3225.jpg
-./make_model_dataset/Jul15_B_43_6462.jpg
-./make_model_dataset/Jul15_A_227_39151.jpg
-./make_model_dataset/Jul15_C_200_36426.jpg
-./make_model_dataset/Jul15_B_410_70695.jpg
-./make_model_dataset/Jul15_C_241_42995.jpg
-./waggle_maingate/maingate_pic/4918341485.jpg
-./make_model_dataset/Jul15_A_265_46323.jpg
-./make_model_dataset/Jul15_C_276_48893.jpg
-./make_model_dataset/Jul15_A_306_54154.jpg
-./make_model_dataset/Jul15_B_403_68692.jpg
-./make_model_dataset/Jul15_A_439_80737.jpg
-./make_model_dataset/Jul15_B_366_63149.jpg
-./make_model_dataset/Jul15_A_376_66752.jpg
-./make_model_dataset/Jul15_B_125_22084.jpg
-./make_model_dataset/Jul15_B_45_7097.jpg
-./make_model_dataset/Jul15_B_287_48531.jpg
-./make_model_dataset/Jul15_C_52_9224.jpg
-./make_model_dataset/Jul15_C_467_85731.jpg
-./make_model_dataset/Jul15_B_118_20391.jpg
-./make_model_dataset/Jul15_C_525_97455.jpg
-./make_model_dataset/Jul15_B_321_55389.jpg
-./waggle_maingate/maingate_pic/5249999235.jpg
-./make_model_dataset/Jul15_C_12_2519.jpg
-./waggle_maingate/maingate_pic/7331597484.jpg
-./make_model_dataset/Jul15_A_256_45004.jpg
-./make_model_dataset/Jul15_C_52_9223.jpg
-./make_model_dataset/Jul15_C_553_102835.jpg
-./waggle_maingate/maingate_pic/9567651312.jpg
-./make_model_dataset/Jul15_A_77_12732.jpg
-./make_model_dataset/Jul15_A_38_6062.jpg
-./make_model_dataset/Jul15_A_216_37807.jpg
-./waggle_maingate/maingate_pic/3201127774.jpg
-./make_model_dataset/Jul15_A_213_36603.jpg
-./make_model_dataset/Jul15_B_285_48234.jpg
-./make_model_dataset/Jul15_C_303_53531.jpg
-./make_model_dataset/Jul15_B_321_55395.jpg
-./make_model_dataset/Jul15_B_310_52169.jpg
-./make_model_dataset/Jul15_A_285_49798.jpg
-./make_model_dataset/Jul15_C_304_54655.jpg
-./make_model_dataset/Jul15_A_479_88257.jpg
-./make_model_dataset/Jul15_A_473_86699.jpg
-./make_model_dataset/Jul15_A_55_8755.jpg
-./make_model_dataset/Jul15_B_136_23249.jpg
-./make_model_dataset/Jul15_B_77_12148.jpg
-./make_model_dataset/Jul15_C_469_86233.jpg
-./make_model_dataset/Jul15_A_209_36421.jpg
-./make_model_dataset/Jul15_A_267_46411.jpg
-./waggle_maingate/maingate_pic/5037739948.jpg
-./make_model_dataset/Jul15_A_8_1614.jpg
-./waggle_maingate/maingate_pic/2333447174.jpg
-./make_model_dataset/Jul15_B_516_91561.jpg
-./make_model_dataset/Jul15_C_198_36053.jpg
-./make_model_dataset/Jul15_A_77_12730.jpg
-./waggle_maingate/maingate_pic/1021529292.jpg
-./make_model_dataset/Jul15_B_416_72678.jpg
-./make_model_dataset/Jul15_C_179_33767.jpg
-./waggle_maingate/maingate_pic/2912972485.jpg
-./make_model_dataset/Jul15_C_23_5181.jpg
-./make_model_dataset/Jul15_B_309_52127.jpg
-./make_model_dataset/Jul15_C_189_34693.jpg
-./waggle_maingate/maingate_pic/159025850.jpg
-./make_model_dataset/Jul15_B_118_20389.jpg
-./waggle_maingate/maingate_pic/8195148261.jpg
-./make_model_dataset/Jul15_B_285_48231.jpg
-./make_model_dataset/Jul15_C_22_5125.jpg
-./make_model_dataset/Jul15_A_92_16190.jpg
-./waggle_maingate/maingate_pic/8038427606.jpg
-./make_model_dataset/Jul15_A_272_47406.jpg
-./waggle_maingate/maingate_pic/797062836.jpg
-./make_model_dataset/Jul15_A_164_30742.jpg
-./make_model_dataset/Jul15_C_219_38584.jpg
-./make_model_dataset/Jul15_A_15_3482.jpg
-./make_model_dataset/Jul15_C_231_40411.jpg
-./make_model_dataset/Jul15_B_410_70697.jpg
-./make_model_dataset/Jul15_B_10_1496.jpg
-./make_model_dataset/Jul15_B_309_52125.jpg
-./waggle_maingate/maingate_pic/1900293652.jpg
-./make_model_dataset/Jul15_A_181_33786.jpg
-./make_model_dataset/Jul15_B_230_38606.jpg
-./make_model_dataset/Jul15_C_227_39695.jpg
-./make_model_dataset/Jul15_C_422_76172.jpg
-./make_model_dataset/Jul15_C_496_91814.jpg
-./make_model_dataset/Jul15_C_228_39786.jpg
-./make_model_dataset/Jul15_B_286_48319.jpg
-./make_model_dataset/Jul15_A_343_61320.jpg
-./make_model_dataset/Jul15_B_12_1859.jpg
-./make_model_dataset/Jul15_A_272_47408.jpg
-./make_model_dataset/Jul15_C_227_39697.jpg
-./make_model_dataset/Jul15_A_213_36601.jpg
-./make_model_dataset/Jul15_A_216_37806.jpg
-./waggle_maingate/maingate_pic/3904883218.jpg
-./make_model_dataset/Jul15_C_219_38585.jpg
-./make_model_dataset/Jul15_A_65_10486.jpg
-./make_model_dataset/Jul15_C_460_84047.jpg
-./make_model_dataset/Jul15_B_72_11464.jpg
-./make_model_dataset/Jul15_A_479_88258.jpg
-./make_model_dataset/Jul15_B_324_56071.jpg
-./make_model_dataset/Jul15_C_179_33766.jpg
-./make_model_dataset/Jul15_B_410_70692.jpg
-./waggle_maingate/maingate_pic/7070898448.jpg
-./make_model_dataset/Jul15_B_277_46924.jpg
-./make_model_dataset/Jul15_A_350_62513.jpg
-./make_model_dataset/Jul15_C_169_32536.jpg
-./make_model_dataset/Jul15_A_45_7269.jpg
-./make_model_dataset/Jul15_A_274_47696.jpg
-./waggle_maingate/maingate_pic/3162949430.jpg
-./make_model_dataset/Jul15_C_90_16737.jpg
-./make_model_dataset/Jul15_A_439_80742.jpg
-./make_model_dataset/Jul15_B_55_8568.jpg
-./make_model_dataset/Jul15_C_95_17718.jpg
-./waggle_maingate/maingate_pic/1000052595.jpg
-./make_model_dataset/Jul15_A_92_16189.jpg
-./make_model_dataset/Jul15_A_342_61276.jpg
-./make_model_dataset/Jul15_C_525_97451.jpg
-./make_model_dataset/Jul15_B_12_1862.jpg
-./make_model_dataset/Jul15_C_547_101947.jpg
-./waggle_maingate/maingate_pic/4154964681.jpg
-./make_model_dataset/Jul15_A_439_80739.jpg
-./make_model_dataset/Jul15_C_480_89027.jpg
-./make_model_dataset/Jul15_B_224_37755.jpg
-./make_model_dataset/Jul15_A_24_4693.jpg
-./make_model_dataset/Jul15_A_172_32153.jpg
-./waggle_maingate/maingate_pic/5671980992.jpg
-./make_model_dataset/Jul15_A_77_12728.jpg
-./make_model_dataset/Jul15_C_24_5244.jpg
-./make_model_dataset/Jul15_C_90_16735.jpg
-./make_model_dataset/Jul15_C_359_64848.jpg
-./waggle_maingate/maingate_pic/94689285.jpg
-./make_model_dataset/Jul15_B_313_54002.jpg
-./make_model_dataset/Jul15_B_225_37781.jpg
-./make_model_dataset/Jul15_B_212_36059.jpg
-./make_model_dataset/Jul15_B_313_54000.jpg
-./make_model_dataset/Jul15_B_491_87068.jpg
-./waggle_maingate/maingate_pic/3103347552.jpg
-./make_model_dataset/Jul15_A_273_47522.jpg
-./make_model_dataset/Jul15_A_22_4581.jpg
-./make_model_dataset/Jul15_C_317_56989.jpg
-./waggle_maingate/maingate_pic/2399071789.jpg
-./make_model_dataset/Jul15_B_36_5796.jpg
-./waggle_maingate/maingate_pic/4339349730.jpg
-./waggle_maingate/maingate_pic/6084479562.jpg
-./make_model_dataset/Jul15_C_554_103370.jpg
-./make_model_dataset/Jul15_C_220_38875.jpg
-./make_model_dataset/Jul15_B_101_17060.jpg
-./waggle_maingate/maingate_pic/1949278085.jpg
-./make_model_dataset/Jul15_C_224_39574.jpg
-./make_model_dataset/Jul15_A_372_66049.jpg
-./make_model_dataset/Jul15_B_516_91560.jpg
-./make_model_dataset/Jul15_C_369_66102.jpg
-./waggle_maingate/maingate_pic/8675648832.jpg
-./make_model_dataset/Jul15_B_253_42623.jpg
-./waggle_maingate/maingate_pic/8788549477.jpg
-./make_model_dataset/Jul15_C_221_39030.jpg
-./make_model_dataset/Jul15_A_228_39192.jpg
-./make_model_dataset/Jul15_C_369_66104.jpg
-./make_model_dataset/Jul15_B_524_93397.jpg
-./make_model_dataset/Jul15_C_200_36430.jpg
-./make_model_dataset/Jul15_A_164_30743.jpg
-./make_model_dataset/Jul15_A_343_61322.jpg
-./make_model_dataset/Jul15_B_201_35090.jpg
-./make_model_dataset/Jul15_C_296_52273.jpg
-./make_model_dataset/Jul15_B_277_46925.jpg
-./make_model_dataset/Jul15_C_248_43895.jpg
-./make_model_dataset/Jul15_B_96_16070.jpg
-./make_model_dataset/Jul15_C_177_33025.jpg
-./make_model_dataset/Jul15_C_37_6617.jpg
-./make_model_dataset/Jul15_B_514_91148.jpg
-./make_model_dataset/Jul15_B_55_8565.jpg
-./make_model_dataset/Jul15_C_226_39674.jpg
-./make_model_dataset/Jul15_C_505_93654.jpg
-./waggle_maingate/maingate_pic/8331252517.jpg
-./make_model_dataset/Jul15_C_422_76173.jpg
-./make_model_dataset/Jul15_C_246_43499.jpg
-./make_model_dataset/Jul15_A_172_32154.jpg
-./make_model_dataset/Jul15_C_460_84048.jpg
-./make_model_dataset/Jul15_C_422_76177.jpg
-./make_model_dataset/Jul15_C_120_22892.jpg
-./make_model_dataset/Jul15_C_24_5239.jpg
-./make_model_dataset/Jul15_A_337_60012.jpg
-./waggle_maingate/maingate_pic/4858371448.jpg
-./make_model_dataset/Jul15_A_28_4967.jpg
-./make_model_dataset/Jul15_B_66_10365.jpg
-./waggle_maingate/maingate_pic/4584588253.jpg
-./make_model_dataset/Jul15_B_238_39668.jpg
-./make_model_dataset/Jul15_A_256_45005.jpg
-./make_model_dataset/Jul15_C_556_103773.jpg
-./make_model_dataset/Jul15_C_62_10968.jpg
-./make_model_dataset/Jul15_C_114_21439.jpg
-./make_model_dataset/Jul15_B_321_55392.jpg
-./waggle_maingate/maingate_pic/8163319986.jpg
-./make_model_dataset/Jul15_A_368_65148.jpg
-./make_model_dataset/Jul15_C_27_5477.jpg
-./make_model_dataset/Jul15_C_0_139.jpg
-./waggle_maingate/maingate_pic/8969795347.jpg
-./make_model_dataset/Jul15_B_83_12751.jpg
-./make_model_dataset/Jul15_A_424_75775.jpg
-./make_model_dataset/Jul15_A_152_28183.jpg
-./make_model_dataset/Jul15_C_220_38881.jpg
-./waggle_maingate/maingate_pic/5040279520.jpg
-./make_model_dataset/Jul15_B_287_48533.jpg
-./make_model_dataset/Jul15_B_471_82923.jpg
-./make_model_dataset/Jul15_A_473_86700.jpg
-./make_model_dataset/Jul15_C_460_84043.jpg
-./make_model_dataset/Jul15_B_223_37681.jpg
-./waggle_maingate/maingate_pic/4174315830.jpg
-./make_model_dataset/Jul15_C_512_94880.jpg
-./make_model_dataset/Jul15_A_387_67855.jpg
-./make_model_dataset/Jul15_A_267_46409.jpg
-./make_model_dataset/Jul15_C_395_71081.jpg
-./make_model_dataset/Jul15_C_74_13036.jpg
-./waggle_maingate/maingate_pic/3906786013.jpg
-./make_model_dataset/Jul15_C_467_85735.jpg
-./make_model_dataset/Jul15_C_120_22896.jpg
-./make_model_dataset/Jul15_A_390_68640.jpg
-./make_model_dataset/Jul15_B_10_1495.jpg
-./make_model_dataset/Jul15_C_518_95915.jpg
-./make_model_dataset/Jul15_A_480_88387.jpg
-./make_model_dataset/Jul15_B_203_35299.jpg
-./make_model_dataset/Jul15_A_343_61321.jpg
-./make_model_dataset/Jul15_A_387_67854.jpg
-./waggle_maingate/maingate_pic/6546796553.jpg
-./make_model_dataset/Jul15_C_77_13412.jpg
-./make_model_dataset/Jul15_C_553_102833.jpg
-./make_model_dataset/Jul15_A_293_51444.jpg
-./make_model_dataset/Jul15_B_136_23253.jpg
-./make_model_dataset/Jul15_C_224_39573.jpg
-./make_model_dataset/Jul15_A_446_81432.jpg
-./make_model_dataset/Jul15_C_402_73341.jpg
-./make_model_dataset/Jul15_C_217_38415.jpg
-./make_model_dataset/Jul15_A_11_1980.jpg
-./make_model_dataset/Jul15_C_37_6618.jpg
-./make_model_dataset/Jul15_A_52_8459.jpg
-./make_model_dataset/Jul15_A_216_37804.jpg
-./make_model_dataset/Jul15_B_96_16072.jpg
-./make_model_dataset/Jul15_A_424_75776.jpg
-./make_model_dataset/Jul15_A_141_26325.jpg
-./make_model_dataset/Jul15_B_471_82924.jpg
-./make_model_dataset/Jul15_C_248_43893.jpg
-./make_model_dataset/Jul15_C_422_76178.jpg
-./make_model_dataset/Jul15_C_98_18382.jpg
-./make_model_dataset/Jul15_B_52_8302.jpg
-./make_model_dataset/Jul15_A_387_67852.jpg
-./make_model_dataset/Jul15_A_296_51617.jpg
-./make_model_dataset/Jul15_A_172_32149.jpg
-./make_model_dataset/Jul15_B_136_23248.jpg
-./make_model_dataset/Jul15_A_209_36419.jpg
-./make_model_dataset/Jul15_A_141_26326.jpg
-./make_model_dataset/Jul15_C_246_43504.jpg
-./make_model_dataset/Jul15_A_51_8418.jpg
-./make_model_dataset/Jul15_A_213_36602.jpg
-./make_model_dataset/Jul15_B_268_45719.jpg
-./make_model_dataset/Jul15_A_223_38721.jpg
-./make_model_dataset/Jul15_B_212_36061.jpg
-./waggle_maingate/maingate_pic/4138783757.jpg
-./make_model_dataset/Jul15_C_429_78281.jpg
-./make_model_dataset/Jul15_A_337_60010.jpg
-./make_model_dataset/Jul15_C_466_85553.jpg
-./make_model_dataset/Jul15_B_310_52172.jpg
-./make_model_dataset/Jul15_A_141_26327.jpg
-./waggle_maingate/maingate_pic/2741531419.jpg
-./make_model_dataset/Jul15_B_83_12752.jpg
-./make_model_dataset/Jul15_B_430_75035.jpg
-./make_model_dataset/Jul15_A_372_66047.jpg
-./make_model_dataset/Jul15_C_503_93418.jpg
-./waggle_maingate/maingate_pic/7978401844.jpg
-./make_model_dataset/Jul15_A_181_33783.jpg
-./make_model_dataset/Jul15_B_231_38892.jpg
-./make_model_dataset/Jul15_C_547_101951.jpg
-./make_model_dataset/Jul15_B_524_93401.jpg
-./make_model_dataset/Jul15_C_538_101203.jpg
-./waggle_maingate/maingate_pic/5736652140.jpg
-./make_model_dataset/Jul15_A_97_17220.jpg
-./make_model_dataset/Jul15_C_178_33125.jpg
-./waggle_maingate/maingate_pic/7934760286.jpg
-./make_model_dataset/Jul15_A_28_4965.jpg
-./make_model_dataset/Jul15_B_277_46927.jpg
-./waggle_maingate/maingate_pic/4439685507.jpg
-./make_model_dataset/Jul15_B_480_83878.jpg
-./make_model_dataset/Jul15_C_169_32535.jpg
-./make_model_dataset/Jul15_A_424_75774.jpg
-./make_model_dataset/Jul15_A_372_66046.jpg
-./make_model_dataset/Jul15_A_272_47404.jpg
-./make_model_dataset/Jul15_A_228_39194.jpg
-./make_model_dataset/Jul15_C_307_54998.jpg
-./make_model_dataset/Jul15_C_234_41898.jpg
-./make_model_dataset/Jul15_A_342_61275.jpg
-./make_model_dataset/Jul15_B_480_83880.jpg
-./waggle_maingate/maingate_pic/4961103893.jpg
-./make_model_dataset/Jul15_C_352_63786.jpg
-./make_model_dataset/Jul15_B_268_45723.jpg
-./make_model_dataset/Jul15_A_343_61316.jpg
-./make_model_dataset/Jul15_C_231_40406.jpg
-./waggle_maingate/maingate_pic/7632163259.jpg
-./make_model_dataset/Jul15_C_460_84042.jpg
-./make_model_dataset/Jul15_B_104_17723.jpg
-./make_model_dataset/Jul15_A_337_60013.jpg
-./make_model_dataset/Jul15_B_80_12378.jpg
-./make_model_dataset/Jul15_B_136_23252.jpg
-./make_model_dataset/Jul15_B_225_37782.jpg
-./make_model_dataset/Jul15_B_281_47576.jpg
-./make_model_dataset/Jul15_C_280_49640.jpg
-./waggle_maingate/maingate_pic/8701759058.jpg
-./make_model_dataset/Jul15_A_52_8460.jpg
-./make_model_dataset/Jul15_B_203_35297.jpg
-./make_model_dataset/Jul15_A_212_36567.jpg
-./make_model_dataset/Jul15_C_307_54994.jpg
-./make_model_dataset/Jul15_C_512_94881.jpg
-./make_model_dataset/Jul15_A_55_8756.jpg
-./make_model_dataset/Jul15_A_401_72636.jpg
-./make_model_dataset/Jul15_B_360_62229.jpg
-./waggle_maingate/maingate_pic/5455973791.jpg
-./make_model_dataset/Jul15_A_265_46322.jpg
-./make_model_dataset/Jul15_A_343_61318.jpg
-./make_model_dataset/Jul15_B_98_16374.jpg
-./make_model_dataset/Jul15_A_342_61274.jpg
-./make_model_dataset/Jul15_A_293_51441.jpg
-./make_model_dataset/Jul15_A_43_6629.jpg
-./make_model_dataset/Jul15_A_223_38725.jpg
-./waggle_maingate/maingate_pic/5866590221.jpg
-./make_model_dataset/Jul15_B_192_33771.jpg
-./make_model_dataset/Jul15_C_74_13032.jpg
-./make_model_dataset/Jul15_A_439_80738.jpg
-./make_model_dataset/Jul15_B_22_4465.jpg
-./make_model_dataset/Jul15_A_77_12727.jpg
-./waggle_maingate/maingate_pic/9683922329.jpg
-./make_model_dataset/Jul15_C_9_2159.jpg
-./make_model_dataset/Jul15_A_306_54158.jpg
-./waggle_maingate/maingate_pic/379788480.jpg
-./make_model_dataset/Jul15_C_296_52275.jpg
-./make_model_dataset/Jul15_A_97_17215.jpg
-./make_model_dataset/Jul15_C_62_10966.jpg
-./make_model_dataset/Jul15_B_77_12144.jpg
-./make_model_dataset/Jul15_C_281_49761.jpg
-./make_model_dataset/Jul15_A_89_14729.jpg
-./make_model_dataset/Jul15_A_337_60011.jpg
-./make_model_dataset/Jul15_B_360_62226.jpg
-./make_model_dataset/Jul15_C_263_46819.jpg
-./waggle_maingate/maingate_pic/9740007068.jpg
-./make_model_dataset/Jul15_B_482_84889.jpg
-./make_model_dataset/Jul15_C_226_39675.jpg
-./make_model_dataset/Jul15_C_467_85732.jpg
-./make_model_dataset/Jul15_A_118_21242.jpg
-./waggle_maingate/maingate_pic/6152415607.jpg
-./make_model_dataset/Jul15_A_94_16497.jpg
-./make_model_dataset/Jul15_A_303_52294.jpg
-./make_model_dataset/Jul15_B_232_38971.jpg
-./make_model_dataset/Jul15_B_55_8567.jpg
-./waggle_maingate/maingate_pic/2128129122.jpg
-./make_model_dataset/Jul15_A_473_86697.jpg
-./make_model_dataset/Jul15_C_503_93414.jpg
-./make_model_dataset/Jul15_C_480_89024.jpg
-./make_model_dataset/Jul15_C_469_86227.jpg
-./waggle_maingate/maingate_pic/5271409312.jpg
-./make_model_dataset/Jul15_A_219_38045.jpg
-./make_model_dataset/Jul15_A_446_81427.jpg
-./make_model_dataset/Jul15_B_55_8564.jpg
-./make_model_dataset/Jul15_C_480_89028.jpg
-./make_model_dataset/Jul15_A_118_21243.jpg
-./make_model_dataset/Jul15_A_346_61926.jpg
-./make_model_dataset/Jul15_A_43_6626.jpg
-./waggle_maingate/maingate_pic/4268261707.jpg
-./make_model_dataset/Jul15_C_296_52272.jpg
-./waggle_maingate/maingate_pic/1915383884.jpg
-./make_model_dataset/Jul15_C_52_9227.jpg
-./make_model_dataset/Jul15_C_132_24427.jpg
-./make_model_dataset/Jul15_C_120_22894.jpg
-./make_model_dataset/Jul15_B_136_23250.jpg
-./make_model_dataset/Jul15_A_285_49794.jpg
-./make_model_dataset/Jul15_C_220_38878.jpg
-./make_model_dataset/Jul15_B_513_90825.jpg
-./make_model_dataset/Jul15_B_310_52173.jpg
-./make_model_dataset/Jul15_B_416_72677.jpg
-./make_model_dataset/Jul15_A_24_4696.jpg
-./make_model_dataset/Jul15_A_65_10481.jpg
-./make_model_dataset/Jul15_C_14_3224.jpg
-./make_model_dataset/Jul15_A_401_72638.jpg
-./make_model_dataset/Jul15_A_343_61319.jpg
-./make_model_dataset/Jul15_A_209_36417.jpg
-./make_model_dataset/Jul15_B_366_63147.jpg
-./waggle_maingate/maingate_pic/6196065091.jpg
-./make_model_dataset/Jul15_C_282_50328.jpg
-./make_model_dataset/Jul15_C_402_73342.jpg
-./make_model_dataset/Jul15_B_181_32148.jpg
-./make_model_dataset/Jul15_C_512_94882.jpg
-./waggle_maingate/maingate_pic/4429747812.jpg
-./make_model_dataset/Jul15_C_0_140.jpg
-./make_model_dataset/Jul15_C_23_5180.jpg
-./waggle_maingate/maingate_pic/6012258485.jpg
-./make_model_dataset/Jul15_B_72_11460.jpg
-./make_model_dataset/Jul15_C_467_85730.jpg
-./waggle_maingate/maingate_pic/8019008937.jpg
-./make_model_dataset/Jul15_C_10_2442.jpg
-./make_model_dataset/Jul15_A_189_34136.jpg
-./make_model_dataset/Jul15_B_55_8570.jpg
-./make_model_dataset/Jul15_B_513_90827.jpg
-./make_model_dataset/Jul15_B_430_75036.jpg
-./make_model_dataset/Jul15_B_104_17720.jpg
-./waggle_maingate/maingate_pic/3979519046.jpg
-./make_model_dataset/Jul15_B_12_1864.jpg
-./waggle_maingate/maingate_pic/6361667820.jpg
-./make_model_dataset/Jul15_B_524_93396.jpg
-./make_model_dataset/Jul15_C_80_13694.jpg
-./make_model_dataset/Jul15_C_248_43892.jpg
-./make_model_dataset/Jul15_C_12_2520.jpg
-./make_model_dataset/Jul15_C_281_49765.jpg
-./make_model_dataset/Jul15_C_221_39031.jpg
-./make_model_dataset/Jul15_A_219_38044.jpg
-./make_model_dataset/Jul15_C_248_43890.jpg
-./make_model_dataset/Jul15_C_556_103775.jpg
-./make_model_dataset/Jul15_C_307_54993.jpg
-./make_model_dataset/Jul15_B_516_91565.jpg
-./make_model_dataset/Jul15_A_70_11577.jpg
-./make_model_dataset/Jul15_B_201_35089.jpg
-./waggle_maingate/maingate_pic/7094124095.jpg
-./waggle_maingate/maingate_pic/9129422035.jpg
-./make_model_dataset/Jul15_A_343_61317.jpg
-./waggle_maingate/maingate_pic/9107358728.jpg
-./make_model_dataset/Jul15_A_273_47524.jpg
-./make_model_dataset/Jul15_C_55_9561.jpg
-./make_model_dataset/Jul15_C_471_87201.jpg
-./make_model_dataset/Jul15_A_189_34135.jpg
-./waggle_maingate/maingate_pic/886730295.jpg
-./make_model_dataset/Jul15_B_230_38601.jpg
-./make_model_dataset/Jul15_B_287_48534.jpg
-./make_model_dataset/Jul15_A_350_62518.jpg
-./waggle_maingate/maingate_pic/6782235280.jpg
-./make_model_dataset/Jul15_C_281_49759.jpg
-./make_model_dataset/Jul15_A_439_80743.jpg
-./make_model_dataset/Jul15_C_227_39696.jpg
-./make_model_dataset/Jul15_B_98_16376.jpg
-./make_model_dataset/Jul15_B_478_83853.jpg
-./make_model_dataset/Jul15_B_80_12380.jpg
-./make_model_dataset/Jul15_B_223_37683.jpg
-./make_model_dataset/Jul15_C_363_65384.jpg
-./waggle_maingate/maingate_pic/598005252.jpg
-./make_model_dataset/Jul15_B_10_1501.jpg
-./make_model_dataset/Jul15_C_282_50324.jpg
-./make_model_dataset/Jul15_B_203_35298.jpg
-./make_model_dataset/Jul15_C_179_33764.jpg
-./make_model_dataset/Jul15_B_125_22083.jpg
-./make_model_dataset/Jul15_C_77_13409.jpg
-./make_model_dataset/Jul15_C_282_50323.jpg
-./make_model_dataset/Jul15_B_471_82926.jpg
-./make_model_dataset/Jul15_C_10_2436.jpg
-./make_model_dataset/Jul15_B_119_20439.jpg
-./make_model_dataset/Jul15_B_301_51305.jpg
-./waggle_maingate/maingate_pic/1137199227.jpg
-./make_model_dataset/Jul15_B_118_20388.jpg
-./make_model_dataset/Jul15_B_21_4395.jpg
-./waggle_maingate/maingate_pic/8142994471.jpg
-./make_model_dataset/Jul15_C_10_2440.jpg
-./make_model_dataset/Jul15_C_556_103777.jpg
-./waggle_maingate/maingate_pic/1261477182.jpg
-./make_model_dataset/Jul15_C_314_56343.jpg
-./make_model_dataset/Jul15_C_219_38582.jpg
-./make_model_dataset/Jul15_B_513_90824.jpg
-./make_model_dataset/Jul15_B_375_64684.jpg
-./waggle_maingate/maingate_pic/5675264257.jpg
-./make_model_dataset/Jul15_A_24_4697.jpg
-./make_model_dataset/Jul15_A_8_1611.jpg
-./waggle_maingate/maingate_pic/4904752350.jpg
-./make_model_dataset/Jul15_B_101_17055.jpg
-./make_model_dataset/Jul15_C_502_93262.jpg
-./make_model_dataset/Jul15_B_366_63148.jpg
-./make_model_dataset/Jul15_A_211_36488.jpg
-./make_model_dataset/Jul15_A_227_39156.jpg
-./make_model_dataset/Jul15_C_369_66108.jpg
-./make_model_dataset/Jul15_B_62_9680.jpg
-./make_model_dataset/Jul15_A_268_46920.jpg
-./waggle_maingate/maingate_pic/4127569669.jpg
-./make_model_dataset/Jul15_B_491_87067.jpg
-./make_model_dataset/Jul15_A_23_4637.jpg
-./make_model_dataset/Jul15_B_41_6130.jpg
-./waggle_maingate/maingate_pic/3464486266.jpg
-./make_model_dataset/Jul15_B_235_39092.jpg
-./make_model_dataset/Jul15_B_104_17725.jpg
-./waggle_maingate/maingate_pic/7502230677.jpg
-./make_model_dataset/Jul15_A_424_75773.jpg
-./make_model_dataset/Jul15_B_235_39089.jpg
-./make_model_dataset/Jul15_A_172_32155.jpg
-./make_model_dataset/Jul15_A_390_68642.jpg
-./make_model_dataset/Jul15_A_51_8420.jpg
-./make_model_dataset/Jul15_B_277_46921.jpg
-./make_model_dataset/Jul15_C_114_21436.jpg
-./make_model_dataset/Jul15_C_445_81973.jpg
-./make_model_dataset/Jul15_C_77_13411.jpg
-./make_model_dataset/Jul15_C_471_87199.jpg
-./make_model_dataset/Jul15_A_306_54152.jpg
-./make_model_dataset/Jul15_C_402_73345.jpg
-./make_model_dataset/Jul15_C_220_38876.jpg
-./make_model_dataset/Jul15_C_12_2523.jpg
-./make_model_dataset/Jul15_C_178_33128.jpg
-./make_model_dataset/Jul15_A_97_17216.jpg
-./make_model_dataset/Jul15_C_554_103372.jpg
-./make_model_dataset/Jul15_A_446_81429.jpg
-./make_model_dataset/Jul15_B_72_11463.jpg
-./make_model_dataset/Jul15_C_146_27534.jpg
-./make_model_dataset/Jul15_C_228_39790.jpg
-./make_model_dataset/Jul15_B_22_4464.jpg
-./waggle_maingate/maingate_pic/6173054621.jpg
-./make_model_dataset/Jul15_A_212_36568.jpg
-./make_model_dataset/Jul15_A_172_32151.jpg
-./make_model_dataset/Jul15_A_191_34232.jpg
-./make_model_dataset/Jul15_C_307_54995.jpg
-./make_model_dataset/Jul15_B_403_68690.jpg
-./make_model_dataset/Jul15_A_473_86696.jpg
-./waggle_maingate/maingate_pic/5092960937.jpg
-./waggle_maingate/maingate_pic/8894169912.jpg
-./make_model_dataset/Jul15_A_390_68638.jpg
-./make_model_dataset/Jul15_A_51_8419.jpg
-./make_model_dataset/Jul15_A_265_46325.jpg
-./waggle_maingate/maingate_pic/8328311307.jpg
-./make_model_dataset/Jul15_B_513_90826.jpg
-./waggle_maingate/maingate_pic/1188918347.jpg
-./make_model_dataset/Jul15_A_268_46917.jpg
-./make_model_dataset/Jul15_C_317_56988.jpg
-./make_model_dataset/Jul15_A_218_37906.jpg
-./make_model_dataset/Jul15_A_368_65145.jpg
-./make_model_dataset/Jul15_A_303_52290.jpg
-./make_model_dataset/Jul15_C_538_101199.jpg
-./make_model_dataset/Jul15_C_157_29928.jpg
-./waggle_maingate/maingate_pic/8039225372.jpg
-./waggle_maingate/maingate_pic/7293429952.jpg
-./make_model_dataset/Jul15_A_92_16195.jpg
-./make_model_dataset/Jul15_C_90_16738.jpg
-./waggle_maingate/maingate_pic/6469834107.jpg
-./make_model_dataset/Jul15_A_189_34139.jpg
-./make_model_dataset/Jul15_C_429_78279.jpg
-./make_model_dataset/Jul15_B_96_16069.jpg
-./make_model_dataset/Jul15_C_367_65959.jpg
-./waggle_maingate/maingate_pic/4346706068.jpg
-./make_model_dataset/Jul15_A_401_72633.jpg
-./make_model_dataset/Jul15_C_65_11165.jpg
-./make_model_dataset/Jul15_B_77_12147.jpg
-./make_model_dataset/Jul15_B_161_28302.jpg
-./waggle_maingate/maingate_pic/991421356.jpg
-./make_model_dataset/Jul15_B_245_41832.jpg
-./make_model_dataset/Jul15_A_94_16496.jpg
-./make_model_dataset/Jul15_C_234_41900.jpg
-./make_model_dataset/Jul15_C_496_91808.jpg
-./waggle_maingate/maingate_pic/4717919906.jpg
-./make_model_dataset/Jul15_A_274_47697.jpg
-./make_model_dataset/Jul15_B_287_48528.jpg
-./make_model_dataset/Jul15_C_74_13034.jpg
-./make_model_dataset/Jul15_B_416_72681.jpg
-./waggle_maingate/maingate_pic/4731787850.jpg
-./waggle_maingate/maingate_pic/7257906354.jpg
-./make_model_dataset/Jul15_B_83_12753.jpg
-./waggle_maingate/maingate_pic/3018446854.jpg
-./make_model_dataset/Jul15_C_43_7753.jpg
-./make_model_dataset/Jul15_B_287_48529.jpg
-./make_model_dataset/Jul15_B_221_37266.jpg
-./waggle_maingate/maingate_pic/1180780457.jpg
-./make_model_dataset/Jul15_C_9_2160.jpg
-./make_model_dataset/Jul15_A_220_38334.jpg
-./make_model_dataset/Jul15_A_181_33784.jpg
-./make_model_dataset/Jul15_C_231_40407.jpg
-./make_model_dataset/Jul15_A_352_63055.jpg
-./make_model_dataset/Jul15_A_211_36484.jpg
-./make_model_dataset/Jul15_B_43_6461.jpg
-./make_model_dataset/Jul15_B_101_17058.jpg
-./make_model_dataset/Jul15_C_272_48233.jpg
-./make_model_dataset/Jul15_B_375_64682.jpg
-./make_model_dataset/Jul15_B_182_32189.jpg
-./make_model_dataset/Jul15_A_292_50603.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_346_61927.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_55_9562.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/2092730989.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_228_39190.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_62_9865.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_403_68693.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_411_74958.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/7821253820.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/3461435596.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/9194843727.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_482_88662.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_136_23251.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_277_46922.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_366_63145.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_372_66052.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_293_51439.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_150_26364.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_198_36048.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_287_48530.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_502_93263.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_22_5123.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_358_64684.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_224_37756.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_272_47409.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_309_52129.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_219_38041.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_152_28188.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_12_2522.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_62_9869.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_65_10483.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_228_39193.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_219_38580.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_74_13035.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_80_12381.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_281_47571.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_512_94879.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_350_62512.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_98_18383.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/222537051.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_218_37907.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_480_83881.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_286_48323.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_177_33024.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_43_7754.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_37_6621.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_189_34691.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_525_97452.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_22_5126.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_178_33126.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/2751857213.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_547_101945.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_118_21244.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_273_47520.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_118_21240.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/7164809378.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_424_75777.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_77_12731.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_70_12274.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/4076075502.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_231_40408.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_216_37802.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_235_39094.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/6540020533.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_14_3225.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_43_6462.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_227_39151.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_200_36426.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_410_70695.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_241_42995.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/4918341485.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_265_46323.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_276_48893.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_306_54154.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_403_68692.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_439_80737.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_366_63149.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_376_66752.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_125_22084.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_45_7097.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_287_48531.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_52_9224.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_467_85731.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_118_20391.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_525_97455.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_321_55389.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/5249999235.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_12_2519.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/7331597484.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_256_45004.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_52_9223.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_553_102835.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/9567651312.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_77_12732.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_38_6062.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_216_37807.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/3201127774.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_213_36603.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_285_48234.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_303_53531.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_321_55395.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_310_52169.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_285_49798.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_304_54655.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_479_88257.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_473_86699.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_55_8755.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_136_23249.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_77_12148.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_469_86233.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_209_36421.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_267_46411.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/5037739948.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_8_1614.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/2333447174.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_516_91561.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_198_36053.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_77_12730.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/1021529292.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_416_72678.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_179_33767.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/2912972485.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_23_5181.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_309_52127.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_189_34693.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/159025850.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_118_20389.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/8195148261.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_285_48231.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_22_5125.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_92_16190.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/8038427606.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_272_47406.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/797062836.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_164_30742.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_219_38584.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_15_3482.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_231_40411.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_410_70697.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_10_1496.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_309_52125.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/1900293652.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_181_33786.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_230_38606.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_227_39695.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_422_76172.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_496_91814.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_228_39786.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_286_48319.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_343_61320.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_12_1859.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_272_47408.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_227_39697.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_213_36601.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_216_37806.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/3904883218.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_219_38585.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_65_10486.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_460_84047.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_72_11464.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_479_88258.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_324_56071.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_179_33766.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_410_70692.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/7070898448.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_277_46924.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_350_62513.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_169_32536.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_45_7269.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_274_47696.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/3162949430.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_90_16737.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_439_80742.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_55_8568.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_95_17718.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/1000052595.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_92_16189.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_342_61276.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_525_97451.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_12_1862.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_547_101947.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/4154964681.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_439_80739.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_480_89027.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_224_37755.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_24_4693.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_172_32153.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/5671980992.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_77_12728.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_24_5244.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_90_16735.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_359_64848.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/94689285.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_313_54002.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_225_37781.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_212_36059.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_313_54000.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_491_87068.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/3103347552.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_273_47522.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_22_4581.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_317_56989.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/2399071789.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_36_5796.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/4339349730.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/6084479562.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_554_103370.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_220_38875.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_101_17060.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/1949278085.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_224_39574.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_372_66049.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_516_91560.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_369_66102.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/8675648832.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_253_42623.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/8788549477.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_221_39030.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_228_39192.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_369_66104.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_524_93397.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_200_36430.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_164_30743.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_343_61322.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_201_35090.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_296_52273.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_277_46925.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_248_43895.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_96_16070.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_177_33025.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_37_6617.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_514_91148.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_55_8565.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_226_39674.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_505_93654.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/8331252517.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_422_76173.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_246_43499.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_172_32154.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_460_84048.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_422_76177.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_120_22892.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_24_5239.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_337_60012.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/4858371448.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_28_4967.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_66_10365.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/4584588253.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_238_39668.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_256_45005.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_556_103773.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_62_10968.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_114_21439.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_321_55392.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/8163319986.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_368_65148.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_27_5477.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_0_139.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/8969795347.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_83_12751.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_424_75775.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_152_28183.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_220_38881.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/5040279520.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_287_48533.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_471_82923.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_473_86700.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_460_84043.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_223_37681.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/4174315830.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_512_94880.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_387_67855.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_267_46409.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_395_71081.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_74_13036.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/3906786013.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_467_85735.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_120_22896.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_390_68640.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_10_1495.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_518_95915.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_480_88387.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_203_35299.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_343_61321.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_387_67854.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/6546796553.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_77_13412.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_553_102833.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_293_51444.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_136_23253.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_224_39573.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_446_81432.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_402_73341.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_217_38415.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_11_1980.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_37_6618.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_52_8459.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_216_37804.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_96_16072.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_424_75776.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_141_26325.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_471_82924.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_248_43893.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_422_76178.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_98_18382.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_52_8302.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_387_67852.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_296_51617.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_172_32149.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_136_23248.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_209_36419.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_141_26326.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_246_43504.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_51_8418.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_213_36602.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_268_45719.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_223_38721.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_212_36061.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/4138783757.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_429_78281.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_337_60010.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_466_85553.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_310_52172.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_141_26327.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/2741531419.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_83_12752.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_430_75035.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_372_66047.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_503_93418.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/7978401844.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_181_33783.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_231_38892.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_547_101951.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_524_93401.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_538_101203.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/5736652140.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_97_17220.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_178_33125.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/7934760286.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_28_4965.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_277_46927.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/4439685507.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_480_83878.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_169_32535.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_424_75774.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_372_66046.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_272_47404.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_228_39194.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_307_54998.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_234_41898.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_342_61275.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_480_83880.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/4961103893.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_352_63786.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_268_45723.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_343_61316.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_231_40406.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/7632163259.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_460_84042.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_104_17723.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_337_60013.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_80_12378.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_136_23252.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_225_37782.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_281_47576.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_280_49640.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/8701759058.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_52_8460.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_203_35297.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_212_36567.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_307_54994.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_512_94881.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_55_8756.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_401_72636.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_360_62229.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/5455973791.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_265_46322.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_343_61318.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_98_16374.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_342_61274.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_293_51441.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_43_6629.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_223_38725.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/5866590221.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_192_33771.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_74_13032.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_439_80738.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_22_4465.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_77_12727.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/9683922329.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_9_2159.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_306_54158.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/379788480.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_296_52275.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_97_17215.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_62_10966.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_77_12144.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_281_49761.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_89_14729.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_337_60011.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_360_62226.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_263_46819.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/9740007068.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_482_84889.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_226_39675.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_467_85732.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_118_21242.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/6152415607.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_94_16497.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_303_52294.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_232_38971.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_55_8567.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/2128129122.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_473_86697.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_503_93414.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_480_89024.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_469_86227.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/5271409312.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_219_38045.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_446_81427.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_55_8564.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_480_89028.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_118_21243.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_346_61926.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_43_6626.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/4268261707.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_296_52272.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/1915383884.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_52_9227.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_132_24427.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_120_22894.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_136_23250.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_285_49794.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_220_38878.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_513_90825.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_310_52173.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_416_72677.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_24_4696.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_65_10481.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_14_3224.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_401_72638.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_343_61319.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_209_36417.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_366_63147.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/6196065091.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_282_50328.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_402_73342.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_181_32148.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_512_94882.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/4429747812.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_0_140.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_23_5180.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/6012258485.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_72_11460.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_467_85730.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/8019008937.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_10_2442.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_189_34136.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_55_8570.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_513_90827.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_430_75036.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_104_17720.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/3979519046.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_12_1864.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/6361667820.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_524_93396.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_80_13694.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_248_43892.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_12_2520.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_281_49765.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_221_39031.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_219_38044.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_248_43890.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_556_103775.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_307_54993.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_516_91565.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_70_11577.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_201_35089.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/7094124095.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/9129422035.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_343_61317.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/9107358728.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_273_47524.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_55_9561.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_471_87201.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_189_34135.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/886730295.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_230_38601.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_287_48534.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_350_62518.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/6782235280.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_281_49759.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_439_80743.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_227_39696.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_98_16376.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_478_83853.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_80_12380.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_223_37683.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_363_65384.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/598005252.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_10_1501.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_282_50324.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_203_35298.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_179_33764.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_125_22083.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_77_13409.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_282_50323.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_471_82926.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_10_2436.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_119_20439.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_301_51305.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/1137199227.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_118_20388.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_21_4395.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/8142994471.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_10_2440.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_556_103777.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/1261477182.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_314_56343.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_219_38582.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_513_90824.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_375_64684.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/5675264257.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_24_4697.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_8_1611.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/4904752350.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_101_17055.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_502_93262.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_366_63148.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_211_36488.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_227_39156.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_369_66108.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_62_9680.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_268_46920.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/4127569669.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_491_87067.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_23_4637.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_41_6130.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/3464486266.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_235_39092.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_104_17725.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/7502230677.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_424_75773.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_235_39089.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_172_32155.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_390_68642.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_51_8420.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_277_46921.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_114_21436.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_445_81973.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_77_13411.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_471_87199.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_306_54152.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_402_73345.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_220_38876.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_12_2523.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_178_33128.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_97_17216.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_554_103372.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_446_81429.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_72_11463.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_146_27534.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_228_39790.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_22_4464.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/6173054621.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_212_36568.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_172_32151.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_191_34232.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_307_54995.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_403_68690.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_473_86696.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/5092960937.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/8894169912.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_390_68638.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_51_8419.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_265_46325.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/8328311307.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_513_90826.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/1188918347.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_268_46917.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_317_56988.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_218_37906.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_368_65145.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_303_52290.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_538_101199.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_157_29928.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/8039225372.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/7293429952.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_92_16195.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_90_16738.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/6469834107.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_189_34139.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_429_78279.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_96_16069.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_367_65959.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/4346706068.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_401_72633.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_65_11165.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_77_12147.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_161_28302.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/991421356.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_245_41832.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_94_16496.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_234_41900.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_496_91808.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/4717919906.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_274_47697.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_287_48528.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_74_13034.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_416_72681.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/4731787850.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/7257906354.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_83_12753.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/3018446854.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_43_7753.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_287_48529.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_221_37266.jpg
+/media/sng/My Passport/images/waggle_maingate/maingate_pic/1180780457.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_9_2160.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_220_38334.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_181_33784.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_231_40407.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_352_63055.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_211_36484.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_43_6461.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_101_17058.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_C_272_48233.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_375_64682.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_B_182_32189.jpg
+/media/sng/My Passport/images/make_model_dataset/Jul15_A_292_50603.jpg

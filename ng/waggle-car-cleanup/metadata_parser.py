@@ -236,8 +236,8 @@ def main():
 
     # draw_bounding_box(vehicle_md[4])
 
-    # if not os.path.exists(OUTPUT + "cars.names"):
-    #   parse_metadata(vehicle_md)
+    if not os.path.exists(OUTPUT + "cars.names"):
+       parse_metadata(vehicle_md)
 
     classes = read_file_as_list("topclasses.names")
     generate_txt_labels(vehicle_md, classes)

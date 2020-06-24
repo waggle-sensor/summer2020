@@ -62,7 +62,7 @@ class ListDataset(Dataset):
             self.img_files = file.readlines()
 
         self.label_files = [
-            path.replace("images", "labels").replace(".png", ".txt").replace(".jpg", ".txt")
+            "../../waggle-car-cleanup/outputs/labels/" + path.split("/")[-1].replace(".jpg", ".txt")
             for path in self.img_files
         ]
         self.img_size = img_size
