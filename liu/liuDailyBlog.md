@@ -577,7 +577,9 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
 ### June 22, 2020
 #### Work Done:
  * Collect logs and analysis using TensorFlow profile module
+ * timeline single run:
 ![image](Perf-Profiling-Docker-ROS_1/timeline_analysis-TF/time_01.png)
+ * timeline 10 runs:
 ![image](Perf-Profiling-Docker-ROS_1/timeline_analysis-TF/time_10.png)
  * Collect logs using docker stats and tegrastats when changing schduling policy and priority at runtime  
  * Read papers and report about messaging queueing mechanisms and ROS designing
