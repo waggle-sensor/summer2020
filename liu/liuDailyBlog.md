@@ -573,3 +573,15 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
 #### To Do List:
  * Do experiments to get the performance of yolov3 with scheduling polcies changed at runtime
  * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing purpose
+
+### June 22, 2020
+#### Work Done:
+ * Collect logs and analysis using TensorFlow profile module
+![image](Perf-Profiling-Docker-ROS_1/timeline_analysis-TF/time_01.png)
+![image](Perf-Profiling-Docker-ROS_1/timeline_analysis-TF/time_10.png)
+ * Collect logs using docker stats and tegrastats when changing schduling policy and priority at runtime  
+ * Read papers and report about messaging queueing mechanisms and ROS designing
+
+#### To Do List:
+ * Get the result for the analysis of time breakdown
+ * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
