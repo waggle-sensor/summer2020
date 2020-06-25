@@ -9,4 +9,4 @@ Afterwards, run `cleanup.py`. This will generate class names based on the most f
 
 The `augment.py` script can be used to augment the training dataset via the `albumentations` library. Run it with the command `python3 augment.py train.txt`. It has 8 filters, each run for 5 trials, which will augment a data set by 40x.
 
-Upon finish, the script also creates labeled for the transformed image.
+Upon finish, the script also creates labels for the transformed image.
