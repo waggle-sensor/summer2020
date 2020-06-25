@@ -2,7 +2,7 @@
 
 yolov3:
 ```
-node name | requested bytes | total execution time | accelerator execution time | cpu execution time
+node name                   requested bytes                  total execution time            accelerator execution time       cpu execution time
 Conv2D                      1015.29MB (100.00%, 61.17%),     215.96ms (100.00%, 74.32%),     170.59ms (100.00%, 82.80%),      45.37ms (100.00%, 53.65%)
 LeakyRelu                             0B (0.00%, 0.00%),        11.97ms (25.68%, 4.12%),         5.42ms (17.20%, 2.63%),         6.56ms (46.35%, 7.75%)
 FusedBatchNormV3                      0B (0.00%, 0.00%),         9.79ms (21.56%, 3.37%),         5.94ms (14.57%, 2.88%),         3.85ms (38.59%, 4.56%)
