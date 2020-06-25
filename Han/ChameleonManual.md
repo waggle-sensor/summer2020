@@ -3,22 +3,25 @@
 This step-by-step instruction will guide you on how to use Chameleon.\
 This document covers from creating Chameleon account to logging into Chameleon using Floating IP allocated to your instance.\
 It also includes a number of screenshots to help you get on Chameleon as easy and fast as possible.\
-For more detailed information, you can refer to https://chameleoncloud.readthedocs.io/.\
+For more detailed information, you can refer to https://chameleoncloud.readthedocs.io/. <br/>
 If you would like to know how to use Chameleon with docker images, refer to https://github.com/sagecontinuum/chameleon-client/.
 
 ### Getting started
 
 Go to [ChameleonHome] https://www.chameleoncloud.org/ and sign up. Then, ask PI to get you added on the proper project.\
-If you are added to the project, you will be able to access the Chameleon Dashboard.\
-Clicking ```CHI@UC``` or ```CHI@TACC``` will lead you to the Dashboard.\
-![dashboard](images/dashboard.png = 200x130)
-\
+If you are added to the project, you will be able to access the Chameleon Dashboard. <br/>
+Clicking ```CHI@UC``` or ```CHI@TACC``` will lead you to the Dashboard.<br/>
+
+![dashboard|50%](images/dashboard.png)
+
 Go to the Dashboard and either Create a key pair or Import your SSH public key.\
-If you have already generated your own SSH key pair, your public key could be found in ```~/.ssh/id_rsa.pub```.\
+If you have already generated your own SSH key pair, your public key could be found in ```~/.ssh/id_rsa.pub```. 
+<br/>
+
 ![sshkey](images/sshkey.png)
-\
+
 This key pair will be used when you attempt to run your docker image on Chameleon directly by using CLI.\
-For more info on docker and Chameleon, please refer to https://github.com/sagecontinuum/chameleon-client/.\
+For more info on docker and Chameleon, please refer to https://github.com/sagecontinuum/chameleon-client/. \
 Otherwise, for native use of Chameleon, follow the instruction below.\
 
 ### Create an instance
