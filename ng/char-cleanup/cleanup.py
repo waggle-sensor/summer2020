@@ -19,22 +19,19 @@ def generate_all_classes():
     return classes
 
 
-def create_labels(img_paths, classes, all_classes):
-    for path in img_paths:
-        orig_idx = int(path.split("Sample0")[1][:2]) - 1
-        if all_classes[orig_idx] not in classes:
-            continue
+def create_labels(img_dict, classes):
+    for class_name, imgs in img_dict.items():
+        idx = classes.index(class_name)
+        for path in imgs:
+            txt_path = path.replace("images", "labels").replace(".png", ".txt")
 
-        txt_path = path.replace("images", "labels").replace(".png", ".txt")
+            folder_path = "/".join(txt_path.split("/")[:-1])
+            os.makedirs(folder_path, exist_ok=True)
 
-        folder_path = "/".join(txt_path.split("/")[:-1])
-        os.makedirs(folder_path, exist_ok=True)
+            line = f"{idx} 0.5 0.5 1 1"
 
-        idx = classes.index(all_classes[orig_idx])
-        line = f"{idx} 0.5 0.5 1 1"
-
-        with open(txt_path, "w+") as out:
-            out.write(line)
+            with open(txt_path, "w+") as out:
+                out.write(line)
 
 
 def split_test_train(img_dict, prop_train):
@@ -79,7 +76,11 @@ def filter_img_dict(img_dict, classes):
 def main():
     os.makedirs(OUTPUT, exist_ok=True)
 
-    img_paths = glob.glob(DATA + "images/**/*.png", recursive=True)
+    img_paths_raw = glob.glob(DATA + "images/**/*.png", recursive=True)
+    
+    # Filter out augmented images
+    img_paths = [img for img in img_paths_raw if "_" not in img]
+    
 
     all_classes = generate_all_classes()
     img_dict = get_img_dict(img_paths, all_classes)
@@ -98,9 +99,9 @@ def main():
     with open(OUTPUT + "chars.names", "w+") as out:
         out.write("\n".join(classes) + "\n")
 
-    create_labels(img_paths, classes, all_classes)
-
     filtered_dict = filter_img_dict(img_dict, classes)
+
+    create_labels(filtered_dict, classes)
     split_test_train(filtered_dict, 0.75)
 
 
