@@ -54,6 +54,7 @@ def split_test_train(img_dict, prop_train):
     train.close()
     test.close()
 
+
 def get_img_dict(img_paths, classes):
     """Create a dictionary of images by class."""
     img_dict = dict()
