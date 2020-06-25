@@ -20,24 +20,18 @@ To train, simply run the command below on the host machine. Please make sure to 
 
 ```
 # skip --runtime nvidia if the host is not CUDA accelerated
-docker run -d --rm \
+docker run -d \
   --runtime nvidia \
   --name yolov3-training \
-  -v ${PATH_TO_IMAGES}:/plugin/data \
-  -v ${PATH_TO_CONFIG}:/plugin/config \
-  -v ${PATH_TO_PRETRAINED_WEIGHTS}:/plugin/weights \
-  -v ${PATH_FOR_OUTPUT_MODELS}:/plugin/checkpoints \
-  -v ${PATH_TO_LOGS}:/plugin/logs \
+  -v `pwd`/letters:/plugin/data \
+  -v `pwd`/config:/plugin/config \
+  -v checkpoints:/plugin/weights \
+  -v checkpoints:/plugin/checkpoints \
+  -v logs:/plugin/logs \
   waggle/plugin-training-yolov3 \
   train \
-  --epoch ${NUMBER_OF_EPOCH} \
-  --batch_size ${BATCH_SIZE} \
-  --model_def config/yolov3-custom.cfg \
-  --data_config config/custom.data \
-  --pretrained_weights weights/yolov3_ckpt_100.pth \
-  --n_cpu ${NUMBER_OF_CPU} \
-  --checkpoint_interval ${NUMBER_OF_CHK_INTERVAL} \
-  --evaluation_interval ${NUMBER_OF_EVAL_INTERVAL}
+  --model_def config/yolov3.cfg \
+  --data_config /plugin/config/chars.data
 ```
 
 The log of the training can be shown by,

@@ -1,0 +1,5 @@
+classes = 62
+train = config/train.txt
+valid = config/test.txt
+names = config/chars.names
+backup =backup

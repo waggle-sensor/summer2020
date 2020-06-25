@@ -1,5 +1,0 @@
-classes = 62
-train = train.txt
-valid = test.txt
-names = chars.names
-backup =./backup
