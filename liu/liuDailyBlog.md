@@ -587,3 +587,21 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
 #### To Do List:
  * Get the result for the analysis of time breakdown
  * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
+
+### June 23, 2020
+#### Work Done:
+ * Analysis logs collected using TensorFlow profile, it shows for each model inference, more than 80 percent of time is used on GPU
+ * Analysis logs collected when changing schduling policy and priority at runtime and get the CDF of the latency
+
+#### To Do List:
+ * Start implement ROS2 inside Docker image and set up yolov3-based application
+ * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
+
+### June 24, 2020
+#### Work Done:
+ * Discuss with Raj about the time breakdown of each model inference and the CDF of the latency when the schduling policy and priority are changed
+ * Work on the ROS2 set up inside Docker
+
+#### To Do List:
+ * Start implement ROS2 inside Docker image and set up yolov3-based application
+ * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
