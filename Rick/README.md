@@ -13,6 +13,8 @@ In the repo, you will find an example .ipynb notebook showing how the data loade
 * For my experiment, one of the test consist of using a LSTM to forecast solar radiation. This is used as a baseline to compare the performance of WeatherNet.
 Inside this directory, is an array of files however, for the finshed and documented experiment refer to the folder LSTM_Weather_Data_Experiment.
 
+![tree](Images/LSTM_Weather_Model_netron.png) 
+
 ## ProjectUpdates
 * This repo contains slides from my weekly update meetings.
 
