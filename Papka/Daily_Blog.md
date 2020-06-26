@@ -7,3 +7,5 @@ Week 2 (6/15- 6/19/2020)
 - I started to learn about WordPress and experiement with it's functions. 
 
 Week 3 (6/22-6/26/2020)
+- I continued to work on sorting the ballpark water images.
+- I also continued looking at WordPress
