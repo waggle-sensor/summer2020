@@ -81,3 +81,14 @@
 * Wrote scripts to label and clean Char74K dataset
 * Ran test run of YOLOv3 script on local computer (creating a checkpoint after one epoch)
   * Will test on Lambda once I gain access
+
+
+**Thursday, June 24**
+
+* Had AI/ML scrum meeting
+* Attended student seminar on I/O in computing
+* Added stratified sampling for characters and filtered used classes based on the most frequent ones
+* Attended student cohort session
+* Created data set augmentation script for training images
+* Gained access to lambda and blues
+* To do: run augmentation and train on Lambda
