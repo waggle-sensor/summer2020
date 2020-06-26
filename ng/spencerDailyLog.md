@@ -92,3 +92,16 @@
 * Created data set augmentation script for training images
 * Gained access to lambda and blues
 * To do: run augmentation and train on Lambda
+
+**Friday, June 25**
+
+* Attended chat with Mike Papka
+* Fixed bugs in augmentation script and deployed it on Lambda and Blues
+* Wrote sbatch script to deploy on Lambda/Blues and set up Anaconda environment/dependencies
+  * Job couldn't be submitted on Lambda, Blues undergoing maintenance this weekend
+* Searched for other datasets for sampling and retraining
+  * Google Street View has 300 images, has no character-specific annotations
+  * KAIST has one with bounding boxes for characters and similar distributions to our training dataset, good candidate
+    * Wrote script to determine this
+* Launched Chameleon instance for training
+* Began reading papers on YOLO(v3) implementation and research on good training data for ML
