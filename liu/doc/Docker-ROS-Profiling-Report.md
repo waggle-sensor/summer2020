@@ -193,11 +193,14 @@ Single test with Yolov3 results:
 | Generic 	| 2330 	| 18525 	| 4602 	| 2911 	| 4620 	| 32988 	|
 | RT 	| 2312 	| 19050 	| 4962 	| 2756 	| 4885 	| 33965 	|
 
-![image](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/kernel-pressure-single-power.png)
+
 
 ## Runtime Scheduling Configuration
 
-![image](../image/runtime_sched_config.png)
+Power Analysis             |  CDF with Runtime Scheduling Config
+:-------------------------:|:-------------------------:
+![](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/kernel-pressure-single-power.png)  |  ![](../image/runtime_sched_config.png)
+
 
 ## Timeline and breakdown
 
