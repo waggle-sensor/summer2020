@@ -1,7 +1,7 @@
 # How to use Chameleon
 
 This step-by-step instruction will guide you on how to use Chameleon.<br/>
-This document covers from <em>creating Chameleon account</em> to <em>logging into Chameleon using Floating IP allocated to your instance</em>.<br/>
+This document covers from <em>creating Chameleon account</em> to finally <em>logging into Chameleon</em> using Floating IP allocated to your instance.<br/>
 It also includes a number of screenshots to help you get on Chameleon as easy and fast as it could.<br/>
 For more detailed information, you can refer to https://chameleoncloud.readthedocs.io/. <br/>
 If you would like to know how to use Chameleon with docker images, refer to https://github.com/sagecontinuum/chameleon-client/.
