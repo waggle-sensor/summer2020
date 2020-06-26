@@ -1,13 +1,13 @@
 # Rick's Repo Home Page
 
 ## To do list :)
-1. Copy current weathernet model from lambda and back up 
-2. Plan out how I will create WeatherNet V2 that uses images and past hour weather values
-3. Build new data loader for WeatherNet V2
-4. Test and document results of WeatherNet V2
-5. Build final experiment WeatherNet V2 and tower data set
-6. Build new new data loader 
-7. Run final experiment and document results
+1. [ ]Copy current weathernet model from lambda and back up 
+2. [ ]Plan out how I will create WeatherNet V2 that uses images and past hour weather values
+3. [ ]Build new data loader for WeatherNet V2
+4. [ ]Test and document results of WeatherNet V2
+5. [ ]Build final experiment WeatherNet V2 and tower data set
+6. [ ]Build new new data loader 
+7. [ ]Run final experiment and document results
 
 <br>
 
