@@ -1,7 +1,7 @@
 # How to use Chameleon
 
 This step-by-step instruction will guide you on how to use Chameleon.<br/>
-This document covers from creating Chameleon account to logging into Chameleon using Floating IP allocated to your instance.<br/>
+This document covers from <em>creating Chameleon account</em> to <em>logging into Chameleon using Floating IP allocated to your instance</em>.<br/>
 It also includes a number of screenshots to help you get on Chameleon as easy and fast as it could.<br/>
 For more detailed information, you can refer to https://chameleoncloud.readthedocs.io/. <br/>
 If you would like to know how to use Chameleon with docker images, refer to https://github.com/sagecontinuum/chameleon-client/.
@@ -114,7 +114,7 @@ Then the wizard will be loaded. Select your instance port for <strong>Port to be
 <br/>
 Now if you go back to <strong>instances</strong> under <strong>Compute</strong> again, you will see your instance created there with the Floating IP you have allocated. 
 
-<br/>
+<br/><br/>
 <img src="images/Done.png" width="1000" height="250" title="Done">
 
 ## Accessing your instance <br/>
