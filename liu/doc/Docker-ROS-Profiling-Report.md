@@ -229,3 +229,4 @@ The detailed logs of the breakdown can be found at: https://github.com/waggle-se
  - https://docs.nvidia.com/jetson/l4t/index.html#page/Tegra%20Linux%20Driver%20Package%20Development%20Guide/power_management_jetson_xavier.html
  - https://wiki.linuxfoundation.org/realtime/documentation/howto/tools/cyclictest/start
  - https://docs.nvidia.com/jetson/archives/l4t-archived/l4t-322/index.html#page/Tegra%2520Linux%2520Driver%2520Package%2520Development%2520Guide%2Fpower_management_jetson_xavier.html%23wwpID0E0LF0HA
+ - https://github.com/tensorflow/tensorflow/blob/r1.15/tensorflow/core/profiler/g3doc/python_api.md
