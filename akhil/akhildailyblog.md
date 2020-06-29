@@ -70,3 +70,82 @@ docker logs --tail 50 --follow --timestamps container_id
 #### Issues/Errors/To Do/Questions:
 - connect and create multiple instances of virtual waggle within docker containers on the cloud
 - registration container always restarting
+
+### Friday June 19, 2020
+#### Meeting, Out of Work:
+none
+#### Work done
+In order to fix the issue of the constantly restarting registration container, I ran the command ```docker run --rm -it --env-file "./waggle-node.env" -v "${WAGGLE_ETC_ROOT}:/etc/waggle" waggle/registration /bin/sh```. This creates the registration container, but I am able to access the terminal within the container. From here I can debug ``` registration.py ``` by using ``` ping host.docker.internal ```. The debugged
+
+#### Issues
+
+### Monday June 22, 2020
+#### Meeting, Out of Work:
+- 10am-10:30am
+#### Work done
+I worked on creating a bare-metal instance that uses 18.04 Ubuntu image that can be configured to work with beehive and run virtual waggle. I also worked with numerous issues with creating an instance, ssh key, key pair, private, and public key and trying to ssh into the instance from command line.
+
+#### Issues/Errors
+- not enough floating IPs
+- Error: Permission denied (publickey)
+
+### Tuesday June 23, 2020
+#### Meeting, Out of Work:
+- 9am - 1pm Mandatory Carpentry Workshop - Advanced Python
+
+#### Work done
+I attended the virtual workshop on Advanced python programming. I learned about error catching, defensive programming, and using the Pandas library for many different purposes: Reading, writing, graphing, displaying csv files.
+I was also able to build an Ubuntu image on run it on a Chameleon bare-metal instance. I also resolved yesterdays issues and sshed into the instance. I then started downloading an Ubuntu image from the cloud in order to create an image that can be used in Docker containers.
+
+#### Issues, Errors
+- Documentaion is a little confusing and I am getting issues with authentication
+
+### Wednesday June 24, 2020
+#### Meeting, Out of Work:
+- 9am - 1pm Mandatory Carpentry Workshop - Advanced Unix shell commands
+
+#### Work done
+I worked through the issues from yesterday with the assistance of Jake. I figure that I was running the python script incorrectly.
+Correct way: ```python create-image.py --release bionic --variant sage --region CHI@UC ```
+Then I had to work through the ``` glance ``` command that is supposed to register the image to the open stack system. I had to work through some of these issues as well.
+Correct glance command: ``` glance image-create --name "CC-Ubuntu18.04-SAGE" ```
+
+#### Issues/Errors
+- variant flag error when running ``` glance ``` command
+
+### Thursday June 25, 2020
+#### Meeting, Out of Work:
+- 9am - 1pm Mandatory Carpentry Workshop - Advance Git
+
+#### Work done
+I worked through yesterdays variant error. I had to check out the sage branch, I can use the sage as a variant
+Check out: ```git fetch && git checkout sage;```
+Quick recap of what I have done so far: Chameleon-Sage-Image-Builder downloads an Ubuntu image then customizes it so it can be used on the Chameleon bare-metal instance and then, ultimately, generates an image with Virtual-Waggle that can interact with beehive. I then started working on creating a docker group that can deploy beehive and run virtual-waggle without admin privledges (without sudo). I started to research how to do this
+
+#### Issues/Errors
+- how to create docker group with user that doesn't need to use sudo to ```waggle-node up ``` and ``` beehive deploy ```
+
+### Friday June 26, 2020
+#### Meeting, Out of Work
+- 9am - 1pm Mandatory Carpentry Workshop - Advance SQL
+
+#### Work done
+I continued researching on how to create a docker group with user cc. cc should be able to deploy beehive and run virtual waggle without sudo. I was able to create docker group and added user cc to it.
+Code I used
+``` sudo groupadd docker
+    sudo usermod -aG docker cc
+    newgrp docker
+                    ```
+However, when trying to run the commands I still receive an error.
+
+#### Issues/Errors
+- Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.40/containers/json: dial unix /var/run/docker.sock: connect: permission denied
+
+### Monday June 29th, 2020
+#### Meeting, Out of Work
+- 10am-10:45am Weekly Cohort Standup
+- 11:30am - 1pm Scrum meeting
+
+#### Work done
+
+#### Issues/Errors
