@@ -28,18 +28,55 @@ def split_test_train(annots, classes, prop_train):
     train = open(OUTPUT + "train.txt", "w+")
     test = open(OUTPUT + "test.txt", "w+")
 
-    for class_name, imgs in img_dict.items():
-        random.shuffle(imgs)
+    remaining_examples = sort_freq_dict(get_freq(annots), False)
+    for k in list(remaining_examples.keys()):
+        if k not in classes:
+            del remaining_examples[k]
+    print(remaining_examples)
+    train_desire = dict()
+    test_desire = dict()
 
-        train_num = round(prop_train * len(imgs))
-        train_list = imgs[:train_num]
-        test_list = imgs[train_num : len(imgs)]
+    for k, v in remaining_examples.items():
+        train_num = round(prop_train * v)
+        train_desire[k] = train_num
+        test_desire[k] = v - train_num
 
-        train.write("\n".join(train_list) + "\n")
-        test.write("\n".join(test_list) + "\n")
+    for i in range(len(classes)):
+        # print(len(annots), remaining_examples)
+        cur_label = list(remaining_examples.keys())[i]
+        available = list()
+
+        for img in annots:
+            for label in img.labels:
+                if label["class"] == cur_label:
+                    available.append(img)
+                    break
+
+        random.shuffle(available)
+
+        for img in available:
+
+            if train_desire[cur_label] > test_desire[cur_label] or (
+                train_desire[cur_label] == test_desire[cur_label]
+                and random.choice([True, False])
+            ):
+                train.write(img.img_path + "\n")
+                chosen_set = train_desire
+            else:
+                test.write(img.img_path + "\n")
+                chosen_set = test_desire
+
+            for label in img.labels:
+                if label["class"] in classes:
+                    chosen_set[label["class"]] -= 1
+                    remaining_examples[label["class"]] -= 1
+            annots.remove(img)
+
+        remaining_examples = sort_freq_dict(remaining_examples, False)
 
     train.close()
     test.close()
+    print(train_desire)
 
 
 def move_rename_images():
@@ -61,6 +98,12 @@ def move_rename_images():
             os.remove(new_path + ".txt")
 
 
+def sort_freq_dict(freq, rev=True):
+    return {
+        k: v for k, v in sorted(freq.items(), key=lambda item: item[1], reverse=rev)
+    }
+
+
 def get_freq(annots):
     freq = dict()
     for a in annots:
@@ -70,10 +113,8 @@ def get_freq(annots):
                 freq[name] += 1
             else:
                 freq[name] = 1
-    sorted_freq = {
-        k: v for k, v in sorted(freq.items(), key=lambda item: item[1], reverse=True)
-    }
-    return sorted_freq
+
+    return freq
 
 
 def parse_annots(img_path):
@@ -178,7 +219,7 @@ def main():
 
     all_classes = generate_all_classes()
 
-    freq = get_freq(annots)
+    freq = sort_freq_dict(get_freq(annots))
     with open(OUTPUT + "freq.txt", "w+") as out:
         for k, v in freq.items():
             out.write(f"{k}: {v}\n")
@@ -195,7 +236,7 @@ def main():
                     a.make_darknet_label(classes)
                     break
 
-    # split_test_train(annots, classes, 0.75)
+    split_test_train(annots, classes, 0.75)
 
 
 if __name__ == "__main__":

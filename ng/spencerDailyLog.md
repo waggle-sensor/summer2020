@@ -105,3 +105,14 @@
     * Wrote script to determine this
 * Launched Chameleon instance for training
 * Began reading papers on YOLO(v3) implementation and research on good training data for ML
+
+## Week 3
+
+**Monday, June 30**
+
+* Discussed how to move forward with Luke after analyzing results of the character model
+  * Recognizes test data with 85% accuracy, but fails to detect individual characters in signs
+  * Due to training on pre-segmented images?
+* Created bounding box label conversion script for annotated full scene images from 74k character dataset
+* Discussed sampling techniques and moving forward with Luke and Nicola
+* Implemented interative stratified sampling algorithm for training and testing splits with multilabeled images
