@@ -11,7 +11,7 @@
 # module load python/3.6.5-lvrzbky
 
 # For lambda only
-# . /software/anaconda3/bin/activate
+# . /software/anaconda3/bin/activate train
 
 conda activate train
 python3 train.py --data_config config/chars.data

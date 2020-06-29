@@ -18,6 +18,7 @@
 
 from tensorboardX import SummaryWriter
 
+
 class Logger(object):
     def __init__(self, log_dir):
         self.writer = SummaryWriter(log_dir)

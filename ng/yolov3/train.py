@@ -14,6 +14,8 @@ import sys
 import time
 import datetime
 import argparse
+import warnings
+
 
 import torch
 from torch.utils.data import DataLoader
@@ -22,26 +24,71 @@ from torchvision import transforms
 from torch.autograd import Variable
 import torch.optim as optim
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--epochs", type=int, default=100, help="number of epochs")
-    parser.add_argument("--batch_size", type=int, default=8, help="size of each image batch")
-    parser.add_argument("--gradient_accumulations", type=int, default=2, help="number of gradient accums before step")
-    parser.add_argument("--model_def", type=str, default="config/yolov3.cfg", help="path to model definition file")
-    parser.add_argument("--data_config", type=str, default="config/coco.data", help="path to data config file")
-    parser.add_argument("--pretrained_weights", type=str, help="if specified starts from checkpoint model")
-    parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
-    parser.add_argument("--img_size", type=int, default=416, help="size of each image dimension")
-    parser.add_argument("--checkpoint_interval", type=int, default=1, help="interval between saving model weights")
-    parser.add_argument("--evaluation_interval", type=int, default=1, help="interval evaluations on validation set")
-    parser.add_argument("--compute_map", default=False, help="if True computes mAP every tenth batch")
-    parser.add_argument("--multiscale_training", default=True, help="allow for multi-scale training")
+    parser.add_argument(
+        "--batch_size", type=int, default=8, help="size of each image batch"
+    )
+    parser.add_argument(
+        "--gradient_accumulations",
+        type=int,
+        default=2,
+        help="number of gradient accums before step",
+    )
+    parser.add_argument(
+        "--model_def",
+        type=str,
+        default="config/yolov3.cfg",
+        help="path to model definition file",
+    )
+    parser.add_argument(
+        "--data_config",
+        type=str,
+        default="config/coco.data",
+        help="path to data config file",
+    )
+    parser.add_argument(
+        "--pretrained_weights",
+        type=str,
+        help="if specified starts from checkpoint model",
+    )
+    parser.add_argument(
+        "--n_cpu",
+        type=int,
+        default=8,
+        help="number of cpu threads to use during batch generation",
+    )
+    parser.add_argument(
+        "--img_size", type=int, default=416, help="size of each image dimension"
+    )
+    parser.add_argument(
+        "--checkpoint_interval",
+        type=int,
+        default=1,
+        help="interval between saving model weights",
+    )
+    parser.add_argument(
+        "--evaluation_interval",
+        type=int,
+        default=1,
+        help="interval evaluations on validation set",
+    )
+    parser.add_argument(
+        "--compute_map", default=False, help="if True computes mAP every tenth batch"
+    )
+    parser.add_argument(
+        "--multiscale_training", default=True, help="allow for multi-scale training"
+    )
     opt = parser.parse_args()
     print(opt)
 
     logger = Logger("logs")
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device_str = "cuda" if torch.cuda.is_available() else "cpu"
+    print(f"Using {device_str} for training")
+    device = torch.device(device_str)
 
     os.makedirs("output", exist_ok=True)
     os.makedirs("checkpoints", exist_ok=True)
@@ -114,16 +161,26 @@ if __name__ == "__main__":
             #   Log progress
             # ----------------
 
-            log_str = "\n---- [Epoch %d/%d, Batch %d/%d] ----\n" % (epoch, opt.epochs, batch_i, len(dataloader))
+            log_str = "\n---- [Epoch %d/%d, Batch %d/%d] ----\n" % (
+                epoch,
+                opt.epochs,
+                batch_i,
+                len(dataloader),
+            )
 
-            metric_table = [["Metrics", *[f"YOLO Layer {i}" for i in range(len(model.yolo_layers))]]]
+            metric_table = [
+                ["Metrics", *[f"YOLO Layer {i}" for i in range(len(model.yolo_layers))]]
+            ]
 
             # Log metrics at each YOLO layer
             for i, metric in enumerate(metrics):
                 formats = {m: "%.6f" for m in metrics}
                 formats["grid_size"] = "%2d"
                 formats["cls_acc"] = "%.2f%%"
-                row_metrics = [formats[metric] % yolo.metrics.get(metric, 0) for yolo in model.yolo_layers]
+                row_metrics = [
+                    formats[metric] % yolo.metrics.get(metric, 0)
+                    for yolo in model.yolo_layers
+                ]
                 metric_table += [[metric, *row_metrics]]
 
                 # Tensorboard logging
@@ -140,7 +197,9 @@ if __name__ == "__main__":
 
             # Determine approximate time left for epoch
             epoch_batches_left = len(dataloader) - (batch_i + 1)
-            time_left = datetime.timedelta(seconds=epoch_batches_left * (time.time() - start_time) / (batch_i + 1))
+            time_left = datetime.timedelta(
+                seconds=epoch_batches_left * (time.time() - start_time) / (batch_i + 1)
+            )
             log_str += f"\n---- ETA {time_left}"
 
             print(log_str)
