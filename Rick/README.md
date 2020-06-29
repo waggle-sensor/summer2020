@@ -1,7 +1,7 @@
 # Rick's Repo Home Page
 
 ## To do list :)
-1. [ ]Copy current weathernet model from lambda and back up 
+1. [done]Copy current weathernet model from lambda and back up 
 2. [ ]Plan out how I will create WeatherNet V2 that uses images and past hour weather values
 3. [ ]Build new data loader for WeatherNet V2
 4. [ ]Test and document results of WeatherNet V2
@@ -17,6 +17,16 @@
 ![tree](Images/DataLoaderDirPic.png)                                                                                          
                                                                                          
 In the repo, you will find an example .ipynb notebook showing how the data loader and how it fetches images. There are limited examples of how to build a data loader on the internet with multiple inputs and also for sequence-based images, so this may be a useful resource for constructing your own data loader for image sequences (video). 
+
+<br>
+
+## WeatherNet_v1
+* This directory contains code for the WeatherNetV1. WeatherNetV1 would not learn to be able to predict out of sample. The following reason are why I believe it did not work.
+1. The model did not know the current value of solar energy.
+2. The size of 6 images for a single sample was not ideal since again, each sample did not have a corresponding intial condition. 
+3. My belief is that the model with be highly influenced by the brightness of the images and cloud coverage (which in hand will also affect brightness)
+
+![tree](Images/WeatherNet_v1_pic.png) 
 
 <br>
 
