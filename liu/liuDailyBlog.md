@@ -542,4 +542,66 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
 #### To Do List:
  * Using the API to configure the schduling policy and priority of process at runtime
  * Do research on the syscall for requesting GPU resources from CPU and try to get the time breakdown
- * Get the power analysis results 
+ * Get the power analysis results
+
+### June 18, 2020
+#### Work Done:
+ * Analysis logs collected from tegrastats for power dissipation and finish the Docker ROS profiling report
+
+#### To Do List:
+ * Using the API to configure the schduling policy and priority of process at runtime
+ * Do research on the syscall for requesting GPU resources from CPU and try to get the time breakdown
+ * Get the power analysis results
+
+### June 19, 2020
+#### Work Done:
+ * Finish the Docker ROS profiling report with power analysis
+ * Use the API to configure the schduling policy and priority of process at runtime
+ * Discuss with Raj about the outline of the paper: A Framework/Architecture for Resource, Sensors and Data Sharing in Edge Computing Infrastructure.
+
+#### To Do List:
+ * Do research on the syscall for requesting GPU resources from CPU and try to get the time breakdown
+ * Investigate all the messaging sharing mechanisms (RabbitMQ, ZeroMQ, etc)
+
+## Week 8 (June 22 to June 26)
+
+### June 22, 2020
+#### Work Done:
+ * Try TensorFlow timeline tool to get the time breakdown of the yolov3 model inference
+ * Read papers and report about messaging queueing mechanisms and ROS designing
+
+#### To Do List:
+ * Do experiments to get the performance of yolov3 with scheduling polcies changed at runtime
+ * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing purpose
+
+### June 22, 2020
+#### Work Done:
+ * Collect logs and analysis using TensorFlow profile module
+ * timeline single run:
+![image](Perf-Profiling-Docker-ROS_1/timeline_analysis-TF/time_01.png)
+ * timeline 10 runs:
+![image](Perf-Profiling-Docker-ROS_1/timeline_analysis-TF/time_10.png)
+ * Collect logs using docker stats and tegrastats when changing schduling policy and priority at runtime  
+ * Read papers and report about messaging queueing mechanisms and ROS designing
+
+#### To Do List:
+ * Get the result for the analysis of time breakdown
+ * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
+
+### June 23, 2020
+#### Work Done:
+ * Analysis logs collected using TensorFlow profile, it shows for each model inference, more than 80 percent of time is used on GPU
+ * Analysis logs collected when changing schduling policy and priority at runtime and get the CDF of the latency
+
+#### To Do List:
+ * Start implement ROS2 inside Docker image and set up yolov3-based application
+ * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
+
+### June 24, 2020
+#### Work Done:
+ * Discuss with Raj about the time breakdown of each model inference and the CDF of the latency when the schduling policy and priority are changed
+ * Work on the ROS2 set up inside Docker
+
+#### To Do List:
+ * Start implement ROS2 inside Docker image and set up yolov3-based application
+ * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
