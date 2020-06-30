@@ -48,5 +48,13 @@ Monday 6/29
 4. Collected and organized additional PyImageSearch tutorials
 5. Began research on crowds and computer vision
 
+Tuesday 6/30
+1. AI/ML Scrum Meeting
+2. NAISE check-in meeting
+3. Writing Coach Session
+4. YouTube OpenCV Tutorial part 21 - 25
+5. PyImageSearch Course part 3 (https://www.pyimagesearch.com/2014/09/01/build-kick-ass-mobile-document-scanner-just-5-minutes/)
+6. Went through sample chapter from Practical Python and OpenCV by Dr. Adrian Rosebrock (Chapter 10: Gradients and Edge Detection)
+7. PyImageSearch tutorial: Distance from Camera to Object
 
 
