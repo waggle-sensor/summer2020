@@ -2,12 +2,10 @@
 import string
 import os
 import glob
-import cv2
 import random
-import imutils
 from math import log, ceil
-
-NUM_CLASSES = 8
+import cv2
+import imutils
 
 
 def generate_all_classes():
@@ -87,12 +85,12 @@ def move_rename_images(annot_ext, data, annot_path_to_img):
         new_path = data + f"images/labeled/IMG{str(count).zfill(num_digits)}"
         img_path = annot_path_to_img(annot_path)
         img_ext = img_path[-4:].lower()
-        os.replace(annot_path, new_path + annot_ext)
         try:
             os.replace(img_path, new_path + img_ext)
+            os.replace(annot_path, new_path + annot_ext)
             count += 1
         except FileNotFoundError:
-            os.remove(new_path + annot_ext)
+            print("Image not found: Skipping " + annot_path)
 
 
 def sort_freq_dict(freq, rev=True):
@@ -166,31 +164,57 @@ class Annotation:
         cv2.imshow("Bounding box", disp_img)
         cv2.waitKey(0)
 
+    def crop_labels(self, class_list, output_path):
+        num_digits = ceil(log(len(class_list), 10))
+        for label in self.labels:
+            if label["class"] not in class_list:
+                continue
+            idx = class_list.index(label["class"])
 
-def clean(data, output, img_exts, annot_ext, annot_parser, annot_path_to_img):
+            folder = f"{output_path}Class{str(idx).zfill(num_digits)}-{label['class']}"
+            os.makedirs(folder, exist_ok=True)
+            name = str(len(os.listdir(folder)) + 1) + ".png"
+
+            img = cv2.imread(self.img_path)
+            (x0, y0) = label["minXY"]
+            (x1, y1) = label["maxXY"]
+            cropped_img = img[y0:y1, x0:x1]
+
+            cv2.imwrite(folder + "/" + name, cropped_img)
+
+
+def get_img_paths(data, img_exts):
+    img_paths = list()
+    for img_ext in img_exts:
+        img_paths += glob.glob(data + "images/labeled/*" + img_ext)
+
+    return img_paths
+
+
+def clean(
+    data, output, img_exts, annot_ext, annot_parser, annot_path_to_img, top_classes=None
+):
     os.makedirs(output, exist_ok=True)
 
     if not os.path.exists(data + "images/labeled"):
         move_rename_images(annot_ext, data, annot_path_to_img)
 
-    img_paths_raw = list()
-    for img_ext in img_exts:
-        img_paths_raw += glob.glob(data + "images/labeled/*" + img_ext)
-
     # Filter out augmented images
-    img_paths = [img for img in img_paths_raw if "_" not in img]
+    img_paths = [img for img in get_img_paths(data, img_exts) if "_" not in img]
+
     annots = parse_annots(img_paths, annot_ext, annot_parser)
 
     # annots[11].draw_bounding_boxes()
-
-    all_classes = generate_all_classes()
 
     freq = sort_freq_dict(get_freq(annots))
     with open(output + "freq.txt", "w+") as out:
         for k, v in freq.items():
             out.write(f"{k}: {v}\n")
 
-    classes = list(freq.keys())[:NUM_CLASSES]
+    if top_classes is None:
+        classes = list(freq.keys())
+    else:
+        classes = list(freq.keys())[:top_classes]
     with open(output + "chars.names", "w+") as out:
         out.write("\n".join(classes) + "\n")
 

@@ -3,6 +3,7 @@ import cleanup
 
 DATA = "./data/"
 OUTPUT = "./output/"
+NUM_CLASSES = 8
 
 
 def annot_parser(txt_path):
@@ -47,4 +48,4 @@ def annot_path_to_img(annot_path):
 
 if __name__ == "__main__":
     exts = [".JPG", ".gif", ".jpg", ".bmp"]
-    cleanup.clean(DATA, OUTPUT, exts, ".txt", annot_parser, annot_path_to_img)
+    cleanup.clean(DATA, OUTPUT, exts, ".txt", annot_parser, annot_path_to_img, NUM)

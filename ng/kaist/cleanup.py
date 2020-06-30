@@ -2,10 +2,10 @@
 import string
 import os
 import glob
-import cv2
 import random
-import imutils
 from math import log, ceil
+import cv2
+import imutils
 
 
 def generate_all_classes():
@@ -164,6 +164,32 @@ class Annotation:
         cv2.imshow("Bounding box", disp_img)
         cv2.waitKey(0)
 
+    def crop_labels(self, class_list, output_path):
+        num_digits = ceil(log(len(class_list), 10))
+        for label in self.labels:
+            if label["class"] not in class_list:
+                continue
+            idx = class_list.index(label["class"])
+
+            folder = f"{output_path}Class{str(idx).zfill(num_digits)}-{label['class']}"
+            os.makedirs(folder, exist_ok=True)
+            name = str(len(os.listdir(folder)) + 1) + ".png"
+
+            img = cv2.imread(self.img_path)
+            (x0, y0) = label["minXY"]
+            (x1, y1) = label["maxXY"]
+            cropped_img = img[y0:y1, x0:x1]
+
+            cv2.imwrite(folder + "/" + name, cropped_img)
+
+
+def get_img_paths(data, img_exts):
+    img_paths = list()
+    for img_ext in img_exts:
+        img_paths += glob.glob(data + "images/labeled/*" + img_ext)
+
+    return img_paths
+
 
 def clean(
     data, output, img_exts, annot_ext, annot_parser, annot_path_to_img, top_classes=None
@@ -173,12 +199,9 @@ def clean(
     if not os.path.exists(data + "images/labeled"):
         move_rename_images(annot_ext, data, annot_path_to_img)
 
-    img_paths_raw = list()
-    for img_ext in img_exts:
-        img_paths_raw += glob.glob(data + "images/labeled/*" + img_ext)
-
     # Filter out augmented images
-    img_paths = [img for img in img_paths_raw if "_" not in img]
+    img_paths = [img for img in get_img_paths(data, img_exts) if "_" not in img]
+
     annots = parse_annots(img_paths, annot_ext, annot_parser)
 
     # annots[11].draw_bounding_boxes()
