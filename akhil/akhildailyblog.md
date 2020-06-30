@@ -145,7 +145,11 @@ However, when trying to run the commands I still receive an error.
 #### Meeting, Out of Work
 - 10am-10:45am Weekly Cohort Standup
 - 11:30am - 1pm Scrum meeting
+- 3pm - 3:45pm Meeting with Jake
 
 #### Work done
-
+I worked through yesterdays error and successfully created a docker group where user cc doesn't need sudo to run docker commands. I then started to add a section to the markdown on Chameleon-Sage-Image-Builder that will help Sage users replicate my process. I will also start to research Kubernates.
 #### Issues/Errors
+- I need access to make commits to the Chameleon-Sage-Image-Builder repo
+
+### Tuesday June 30th, 2020
