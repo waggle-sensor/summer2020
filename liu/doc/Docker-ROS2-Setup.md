@@ -80,7 +80,7 @@ compilation terminated.
 ```
 Solution: Add "include_directories("${CUDA_INCLUDE_DIRS}")" into CMakeList.txt.
 
-#### 
+#### OpenCV4 issue 
 
 ```
 root@nvidia-desktop:~/ros2_example_ws# colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-select darknet_vendor
