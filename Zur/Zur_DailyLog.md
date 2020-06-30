@@ -6,6 +6,7 @@ Week 1 (6/15 - 6/19)
 3. Writing coach sessions
 4. Met supervisor and mentor, figured out project topic
 
+Week 2 (6/22-6/26)
 Monday 6/22 
 1. Mac Software update
 2. Downloaded Xcode
@@ -38,5 +39,14 @@ Friday 6/26
 2. YouTube OpenCV Tutorials part 10 - 15
 3. Cristina Check In Meeting
 4. PyImageSearch OpenCV course part 1 (https://www.pyimagesearch.com/2018/02/26/face-detection-with-opencv-and-deep-learning/)
+
+Week 3 (6/29 - 7/2)
+Monday 6/29
+1. YouTube OpenCV Tutorials part 16 - 20
+2. PyImageSearch Course part 2 (https://www.pyimagesearch.com/2018/07/19/opencv-tutorial-a-guide-to-learn-opencv/)
+3. Revisited last week's OpenCV projects (doc scanner, facial detection) with more knowledge of OpenCV from the tutorials
+4. Collected and organized additional PyImageSearch tutorials
+5. Began research on crowds and computer vision
+
 
 
