@@ -153,3 +153,9 @@ I worked through yesterdays error and successfully created a docker group where 
 - I need access to make commits to the Chameleon-Sage-Image-Builder repo
 
 ### Tuesday June 30th, 2020
+#### Meeting, Out of work
+
+#### Work done
+I added steps that a Sage user can take to create a Chameleon instance and create a Chameleon-Sage image. I also added steps on how to create a docker group with user cc that can use Docker commands without ```sudo```
+
+#### Issues/Errors
