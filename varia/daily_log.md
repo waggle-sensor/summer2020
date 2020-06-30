@@ -36,4 +36,11 @@
 - Emailed HR regarding Kronos and other queries
 - Continuing literature review and opencv tutorial
 
+# Week 3:
 
+## Weekend + June 29:
+- Finished literature survey (for now)
+- Talked to Bobby regarding his ice crystal vs raindrop project
+- Mailed Evan for the labeled data 
+- Finished Docker tutorial
+- Continuing opencv tutorial
