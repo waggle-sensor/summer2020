@@ -7,8 +7,6 @@ import random
 import imutils
 from math import log, ceil
 
-DATA = "./data/"
-OUTPUT = "./output/"
 NUM_CLASSES = 8
 
 
@@ -24,9 +22,9 @@ def generate_all_classes():
 
 # Implementation of iterative stratification
 # Based on https://link.springer.com/content/pdf/10.1007%2F978-3-642-23808-6_10.pdf
-def split_test_train(annots, classes, prop_train):
-    train = open(OUTPUT + "train.txt", "w+")
-    test = open(OUTPUT + "test.txt", "w+")
+def split_test_train(annots, classes, prop_train, output):
+    train = open(output + "train.txt", "w+")
+    test = open(output + "test.txt", "w+")
 
     remaining_examples = sort_freq_dict(get_freq(annots), False)
     for k in list(remaining_examples.keys()):
@@ -42,7 +40,6 @@ def split_test_train(annots, classes, prop_train):
         test_desire[k] = v - train_num
 
     for i in range(len(classes)):
-        # print(len(annots), remaining_examples)
         cur_label = list(remaining_examples.keys())[i]
         available = list()
 
@@ -79,23 +76,23 @@ def split_test_train(annots, classes, prop_train):
     print(train_desire)
 
 
-def move_rename_images():
-    os.makedirs(DATA + "images/labeled", exist_ok=True)
-    txt_paths = glob.glob(DATA + "images/**/*.txt", recursive=True)
+def move_rename_images(annot_ext, data, annot_path_to_img):
+    os.makedirs(data + "images/labeled", exist_ok=True)
+    annot_paths = glob.glob(data + "images/**/*" + annot_ext, recursive=True)
 
-    num_digits = ceil(log(len(txt_paths), 10))
+    num_digits = ceil(log(len(annot_paths), 10))
 
     count = 1
-    for txt_path in txt_paths:
-        new_path = DATA + f"images/labeled/IMG{str(count).zfill(num_digits)}"
-        img_path = txt_path[:-4]
-        ext = img_path[-4:].lower()
-        os.replace(txt_path, new_path + ".txt")
+    for annot_path in annot_paths:
+        new_path = data + f"images/labeled/IMG{str(count).zfill(num_digits)}"
+        img_path = annot_path_to_img(annot_path)
+        img_ext = img_path[-4:].lower()
+        os.replace(annot_path, new_path + annot_ext)
         try:
-            os.replace(img_path, new_path + ext)
+            os.replace(img_path, new_path + img_ext)
             count += 1
         except FileNotFoundError:
-            os.remove(new_path + ".txt")
+            os.remove(new_path + annot_ext)
 
 
 def sort_freq_dict(freq, rev=True):
@@ -117,49 +114,19 @@ def get_freq(annots):
     return freq
 
 
-def parse_annots(img_path):
-    return [Annotation(path) for path in img_path]
+def parse_annots(img_path, ext, annot_parser):
+    return [Annotation(path, ext, annot_parser) for path in img_path]
 
 
 class Annotation:
-    def __init__(self, img_path):
+    def __init__(self, img_path, annot_ext, annot_parser):
         self.img_path = img_path
 
-        txt_path = img_path[:-4] + ".txt"
-        self.parse_txt(txt_path)
+        annot_path = img_path[:-4] + annot_ext
+        self.parse(annot_path, annot_parser)
 
-    def parse_txt(self, txt_path):
-        self.labels = list()
-
-        with open(txt_path, "r") as file:
-            lines = file.read().split("\n")
-
-        for line in lines:
-            if line == str():
-                continue
-            cols = line.split(";")[:-1]
-
-            points = cols[0].split(",")[:-1]
-
-            max_x = float("-inf")
-            max_y = float("-inf")
-            min_x = float("inf")
-            min_y = float("inf")
-
-            for point in points:
-                (x, y) = map(int, point.split(":"))
-
-                max_x = max(x, max_x)
-                min_x = min(x, min_x)
-                max_y = max(y, max_y)
-                min_y = min(y, min_y)
-
-            label = dict()
-            label["class"] = cols[1]
-            label["minXY"] = (min_x, min_y)
-            label["maxXY"] = (max_x, max_y)
-
-            self.labels.append(label)
+    def parse(self, annot_path, annot_parser):
+        self.labels = annot_parser(annot_path)
 
     def make_darknet_label(self, class_list):
         out_path = self.img_path.replace("images", "labels")[:-4] + ".txt"
@@ -191,7 +158,7 @@ class Annotation:
 
     def draw_bounding_boxes(self):
         img = cv2.imread(self.img_path)
-
+        print(self.img_path)
         for label in self.labels:
             cv2.rectangle(img, label["minXY"], label["maxXY"], (0, 255, 0), 5)
 
@@ -200,44 +167,39 @@ class Annotation:
         cv2.waitKey(0)
 
 
-def main():
-    os.makedirs(OUTPUT, exist_ok=True)
+def clean(data, output, img_exts, annot_ext, annot_parser, annot_path_to_img):
+    os.makedirs(output, exist_ok=True)
 
-    if not os.path.exists(DATA + "images/labeled"):
-        move_rename_images()
+    if not os.path.exists(data + "images/labeled"):
+        move_rename_images(annot_ext, data, annot_path_to_img)
 
-    exts = [".JPG", ".gif", ".jpg", ".bmp"]
     img_paths_raw = list()
-    for ext in exts:
-        img_paths_raw += glob.glob(DATA + "images/labeled/*" + ext)
+    for img_ext in img_exts:
+        img_paths_raw += glob.glob(data + "images/labeled/*" + img_ext)
 
     # Filter out augmented images
     img_paths = [img for img in img_paths_raw if "_" not in img]
-    annots = parse_annots(img_paths)
+    annots = parse_annots(img_paths, annot_ext, annot_parser)
 
-    # annots[1].draw_bounding_boxes()
+    # annots[11].draw_bounding_boxes()
 
     all_classes = generate_all_classes()
 
     freq = sort_freq_dict(get_freq(annots))
-    with open(OUTPUT + "freq.txt", "w+") as out:
+    with open(output + "freq.txt", "w+") as out:
         for k, v in freq.items():
             out.write(f"{k}: {v}\n")
 
     classes = list(freq.keys())[:NUM_CLASSES]
-    with open(OUTPUT + "chars.names", "w+") as out:
+    with open(output + "chars.names", "w+") as out:
         out.write("\n".join(classes) + "\n")
 
-    if not os.path.exists(DATA + "labels/labeled"):
-        os.makedirs(DATA + "labels/labeled")
+    if not os.path.exists(data + "labels/labeled"):
+        os.makedirs(data + "labels/labeled")
         for a in annots:
             for label in a.labels:
                 if label["class"] in classes:
                     a.make_darknet_label(classes)
                     break
 
-    split_test_train(annots, classes, 0.75)
-
-
-if __name__ == "__main__":
-    main()
+    split_test_train(annots, classes, 0.75, output)
