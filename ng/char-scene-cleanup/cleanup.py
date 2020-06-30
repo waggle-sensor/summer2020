@@ -89,7 +89,7 @@ def move_rename_images():
     for txt_path in txt_paths:
         new_path = DATA + f"images/labeled/IMG{str(count).zfill(num_digits)}"
         img_path = txt_path[:-4]
-        ext = img_path[-4:]
+        ext = img_path[-4:].lower()
         os.replace(txt_path, new_path + ".txt")
         try:
             os.replace(img_path, new_path + ext)

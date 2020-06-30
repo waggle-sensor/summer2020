@@ -14,7 +14,6 @@ import sys
 import time
 import datetime
 import argparse
-import warnings
 
 
 import torch
@@ -81,6 +80,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--multiscale_training", default=True, help="allow for multi-scale training"
     )
+    parser.add_argument(
+        "--resume", default=0, help="resume training from a specific epoch"
+    )
     opt = parser.parse_args()
     print(opt)
 
@@ -102,6 +104,9 @@ if __name__ == "__main__":
     # Initiate model
     model = Darknet(opt.model_def).to(device)
     model.apply(weights_init_normal)
+
+    if opt.resume != 0:
+        opt.pretrained_weights = f"checkpoints/yolov3_ckpt_{int(opt.resume)}.pth"
 
     # If specified we start from checkpoint
     if opt.pretrained_weights:
@@ -140,7 +145,7 @@ if __name__ == "__main__":
         "conf_noobj",
     ]
 
-    for epoch in range(opt.epochs):
+    for epoch in range(opt.resume, opt.epochs):
         model.train()
         start_time = time.time()
         for batch_i, (_, imgs, targets) in enumerate(dataloader):
