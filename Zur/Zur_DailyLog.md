@@ -38,12 +38,12 @@ Friday 6/26
 1. Coffee with Mike Papka
 2. YouTube OpenCV Tutorials part 10 - 15
 3. Cristina Check In Meeting
-4. PyImageSearch OpenCV course part 1 (https://www.pyimagesearch.com/2018/02/26/face-detection-with-opencv-and-deep-learning/)
+4. PyImageSearch OpenCV course day 1 (https://www.pyimagesearch.com/2018/02/26/face-detection-with-opencv-and-deep-learning/)
 
 Week 3 (6/29 - 7/2)
 Monday 6/29
 1. YouTube OpenCV Tutorials part 16 - 20
-2. PyImageSearch Course part 2 (https://www.pyimagesearch.com/2018/07/19/opencv-tutorial-a-guide-to-learn-opencv/)
+2. PyImageSearch Course day 2 (https://www.pyimagesearch.com/2018/07/19/opencv-tutorial-a-guide-to-learn-opencv/)
 3. Revisited last week's OpenCV projects (doc scanner, facial detection) with more knowledge of OpenCV from the tutorials
 4. Collected and organized additional PyImageSearch tutorials
 5. Began research on crowds and computer vision
@@ -53,8 +53,17 @@ Tuesday 6/30
 2. NAISE check-in meeting
 3. Writing Coach Session
 4. YouTube OpenCV Tutorial part 21 - 25
-5. PyImageSearch Course part 3 (https://www.pyimagesearch.com/2014/09/01/build-kick-ass-mobile-document-scanner-just-5-minutes/)
+5. PyImageSearch Course day 3 (https://www.pyimagesearch.com/2014/09/01/build-kick-ass-mobile-document-scanner-just-5-minutes/)
 6. Went through sample chapter from Practical Python and OpenCV by Dr. Adrian Rosebrock (Chapter 10: Gradients and Edge Detection)
-7. PyImageSearch tutorial: Distance from Camera to Object
+7. PyImageSearch tutorial: Distance from Camera to Object (https://www.pyimagesearch.com/2015/01/19/find-distance-camera-objectmarker-using-python-opencv/)
+
+Wednesday 7/1
+1. Student Seminar (IP Overview)
+2. EVS Seminar
+3. CELS Student Hang
+4. YouTube OpenCV Tutorial part 26 - 30
+5. PyImageSearch Course day 4 (https://www.pyimagesearch.com/2016/10/03/bubble-sheet-multiple-choice-scanner-and-test-grader-using-omr-python-and-opencv/)
+6. PyImageSearch tutorial: Shape Detection (https://www.pyimagesearch.com/2016/02/08/opencv-shape-detection/)
+
 
 
