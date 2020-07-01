@@ -20,11 +20,21 @@ $ colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 ### Install Darknet_vendor and vision_msgs
 ```
+root@nvidia-desktop:~/ros2_example_ws/src# git clone https://github.com/ros2/darknet_vendor.git
+root@nvidia-desktop:~/ros2_example_ws/src# cd ..
+root@nvidia-desktop:~/ros2_example_ws# colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-select darknet_vendor
 
+root@nvidia-desktop:~/ros2_example_ws/src# git clone https://github.com/Kukanani/vision_msgs.git
+root@nvidia-desktop:~/ros2_example_ws/src# cd vision_msgs
+root@nvidia-desktop:~/ros2_example_ws/src/vision_msgs# git checkout ros2
+root@nvidia-desktop:~/ros2_example_ws# colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-select vision_msgs
 ```
 
 ### Install ros2_usb_camera
-
+```
+root@nvidia-desktop:~/ros2_example_ws/src# git clone https://github.com/klintan/ros2_usb_camera.git
+root@nvidia-desktop:~/ros2_example_ws# colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-select ros2_usb_camera
+```
 
 ### Issues and solutions
 
