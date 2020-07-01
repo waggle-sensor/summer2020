@@ -22,3 +22,5 @@ This script will give create a new folder for the each type of image (flir, top,
 where the name is a timestamp. The script also removed images if the corresponding image from a particular time can't be found from all three cameras.
 The new folders are stored in a new folder called data_clean.
 <br>
+
+## 4. Run tower data test within TowerDataTest
