@@ -628,3 +628,13 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
  * Set up yolov3-based application with ROS 2
  * Performance profiling of the ROS 2 based image
  * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
+
+### June 30
+#### Work Done
+ * Get ROS2 and machine learning tools running inside the Docker image, checkout the image at: liangkailiu/plugin-tensorflow-ros:v2.0.5. 
+ * Set up Yolov3-based object detection running inside the docker image
+
+#### To Do List:
+ * Performance profiling of the ROS 2 based image
+ * Set up different message queuing mechanism inside ROS2 for profiling
+ * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
