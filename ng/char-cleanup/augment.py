@@ -36,6 +36,7 @@ def augment(train_list):
             for i in range(5):
                 aug_path = f"{base_name}_{name}-{i}.png"
                 aug_img = func(image=img)["image"]
+                img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
                 cv2.imwrite(aug_path, aug_img)
 
                 imgs.append(aug_path)

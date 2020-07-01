@@ -48,4 +48,6 @@ def annot_path_to_img(annot_path):
 
 if __name__ == "__main__":
     exts = [".JPG", ".gif", ".jpg", ".bmp"]
-    cleanup.clean(DATA, OUTPUT, exts, ".txt", annot_parser, annot_path_to_img, NUM)
+    cleanup.clean(
+        DATA, OUTPUT, exts, ".txt", annot_parser, annot_path_to_img, NUM_CLASSES
+    )

@@ -47,13 +47,13 @@
 
 ## Week 2
 
-**Monday, June 21**
+**Monday, June 22**
 
 * Research sampling methods for machine learning and YOLOv3 documentation
 * Obtained car images, labels, and masks from Omar
 * Began writing Python script to parse and filter annotations in preparation for model training
 
-**Tuesday, June 22**
+**Tuesday, June 23**
 
 * Created bounding box functions with OpenCV to verify annotation accuracy
 * Finished YOLOv3 text file label generation for main gate dataset
@@ -72,7 +72,7 @@
 * Discussed steps going forward with Raj about potential datasets
 * Finished labeling scripts to generate file lists for make/model
 
-**Wednesday, June 23**
+**Wednesday, June 24**
 
 * Ran a test run of the YOLOv3 scripts on the car datasets
 * Looked into Stanford car dataset for training instead of Waggle images
@@ -83,7 +83,7 @@
   * Will test on Lambda once I gain access
 
 
-**Thursday, June 24**
+**Thursday, June 25**
 
 * Had AI/ML scrum meeting
 * Attended student seminar on I/O in computing
@@ -93,7 +93,7 @@
 * Gained access to lambda and blues
 * To do: run augmentation and train on Lambda
 
-**Friday, June 25**
+**Friday, June 26**
 
 * Attended chat with Mike Papka
 * Fixed bugs in augmentation script and deployed it on Lambda and Blues
@@ -108,7 +108,7 @@
 
 ## Week 3
 
-**Monday, June 30**
+**Monday, June 39**
 
 * Discussed how to move forward with Luke after analyzing results of the character model
   * Recognizes test data with 85% accuracy, but fails to detect individual characters in signs
@@ -116,3 +116,26 @@
 * Created bounding box label conversion script for annotated full scene images from 74k character dataset
 * Discussed sampling techniques and moving forward with Luke and Nicola
 * Implemented interative stratified sampling algorithm for training and testing splits with multilabeled images
+
+**Tuesday, June 30**
+
+* Attended AI/ML scrum meeting
+* Checked results of scene character detector trained overnight - mean average precision of 0.11
+  * Going to stick with individual (pre-segmented) character classification instead
+  * This was after increasing image size to 1000x1000
+* Wrote scripts to clean up the KAIST dataset
+  * Parse XML annotations into general `Annotation` class created for 74K dataset scenes
+  * Function to crop images based on their bounding boxes for sampling and retraining
+* To do:
+  * Write functions for sampling
+  * Create pipeline for retraining after getting detection results
+
+**Wednesday, July 1**
+
+* Checked progress on character training model
+* Developed scripts to visualize accuracy over time
+  * Visualizer tool to convert Tensorboard output log
+  * Modified testing script to output results
+* Created presentation on progress thus far
+* Fixed bug in augmentation script
+* Researched methods for sampling

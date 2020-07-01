@@ -18,10 +18,10 @@ wget http://www.ee.surrey.ac.uk/CVSSP/demos/chars74k/EnglishImg.tgz
 tar xvzf EnglishImg.tgz
 mv English/Img images
 cd images
-mv GoodImag/Bmp/* GoodImg/
+mv GoodImg/Bmp/* GoodImg/
 mv BadImag/Bmp/* BadImag/
 rm -r BadImag/Msk/
-rm -r GoodImag/Msk/
+rm -r GoodImg/Msk/
 ```
 
 ### Pipeline

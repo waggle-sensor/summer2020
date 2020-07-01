@@ -159,7 +159,8 @@ class Annotation:
         print(self.img_path)
         for label in self.labels:
             cv2.rectangle(img, label["minXY"], label["maxXY"], (0, 255, 0), 5)
-
+        if img is None:
+            return
         disp_img = imutils.resize(img, width=1024)
         cv2.imshow("Bounding box", disp_img)
         cv2.waitKey(0)
@@ -204,7 +205,8 @@ def clean(
 
     annots = parse_annots(img_paths, annot_ext, annot_parser)
 
-    # annots[11].draw_bounding_boxes()
+    for i in range(1, 100):
+        annots[i].draw_bounding_boxes()
 
     freq = sort_freq_dict(get_freq(annots))
     with open(output + "freq.txt", "w+") as out:
