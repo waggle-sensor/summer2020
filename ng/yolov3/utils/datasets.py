@@ -69,9 +69,15 @@ class ListDataset(Dataset):
             self.img_files = file.readlines()
 
         self.label_files = [
-            path.replace("images", "labels")[:-4] + ".txt"
+            path.replace("images", "labels")
+            .replace(".jpg", ".txt")
+            .replace(".JPG", ".txt")
+            .replace(".bmp", ".txt")
+            .replace(".gif", ".txt")
+            .replace(".png", ".txt")
             for path in self.img_files
         ]
+
         self.img_size = img_size
         self.max_objects = 100
         self.augment = augment
@@ -141,6 +147,7 @@ class ListDataset(Dataset):
     def collate_fn(self, batch):
         paths, imgs, targets = list(zip(*batch))
         # Remove empty placeholder targets
+
         targets = [boxes for boxes in targets if boxes is not None]
         # Add sample index to targets
         for i, boxes in enumerate(targets):
