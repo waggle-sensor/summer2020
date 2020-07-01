@@ -201,7 +201,7 @@ def generate_txt_labels(vehicle_md, classes):
             class_name = f"{attr['make']} {attr['model']}"
             if class_name not in classes:
                 continue
-            
+
             (x0, y0), (x1, y1) = get_rect_bounds(obj)
             rect_h = y1 - y0
             rect_w = x1 - x0
@@ -224,6 +224,7 @@ def generate_txt_labels(vehicle_md, classes):
     with open(OUTPUT + "cars.data", "a+") as out:
         out.write("\n".join(paths))
 
+
 def main():
     md = get_metadata()
 
@@ -237,7 +238,7 @@ def main():
     # draw_bounding_box(vehicle_md[4])
 
     if not os.path.exists(OUTPUT + "cars.names"):
-       parse_metadata(vehicle_md)
+        parse_metadata(vehicle_md)
 
     classes = read_file_as_list("topclasses.names")
     generate_txt_labels(vehicle_md, classes)

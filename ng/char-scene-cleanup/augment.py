@@ -40,10 +40,8 @@ def augment(train_list):
 
                 imgs.append(aug_path)
 
-                txt_path = img_path.replace("image", "label").replace(".png", ".txt")
-                new_txt_path = aug_path.replace("image", "label").replace(
-                    ".png", ".txt"
-                )
+                txt_path = img_path.replace("image", "label")[:-4] + ".txt"
+                new_txt_path = aug_path.replace("image", "label")[:-4] + ".txt"
                 copyfile(txt_path, new_txt_path)
 
     with open(train_list[:-4] + "-aug.txt", "w+") as out:

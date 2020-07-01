@@ -77,10 +77,9 @@ def main():
     os.makedirs(OUTPUT, exist_ok=True)
 
     img_paths_raw = glob.glob(DATA + "images/**/*.png", recursive=True)
-    
+
     # Filter out augmented images
     img_paths = [img for img in img_paths_raw if "_" not in img]
-    
 
     all_classes = generate_all_classes()
     img_dict = get_img_dict(img_paths, all_classes)
