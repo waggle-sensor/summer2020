@@ -23,4 +23,5 @@ where the name is a timestamp. The script also removed images if the correspondi
 The new folders are stored in a new folder called data_clean.
 <br>
 
-## 4. Run tower data test within TowerDataTest
+## 4. Run tower data test within TowerDataTest T
+Run Scale_Train_Test.ipynb to create two .csv files: train_weather.csv and test_weather.csv. Then run test_tower_data.ipynb to train and test model to foreacast 15 minute future solar values.
