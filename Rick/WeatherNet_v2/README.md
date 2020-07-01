@@ -13,6 +13,6 @@ The file 15_min_weather_prep.csv will be used for the experiments. The image Ave
 three categories the values get put into.
 
 
-![tree](Images/Average_Net_Radiation_Values_pic.jpg)    
+![tree](WeatherNet_v2_Images/Average_Net_Radiation_Values_pic.jpg)    
 
 <br>
