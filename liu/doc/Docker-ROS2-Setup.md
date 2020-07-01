@@ -18,6 +18,14 @@ $ cd ..
 $ colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
 ```
 
+### Install Darknet_vendor and vision_msgs
+```
+
+```
+
+### Install ros2_usb_camera
+
+
 ### Issues and solutions
 
 #### No Darknet vendor
@@ -194,6 +202,7 @@ Summary: 0 packages finished [24.8s]
   1 package had stderr output: darknet_vendor
 
 ```
+Solution: downgrade the OpenCV to 3.4.0 can solve the problem.
 
 
 ### Reference
