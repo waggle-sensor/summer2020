@@ -158,4 +158,15 @@ I worked through yesterdays error and successfully created a docker group where 
 #### Work done
 I added steps that a Sage user can take to create a Chameleon instance and create a Chameleon-Sage image. I also added steps on how to create a docker group with user cc that can use Docker commands without ```sudo```
 
+Notes On Kubernetes:
+Katacoda: used to run virtual terminal
+Minicube: small scale local deployment of Kubernates
+Kubernetes coorindates a highly available cluster of computers that are connected to work as a same unit. Kubernetes automates the distribution and scheduling of application containers across a cluster in a more efficient way.
+- Master: Coordinates and manages clusters, maintaining node processes and states, and rolls out updates.
+- Nodes: are the workers that run the applications. They are VM or computers. Hosts the running applications. Each node has a Kubelet.
+- Kubelet: an agent used to manage the node and communicate with Kubernetes master.
+Nodes communicate with master
+
+
 #### Issues/Errors
+- mcs email account
