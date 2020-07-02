@@ -24,8 +24,6 @@ from terminaltables import AsciiTable
 
 
 def evaluate(model, path, iou_thres, conf_thres, nms_thres, img_size, batch_size):
-    model.eval()
-
     # Get dataloader
     dataset = ListDataset(path, img_size=img_size, augment=False, multiscale=False)
     dataloader = torch.utils.data.DataLoader(
@@ -165,26 +163,19 @@ if __name__ == "__main__":
     opt = parser.parse_args()
     print(opt)
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
     data_config = parse_data_config(opt.data_config)
     valid_path = data_config["valid"]
     class_names = load_classes(data_config["names"])
-
-    # Initiate model
-    model = Darknet(opt.model_def).to(device)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     if not opt.log_epoch:
-        if opt.weights_path.endswith(".weights"):
-            # Load darknet weights
-            model.load_darknet_weights(opt.weights_path)
-        else:
-            # Load checkpoint weights
-            model.load_state_dict(torch.load(opt.weights_path, map_location=device))
-
+        model = get_eval_model(opt.model_def, opt.img_size, opt.weights_path)
         get_results(model, valid_path, opt, class_names)
     else:
+        weights_path = opt.weights_path + "0.pth"
+        model = get_eval_model(opt.model_def, opt.img_size, weights_path)
         logger = Logger("logs")
+
         for i in range(opt.log_epoch + 1):
             weights_path = opt.weights_path + str(i) + ".pth"
             model.load_state_dict(torch.load(weights_path, map_location=device))

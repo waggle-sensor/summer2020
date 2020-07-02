@@ -400,3 +400,21 @@ class Darknet(nn.Module):
                 conv_layer.weight.data.cpu().numpy().tofile(fp)
 
         fp.close()
+
+
+def get_eval_model(model_def, img_size, weights_path):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # Set up model
+    model = Darknet(model_def, img_size=img_size).to(device)
+
+    if weights_path.endswith(".weights"):
+        # Load darknet weights
+        model.load_darknet_weights(weights_path)
+    else:
+        # Load checkpoint weights
+        model.load_state_dict(torch.load(weights_path, map_location=device))
+
+    model.eval()  # Set in evaluation mode
+
+    return model

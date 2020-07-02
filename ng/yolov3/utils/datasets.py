@@ -38,7 +38,7 @@ def random_resize(images, min_size=288, max_size=448):
 
 class ImageFolder(Dataset):
     def __init__(self, folder_path, img_size=416):
-        self.files = sorted(glob.glob("%s/*.*" % folder_path))
+        self.files = sorted(glob.glob(f"{folder_path}/**/*.*", recursive=True))
         self.img_size = img_size
 
     def __getitem__(self, index):
