@@ -6,6 +6,11 @@ import math
 from tensorboard.backend.event_processing import event_accumulator
 from scipy.interpolate import make_interp_spline, BSpline, interp1d
 
+"""
+This script was primarily written to convert Tensorboard log data from the YOLOv3
+scripts to a parsable format, but it can be adapted to other purposes
+"""
+
 X_SCALE = 1 / 19137
 
 
@@ -24,11 +29,6 @@ def tensorboard_to_csv(out_dir):
         writer = csv.DictWriter(output, fieldnames=list(dicts[0].keys()))
         for r in dicts:
             writer.writerow(r)
-
-
-def clean(series):
-    out = series[(np.isnan(series) == False) & (np.isinf(series) == False)]
-    return out
 
 
 def add_plot(data, title, color="b", label="", header=None, spline=None):

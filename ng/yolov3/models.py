@@ -1,4 +1,4 @@
-from __future__ import division
+from __future__ import division, absolute_import
 
 import torch
 import torch.nn as nn
@@ -6,8 +6,9 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 import numpy as np
 
-from utils.parse_config import *
-from utils.utils import build_targets, to_cpu, non_max_suppression
+import yolov3
+from yolov3.utils.parse_config import *
+from yolov3.utils.utils import build_targets, to_cpu, non_max_suppression
 
 
 def create_modules(module_defs):

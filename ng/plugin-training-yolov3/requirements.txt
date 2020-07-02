@@ -1,4 +1,0 @@
-pillow
-tqdm
-terminaltables
-tensorboardx

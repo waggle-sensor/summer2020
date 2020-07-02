@@ -148,3 +148,4 @@
   * Sample until a quota is met per class
 * Presented on my work so far and listened to other presentations
 * Attended peer cohort session
+* Beginning to create tools to benchmark model performance against KAIST dataset

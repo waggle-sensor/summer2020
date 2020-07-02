@@ -7,6 +7,18 @@ from math import log, ceil
 import cv2
 import imutils
 
+"""
+Cleans up a set of annotated scene images for training.
+
+Provides utility functions for analyzing class frequency, organizing images by classes, 
+creating Darknet labels, visualizing bounding boxes, and splitting data into train/test sets.
+
+You only need to provide your own annotation parser and a way to extract
+an image path from an annotation.
+
+In this repo, this file is symbolically linked between char-scene-cleanup/ and kaist/.
+"""
+
 
 def generate_all_classes():
     classes = [str(i) for i in range(10)]

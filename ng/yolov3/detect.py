@@ -1,8 +1,8 @@
 from __future__ import division
 
-from models import *
-from utils.utils import *
-from utils.datasets import *
+from yolov3.models import *
+from yolov3.utils.utils import *
+from yolov3.utils.datasets import *
 
 import os
 import sys
@@ -22,14 +22,14 @@ import matplotlib.patches as patches
 from matplotlib.ticker import NullLocator
 
 
-def detect(input_imgs):
+def detect(input_imgs, conf_thres, model, nms_thres=0.4):
     # Configure input
     Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
     input_imgs = Variable(input_imgs.type(Tensor))
 
     with torch.no_grad():
         detections = model(input_imgs)
-        detections = non_max_suppression(detections, opt.conf_thres, opt.nms_thres)
+        detections = non_max_suppression(detections, conf_thres, nms_thres)
 
     return detections
 
@@ -43,6 +43,14 @@ def save_images(imgs, img_detections, opt, best_label_only=False):
         # Draw bounding boxes and labels of detections
         if detections is not None:
             save_image(detections, path, opt, best_label_only)
+
+
+def get_most_conf(detections):
+    most_conf = None
+    for d in detections:
+        if most_conf is None or d[5] > most_conf[5]:
+            most_conf = d
+    return most_conf
 
 
 def save_image(detections, path, opt, best_label_only=False):
@@ -63,11 +71,7 @@ def save_image(detections, path, opt, best_label_only=False):
     bbox_colors = random.sample(colors, n_cls_preds)
 
     if best_label_only:
-        most_conf = None
-        for d in detections:
-            if most_conf is None or d[5] > most_conf[5]:
-                most_conf = d
-        detections = [most_conf]
+        detections = [get_most_conf(detections)]
 
     for x1, y1, x2, y2, conf, cls_conf, cls_pred in detections:
 
@@ -168,7 +172,7 @@ if __name__ == "__main__":
     print("\nPerforming object detection:")
     prev_time = time.time()
     for batch_i, (img_paths, input_imgs) in enumerate(dataloader):
-        detections = detect(input_imgs)
+        detections = detect(input_imgs, opt.conf_thres, model)
 
         # Log progress
         current_time = time.time()
@@ -180,4 +184,4 @@ if __name__ == "__main__":
         imgs.extend(img_paths)
         img_detections.extend(detections)
 
-    save_images(imgs, img_detections, opt)
+    save_images(imgs, img_detections, opt, True)
