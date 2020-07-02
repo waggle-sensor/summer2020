@@ -27,6 +27,7 @@ def tensorboard_to_csv(out_dir):
 
         output = open(f"{out_dir}/{m}.csv", "a+")
         writer = csv.DictWriter(output, fieldnames=list(dicts[0].keys()))
+        writer.writeheader()
         for r in dicts:
             writer.writerow(r)
 

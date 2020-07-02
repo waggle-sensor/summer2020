@@ -35,7 +35,7 @@ if __name__ == "__main__":
     header = "file,actual,detected,conf,hit".split(",")
     output = open("output/benchmark.csv", "w+")
     writer = csv.DictWriter(output, fieldnames=header)
-
+    writer.writeheader()
     for (img_paths, input_imgs) in loader:
         props = dict()
         props["file"] = img_paths[0]
