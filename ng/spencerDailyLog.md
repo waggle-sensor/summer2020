@@ -139,3 +139,12 @@
 * Created presentation on progress thus far
 * Fixed bug in augmentation script
 * Researched methods for sampling
+
+**Thursday, July 2**
+
+* Attended scrum meeting
+* Developed rudimentary (theoretical) model for sampling
+  * Generate a probability vs. confidence value curve to determine likelihood of choosing an image for sampling
+  * Sample until a quota is met per class
+* Presented on my work so far and listened to other presentations
+* Attended peer cohort session

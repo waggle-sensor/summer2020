@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-# Analyze KAIST scene text dataset,
-# from http://www.iapr-tc11.org/mediawiki/index.php?title=KAIST_Scene_Text_Database
+# Analyze KAIST scene text dataset, from
+# http://www.iapr-tc11.org/mediawiki/index.php?title=KAIST_Scene_Text_Database
 
 import lxml.etree as ET
 import os
@@ -50,7 +50,7 @@ def annot_path_to_img(annot_path):
 
 def main():
     exts = [".JPG", ".jpg"]
-    # cleanup.clean(DATA, OUTPUT, exts, ".xml", annot_parser, annot_path_to_img)
+    cleanup.clean(DATA, OUTPUT, exts, ".xml", annot_parser, annot_path_to_img)
     img_paths = cleanup.get_img_paths(DATA, exts)
     annots = cleanup.parse_annots(img_paths, ".xml", annot_parser)
     for a in annots:
