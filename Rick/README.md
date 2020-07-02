@@ -1,9 +1,9 @@
 # Rick's Repo Home Page
 
 ## To do list :)
-1. [ ] Make update slides for ML Demo for Thursday (July 2, 2020).
-2. [ ] Update data split script for weather data work on 15min.
-3. [ ] Re-run lstm experiment using 15min data.
+1. [Done] Make update slides for ML Demo for Thursday (July 2, 2020).
+2. [Done] Update data split script for weather data work on 15min.
+3. [Done] Re-run lstm experiment using 15min data.
 4. [ ] Document new lstm experiment 
 5. [ ] Update paper
 6. [ ] Build new dataloader for images
