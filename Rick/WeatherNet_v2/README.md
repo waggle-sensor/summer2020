@@ -25,3 +25,7 @@ The new folders are stored in a new folder called data_clean.
 
 ## 4. Run tower data test within TowerDataTest 
 Run Scale_Train_Test.ipynb to create two .csv files: train_weather.csv and test_weather.csv. Then run test_tower_data.ipynb to train and test model to foreacast 15 minute future solar values.
+
+![tree](WeatherNet_v2_Images/tower_test_data_results.png)    
+
+<br>
