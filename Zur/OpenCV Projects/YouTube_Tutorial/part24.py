@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-cap = cv2.VideoCapture('pedestrians.mp4')
+cap = cv2.VideoCapture('IMG_0501.MOV')
 ret, frame1 = cap.read()
 ret, frame2 = cap.read()
 

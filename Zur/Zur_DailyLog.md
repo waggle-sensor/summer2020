@@ -65,5 +65,12 @@ Wednesday 7/1
 5. PyImageSearch Course day 4 (https://www.pyimagesearch.com/2016/10/03/bubble-sheet-multiple-choice-scanner-and-test-grader-using-omr-python-and-opencv/)
 6. PyImageSearch tutorial: Shape Detection (https://www.pyimagesearch.com/2016/02/08/opencv-shape-detection/)
 
-
-
+Thursday 7/2
+1. AI/ML Scrum
+2. AI/ML Demo
+3. YouTube OpenCV Tutorial part 31 - 34
+4. PyImageSearch Course day 5 (https://www.pyimagesearch.com/2015/09/14/ball-tracking-with-opencv/)
+5. Student Connects Meeting
+6. PyImageSearch tutorial: Contour Center Finder (https://www.pyimagesearch.com/2016/02/01/opencv-center-of-contour/)
+7. PyImageSearch tutorial: Object Color Detection (https://www.pyimagesearch.com/2016/02/15/determining-object-color-with-opencv/)
+8. Continued research on crowd analysis using computer vision and bird's eye view image transformation techniques
