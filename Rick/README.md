@@ -16,6 +16,11 @@
 
 <br>
 
+## WeatherNet_v2
+* This is the main directory of the project! All of the codes needed to reconstruct the experiment can be found in here!
+
+<br>
+
 ## ImgSeqLoader [ This goes to WeatherNet_v1 ]
 * This directory contains code for the data loader I made for my model that forecasts solar radiation amounts. This data loader feeds in three sets of time-sequenced images from three different cameras. The data loader navigates the folder structure (as shown below) and grabs the correct called images and deletes from memory the old images from memory.
 
