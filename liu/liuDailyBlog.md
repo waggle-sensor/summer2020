@@ -639,4 +639,4 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
  * Set up different message queuing mechanism inside ROS2 for profiling
  * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
 
-https://drive.google.com/file/d/1g8xWCEcnoxAy65gZXwX7Pzj20ffDxgQB/view
+
