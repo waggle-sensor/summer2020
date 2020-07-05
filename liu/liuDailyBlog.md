@@ -650,7 +650,7 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
 
 ### July 2
 #### Work Done
- * Attend the workshop about yotoc
+ * Attend the workshop about Yocto
 
 #### To Do List:
  * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
