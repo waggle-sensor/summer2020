@@ -639,4 +639,19 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
  * Set up different message queuing mechanism inside ROS2 for profiling
  * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
 
+### July 1
+#### Work Done
+ * Set up drivers for velodyne LiDAR and ouster LiDAR and extract ROS bags files; a issue of flashing comes out when using ouster LiDAR
+ * Do experiments in ROS2 images within Docker to collect logs in latency, resource consumption, and energy consumption
 
+#### To Do List:
+ * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture 
+ * Performance profiling of the ROS 2 based image
+
+### July 2
+#### Work Done
+ * Attend the workshop about yotoc
+
+#### To Do List:
+ * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
+ * Performance profiling of the ROS 2 based image
