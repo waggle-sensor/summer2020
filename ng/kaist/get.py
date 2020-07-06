@@ -6,6 +6,10 @@ import zipfile
 import glob
 import os
 
+"""
+Quick executable script to download the KAIST data set,
+recursively extract all images, and delete masks
+"""
 
 wget.download("http://www.iapr-tc11.org/dataset/KAIST_SceneText/KAIST_all.zip", ".")
 

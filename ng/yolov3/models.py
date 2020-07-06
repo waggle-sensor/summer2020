@@ -1,4 +1,4 @@
-from __future__ import division
+from __future__ import division, absolute_import
 
 import torch
 import torch.nn as nn
@@ -6,8 +6,9 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 import numpy as np
 
-from utils.parse_config import *
-from utils.utils import build_targets, to_cpu, non_max_suppression
+import yolov3
+from yolov3.utils.parse_config import *
+from yolov3.utils.utils import build_targets, to_cpu, non_max_suppression
 
 
 def create_modules(module_defs):
@@ -400,3 +401,21 @@ class Darknet(nn.Module):
                 conv_layer.weight.data.cpu().numpy().tofile(fp)
 
         fp.close()
+
+
+def get_eval_model(model_def, img_size, weights_path):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # Set up model
+    model = Darknet(model_def, img_size=img_size).to(device)
+
+    if weights_path.endswith(".weights"):
+        # Load darknet weights
+        model.load_darknet_weights(weights_path)
+    else:
+        # Load checkpoint weights
+        model.load_state_dict(torch.load(weights_path, map_location=device))
+
+    model.eval()  # Set in evaluation mode
+
+    return model

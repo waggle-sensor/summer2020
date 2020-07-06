@@ -1,6 +1,7 @@
 from __future__ import division
 
 from models import *
+from utils.logger import *
 from utils.utils import *
 from utils.datasets import *
 from utils.parse_config import *
@@ -19,10 +20,10 @@ from torchvision import transforms
 from torch.autograd import Variable
 import torch.optim as optim
 
+from terminaltables import AsciiTable
+
 
 def evaluate(model, path, iou_thres, conf_thres, nms_thres, img_size, batch_size):
-    model.eval()
-
     # Get dataloader
     dataset = ListDataset(path, img_size=img_size, augment=False, multiscale=False)
     dataloader = torch.utils.data.DataLoader(
@@ -68,6 +69,39 @@ def evaluate(model, path, iou_thres, conf_thres, nms_thres, img_size, batch_size
     )
 
     return precision, recall, AP, f1, ap_class
+
+
+def get_results(model, path, opt, class_names, logger=None, epoch=0):
+    print("\n---- Evaluating Model ----")
+
+    print("Compute mAP...")
+
+    precision, recall, AP, f1, ap_class = evaluate(
+        model,
+        path=path,
+        iou_thres=opt.iou_thres,
+        conf_thres=opt.conf_thres,
+        nms_thres=opt.nms_thres,
+        img_size=opt.img_size,
+        batch_size=8,
+    )
+
+    evaluation_metrics = [
+        ("val_precision", precision.mean()),
+        ("val_recall", recall.mean()),
+        ("val_mAP", AP.mean()),
+        ("val_f1", f1.mean()),
+    ]
+
+    if logger is not None:
+        logger.list_of_scalars_summary(evaluation_metrics, epoch)
+
+    # Print class APs and mAP
+    ap_table = [["Index", "Class name", "AP"]]
+    for i, c in enumerate(ap_class):
+        ap_table += [[c, class_names[c], "%.5f" % AP[i]]]
+    print(AsciiTable(ap_table).table)
+    print(f"---- mAP {AP.mean()}")
 
 
 if __name__ == "__main__":
@@ -123,39 +157,27 @@ if __name__ == "__main__":
     parser.add_argument(
         "--img_size", type=int, default=416, help="size of each image dimension"
     )
+    parser.add_argument(
+        "--log_epoch", type=int, default=False, help="log results up to a certain epoch"
+    )
     opt = parser.parse_args()
     print(opt)
-
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     data_config = parse_data_config(opt.data_config)
     valid_path = data_config["valid"]
     class_names = load_classes(data_config["names"])
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # Initiate model
-    model = Darknet(opt.model_def).to(device)
-    if opt.weights_path.endswith(".weights"):
-        # Load darknet weights
-        model.load_darknet_weights(opt.weights_path)
+    if not opt.log_epoch:
+        model = get_eval_model(opt.model_def, opt.img_size, opt.weights_path)
+        get_results(model, valid_path, opt, class_names)
     else:
-        # Load checkpoint weights
-        map_location = torch.device("gpu" if torch.cuda.is_available() else "cpu")
-        model.load_state_dict(torch.load(opt.weights_path, map_location=map_location))
+        weights_path = opt.weights_path + "0.pth"
+        model = get_eval_model(opt.model_def, opt.img_size, weights_path)
+        logger = Logger("logs")
 
-    print("Compute mAP...")
+        for i in range(opt.log_epoch + 1):
+            weights_path = opt.weights_path + str(i) + ".pth"
+            model.load_state_dict(torch.load(weights_path, map_location=device))
 
-    precision, recall, AP, f1, ap_class = evaluate(
-        model,
-        path=valid_path,
-        iou_thres=opt.iou_thres,
-        conf_thres=opt.conf_thres,
-        nms_thres=opt.nms_thres,
-        img_size=opt.img_size,
-        batch_size=8,
-    )
-
-    print("Average Precisions:")
-    for i, c in enumerate(ap_class):
-        print(f"+ Class '{c}' ({class_names[c]}) - AP: {AP[i]}")
-
-    print(f"mAP: {AP.mean()}")
+            get_results(model, valid_path, opt, class_names, logger, i)

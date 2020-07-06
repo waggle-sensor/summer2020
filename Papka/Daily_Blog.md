@@ -9,3 +9,6 @@ Week 2 (6/15- 6/19/2020)
 Week 3 (6/22-6/26/2020)
 - I continued to work on sorting the ballpark water images.
 - I also continued looking at WordPress
+
+Week 4 (6/29-7/2/2020)
+- I continued sorting through ballpark water detection images.

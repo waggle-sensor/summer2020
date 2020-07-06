@@ -10,12 +10,36 @@ $ sudo docker run -it nvcr.io/nvidia/l4t-ml:r32.4.2-py3 /bin/bash
  - Install based on https://index.ros.org/doc/ros2/Installation/Dashing/Linux-Install-Debians/.
  - Set up workspace based on https://index.ros.org/doc/ros2/Tutorials/Colcon-Tutorial/.
 
-### Install YOLOv3 application:
+### Install darknet_ros application:
 ```
 $ cd ~/ros2_example_ws/src
-$ git clone https://github.com/ros2/openrobotics_darknet_ros.git
-$ cd ..
-$ colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+$ git clone --recursive https://github.com/leggedrobotics/darknet_ros.git
+$ cd darknet_ros
+$ git checkout ros2
+$ cd ../..
+$ colcon build
+```
+
+### Install Darknet_vendor and vision_msgs
+```
+root@nvidia-desktop:~/ros2_example_ws/src# git clone https://github.com/ros2/darknet_vendor.git
+root@nvidia-desktop:~/ros2_example_ws/src# cd ..
+root@nvidia-desktop:~/ros2_example_ws# colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-select darknet_vendor
+
+root@nvidia-desktop:~/ros2_example_ws/src# git clone https://github.com/Kukanani/vision_msgs.git
+root@nvidia-desktop:~/ros2_example_ws/src# cd vision_msgs
+root@nvidia-desktop:~/ros2_example_ws/src/vision_msgs# git checkout ros2
+root@nvidia-desktop:~/ros2_example_ws# colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-select vision_msgs
+```
+
+### Install ros2 demo
+```
+$ cd ros2_example_ws/src
+$ git clone https://github.com/ros2/demos.git
+$ cd demos
+$ git checkout dashing
+$ cd ../..
+$ colcon build
 ```
 
 ### Issues and solutions
@@ -194,6 +218,7 @@ Summary: 0 packages finished [24.8s]
   1 package had stderr output: darknet_vendor
 
 ```
+Solution: downgrade the OpenCV to 3.4.0 can solve the problem.
 
 
 ### Reference
