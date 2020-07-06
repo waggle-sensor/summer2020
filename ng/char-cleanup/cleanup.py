@@ -100,7 +100,9 @@ def main():
         for k, v in sorted_freq.items():
             out.write(f"{k}: {v}\n")
 
-    classes = [c for c in list(sorted_freq.keys()) if c not in "1234567890"][:NUM_CLASSES]
+    classes = [c for c in list(sorted_freq.keys()) if c not in "1234567890"][
+        :NUM_CLASSES
+    ]
 
     with open(OUTPUT + "chars.names", "w+") as out:
         out.write("\n".join(classes) + "\n")

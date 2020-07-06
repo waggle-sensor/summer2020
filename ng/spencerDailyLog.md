@@ -149,3 +149,20 @@
 * Presented on my work so far and listened to other presentations
 * Attended peer cohort session
 * Beginning to create tools to benchmark model performance against KAIST dataset
+
+## Week 4
+
+**Monday, July 6**
+
+* Created script to view benchmark results
+  * Histograms for hits, misses, and a combinations
+  * On a class-by-class basis or aggregate results
+  * Also computes precision/accuracy values and confusion matrix
+* Plots are *very* left-skewed for the character model with the 8 most frequent characters
+  * High confidence and overall high accuracy -> not much room for improvement
+  * See results at [this link](https://drive.google.com/file/d/1Yykr0N00bwvucnBode34G4PR7dPdC4Wj/view?usp=sharing)
+* Will retrain on 30-class model, using 84 images per class for training, to determine if it leads to a good benchmark
+  * May need to adjust number of classes and samples
+  * New parameters: 256x256 image, batch size of 16
+  * Preventing class imbalance by undersampling based on the class with the fewest number of images
+* Beginning to work on sampling and retraining pipeline
