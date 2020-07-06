@@ -6,7 +6,7 @@ import random
 
 DATA = "./data/"
 OUTPUT = "./output/"
-NUM_CLASSES = 8
+NUM_CLASSES = 30
 
 
 def generate_all_classes():
@@ -34,16 +34,22 @@ def create_labels(img_dict, classes):
                 out.write(line)
 
 
-def split_test_train(img_dict, prop_train):
+def split_test_train(img_dict, prop_train, undersample=False):
     train = open(OUTPUT + "train.txt", "w+")
     test = open(OUTPUT + "test.txt", "w+")
+
+    max_samples = float("inf")
+    if undersample:
+        for imgs in img_dict.values():
+            max_samples = min(max_samples, len(imgs))
 
     for class_name, imgs in img_dict.items():
         random.shuffle(imgs)
 
-        train_num = round(prop_train * len(imgs))
+        train_num = round(prop_train * min(len(imgs), max_samples))
+        test_num = min(len(imgs), max_samples) - train_num
         train_list = imgs[:train_num]
-        test_list = imgs[train_num : len(imgs)]
+        test_list = imgs[train_num : train_num + test_num]
 
         train.write("\n".join(train_list) + "\n")
         test.write("\n".join(test_list) + "\n")
@@ -74,6 +80,7 @@ def filter_img_dict(img_dict, classes):
 
 
 def main():
+    random.seed("sage")
     os.makedirs(OUTPUT, exist_ok=True)
 
     img_paths_raw = glob.glob(DATA + "images/**/*.png", recursive=True)
@@ -93,7 +100,7 @@ def main():
         for k, v in sorted_freq.items():
             out.write(f"{k}: {v}\n")
 
-    classes = list(sorted_freq.keys())[:NUM_CLASSES]
+    classes = [c for c in list(sorted_freq.keys()) if c not in "1234567890"][:NUM_CLASSES]
 
     with open(OUTPUT + "chars.names", "w+") as out:
         out.write("\n".join(classes) + "\n")
@@ -101,7 +108,7 @@ def main():
     filtered_dict = filter_img_dict(img_dict, classes)
 
     create_labels(filtered_dict, classes)
-    split_test_train(filtered_dict, 0.75)
+    split_test_train(filtered_dict, 0.75, True)
 
 
 if __name__ == "__main__":

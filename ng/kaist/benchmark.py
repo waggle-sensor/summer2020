@@ -20,7 +20,7 @@ if __name__ == "__main__":
         "yolov3/config/yolov3.cfg", 416, "checkpoints/yolov3_ckpt_14.pth"
     )
 
-    classes = utils.load_classes("output/chars.names")
+    classes = utils.load_classes("yolov3/config/chars.names")
 
     loader = DataLoader(
         datasets.ImageFolder("data/objs/", img_size=416),
