@@ -1,5 +1,5 @@
-classes = 8
-train = ./config/train-aug.txt
-valid = ./config/test.txt
-names = ./config/chars.names
+classes = 30
+train = train-aug.txt
+valid = test.txt
+names = chars.names
 backup =./backup

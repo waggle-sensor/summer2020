@@ -4,6 +4,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
+import random
 from shutil import copyfile
 
 
@@ -23,6 +24,8 @@ def get_augmentations():
 
 
 def augment(train_list):
+    random.seed("sage")
+    
     augs = get_augmentations()
     imgs = open(train_list, "r").read().split("\n")[:-1]
     orig_imgs = imgs.copy()
