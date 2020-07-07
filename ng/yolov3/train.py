@@ -14,7 +14,6 @@ import sys
 import time
 import datetime
 import argparse
-import warnings
 
 
 import torch
@@ -29,7 +28,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--epochs", type=int, default=100, help="number of epochs")
     parser.add_argument(
-        "--batch_size", type=int, default=8, help="size of each image batch"
+        "--batch_size", type=int, default=64, help="size of each image batch"
     )
     parser.add_argument(
         "--gradient_accumulations",
@@ -61,7 +60,7 @@ if __name__ == "__main__":
         help="number of cpu threads to use during batch generation",
     )
     parser.add_argument(
-        "--img_size", type=int, default=416, help="size of each image dimension"
+        "--img_size", type=int, default=128, help="size of each image dimension"
     )
     parser.add_argument(
         "--checkpoint_interval",
@@ -80,6 +79,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--multiscale_training", default=True, help="allow for multi-scale training"
+    )
+    parser.add_argument(
+        "--resume", default=-1, help="resume training from a specific epoch"
     )
     opt = parser.parse_args()
     print(opt)
@@ -102,6 +104,9 @@ if __name__ == "__main__":
     # Initiate model
     model = Darknet(opt.model_def).to(device)
     model.apply(weights_init_normal)
+
+    if opt.resume != -1:
+        opt.pretrained_weights = f"checkpoints/yolov3_ckpt_{int(opt.resume)}.pth"
 
     # If specified we start from checkpoint
     if opt.pretrained_weights:
@@ -140,7 +145,7 @@ if __name__ == "__main__":
         "conf_noobj",
     ]
 
-    for epoch in range(opt.epochs):
+    for epoch in range(opt.resume + 1, opt.epochs):
         model.train()
         start_time = time.time()
         for batch_i, (_, imgs, targets) in enumerate(dataloader):

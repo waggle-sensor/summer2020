@@ -23,14 +23,15 @@ def parse_labels(label_xml):
     for annot in root.findall(".//annotation"):
         label = dict()
         label["filename"] = annot.find("filename").text
-        
+
         obj = annot.find(".//object")
         label["make"], label["model"] = obj.find(".//name").text.split(" ", 1)
         label["conf"] = float(obj.find(".//confidence").text)
-        
+
         labels.append(label)
 
     return labels
+
 
 def get_freq(labels):
     make_models = dict()
@@ -60,10 +61,10 @@ def generate_txt_labels(labels, classes):
 
             idx = classes.index(name.lower())
             line = f"{idx} 0.5 0.5 1 1"
-            
+
             with open(txt_path, "w+") as out:
                 out.write(line)
-    
+
     with open(OUTPUT + "cars.data", "w+") as out:
         out.write("\n".join(filepaths))
 

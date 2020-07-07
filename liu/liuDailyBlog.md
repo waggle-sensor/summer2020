@@ -574,7 +574,7 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
  * Do experiments to get the performance of yolov3 with scheduling polcies changed at runtime
  * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing purpose
 
-### June 22, 2020
+### June 23, 2020
 #### Work Done:
  * Collect logs and analysis using TensorFlow profile module
  * timeline single run:
@@ -588,7 +588,7 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
  * Get the result for the analysis of time breakdown
  * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
 
-### June 23, 2020
+### June 24, 2020
 #### Work Done:
  * Analysis logs collected using TensorFlow profile, it shows for each model inference, more than 80 percent of time is used on GPU
  * Analysis logs collected when changing schduling policy and priority at runtime and get the CDF of the latency
@@ -597,11 +597,61 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
  * Start implement ROS2 inside Docker image and set up yolov3-based application
  * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
 
-### June 24, 2020
+### June 25, 2020
 #### Work Done:
+
  * Discuss with Raj about the time breakdown of each model inference and the CDF of the latency when the schduling policy and priority are changed
  * Work on the ROS2 set up inside Docker
 
 #### To Do List:
  * Start implement ROS2 inside Docker image and set up yolov3-based application
  * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
+
+### June 26, 2020
+#### Work Done:
+ * Work on the ROS2 set up inside Docker, check out the setup doc at https://github.com/waggle-sensor/summer2020/blob/master/liu/doc/Docker-ROS2-Setup.md.
+ * Solve the issues related to opencv4, cuda runtime with ROS2
+
+#### To Do List:
+ * Set up yolov3-based application with ROS 2
+ * Performance profiling of the ROS 2 based image
+ * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
+  
+## Week 9 (June 29 to July 2)
+
+### June 29
+#### Work Done
+ * Meet with the LBNL team to discuss the next step for data sharing
+ * Set up yolov3 inside ROS2-based docker image, sovling the darkent-vendor issue
+
+#### To Do List:
+ * Set up yolov3-based application with ROS 2
+ * Performance profiling of the ROS 2 based image
+ * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
+
+### June 30
+#### Work Done
+ * Get ROS2 and machine learning tools running inside the Docker image, checkout the image at: liangkailiu/plugin-tensorflow-ros:v2.0.5. 
+ * Set up Yolov3-based object detection running inside the docker image
+
+#### To Do List:
+ * Performance profiling of the ROS 2 based image
+ * Set up different message queuing mechanism inside ROS2 for profiling
+ * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
+
+### July 1
+#### Work Done
+ * Set up drivers for velodyne LiDAR and ouster LiDAR and extract ROS bags files; a issue of flashing comes out when using ouster LiDAR
+ * Do experiments in ROS2 images within Docker to collect logs in latency, resource consumption, and energy consumption
+
+#### To Do List:
+ * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture 
+ * Performance profiling of the ROS 2 based image
+
+### July 2
+#### Work Done
+ * Attend the workshop about Yocto
+
+#### To Do List:
+ * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
+ * Performance profiling of the ROS 2 based image

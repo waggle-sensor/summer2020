@@ -8,7 +8,7 @@
 #SBATCH --time=05:00:00
 
 # For blues only
-# module load python/3.6.5-lvrzbky
+# module load python/3.6.5-lvrzbky cuda/10.0.130-kqvlz4i
 
 # For lambda only
 # . /software/anaconda3/bin/activate train

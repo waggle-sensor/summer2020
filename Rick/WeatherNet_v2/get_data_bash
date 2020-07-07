@@ -1,0 +1,5 @@
+#!/bin/bash
+rsync -avPz --include="*/" --include="*:00:*+00:00.jpg" --exclude='*' enueve@bebop.lcrc.anl.gov:/lcrc/project/waggle/public_html/private/training_data/aot_audio_and_images/good/001e06107d7f/* .
+rsync -avPz --include="*/" --include="*:15:*+00:00.jpg" --exclude='*' enueve@bebop.lcrc.anl.gov:/lcrc/project/waggle/public_html/private/training_data/aot_audio_and_images/good/001e06107d7f/* .
+rsync -avPz --include="*/" --include="*:30:*+00:00.jpg" --exclude='*' enueve@bebop.lcrc.anl.gov:/lcrc/project/waggle/public_html/private/training_data/aot_audio_and_images/good/001e06107d7f/* .
+rsync -avPz --include="*/" --include="*:45:*+00:00.jpg" --exclude='*' enueve@bebop.lcrc.anl.gov:/lcrc/project/waggle/public_html/private/training_data/aot_audio_and_images/good/001e06107d7f/* .

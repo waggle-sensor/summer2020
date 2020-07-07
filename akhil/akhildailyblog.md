@@ -1,4 +1,4 @@
-# Daily Notes - Akhil Kodumuri
+presentationpresentation# Daily Notes - Akhil Kodumuri
 
 ## Week 1
 
@@ -132,10 +132,12 @@ Quick recap of what I have done so far: Chameleon-Sage-Image-Builder downloads a
 #### Work done
 I continued researching on how to create a docker group with user cc. cc should be able to deploy beehive and run virtual waggle without sudo. I was able to create docker group and added user cc to it.
 Code I used
-``` sudo groupadd docker
+
+    sudo groupadd docker
     sudo usermod -aG docker cc
     newgrp docker
-                    ```
+
+
 However, when trying to run the commands I still receive an error.
 
 #### Issues/Errors
@@ -145,7 +147,75 @@ However, when trying to run the commands I still receive an error.
 #### Meeting, Out of Work
 - 10am-10:45am Weekly Cohort Standup
 - 11:30am - 1pm Scrum meeting
+- 3pm - 3:45pm Meeting with Jake
 
 #### Work done
+I worked through yesterdays error and successfully created a docker group where user cc doesn't need sudo to run docker commands. I then started to add a section to the markdown on Chameleon-Sage-Image-Builder that will help Sage users replicate my process. I will also start to research Kubernates.
+#### Issues/Errors
+- I need access to make commits to the Chameleon-Sage-Image-Builder repo
+
+### Tuesday June 30th, 2020
+#### Meeting, Out of work
+
+#### Work done
+I added steps that a Sage user can take to create a Chameleon instance and create a Chameleon-Sage image. I also added steps on how to create a docker group with user cc that can use Docker commands without ```sudo```
+
+Notes On Kubernetes:
+Katacoda: used to run virtual terminal
+Minicube: small scale local deployment of Kubernates
+Kubernetes coorindates a highly available cluster of computers that are connected to work as a same unit. Kubernetes automates the distribution and scheduling of application containers across a cluster in a more efficient way.
+- Master: Coordinates and manages clusters, maintaining node processes and states, and rolls out updates.
+- Nodes: are the workers that run the applications. They are VM or computers. Hosts the running applications. Each node has a Kubelet.
+- Kubelet: an agent used to manage the node and communicate with Kubernetes master.
+Nodes communicate with master using kubernetes api.
+
 
 #### Issues/Errors
+- mcs email account
+
+### Wednesday July 1, 2020
+#### Meeting, Out of Work
+- 10:30am - 11am
+
+#### Work done
+Notes On Kubernetes:
+Katacoda: used to run virtual terminal
+Minicube: small scale local deployment of Kubernates
+Kubernetes coorindates a highly available cluster of computers that are connected to work as a same unit. Kubernetes automates the distribution and scheduling of application containers across a cluster in a more efficient way.
+- Master: Coordinates and manages clusters, maintaining node processes and states, and rolls out updates.
+- Nodes: are the workers that run the applications. They are VM or computers. Hosts the running applications. Each node has a Kubelet.
+- Kubelet: an agent used to manage the node and communicate with Kubernetes master.
+Nodes communicate with master using Kubernetes api. It also manages the pods and containers inside of the node.
+- Pod: Abstraction that represents the one or more application containers
+
+```
+To assign role to node -> kubectl label node node_name node-role.kubernetes.io/worker=worker
+```
+
+- Pods are assigned worked by master (master schedules tasks and operations)
+
+#### Issues/Errors
+none
+
+### Thursday July 2, 2020
+#### Meetings
+none
+#### Work done
+I worked on uploading the Sage-Chameleon image the I created and uploading it onto Chameleon for others to use. I also worked through the errors that occurred when trying to create and upload the image. I also continued working on creating the K8 cluster on a bare metal instance that will demo the deployment of a Sage-Virtual waggle pod.
+
+
+```
+create a container on cluster -> microk8s kubectl run sage --image=Chameleon-Sage-Image-Builder/tripleo-image-elements:v1
+```
+#### Issues/Errors
+none
+
+### Monday July 6, 2020
+#### Meetings/Out of work
+- 10am - 11:15am -> Weekly Cohort and Cluster meeting
+- 11:15am - 1pm -> Scrum meeting and Backlog refinement
+
+#### Work done/Things learned
+I am building a Chameleon bare-metal instance with the Chameleon-Sage image with the additions that I made to it. From there, I will make it into a Kubernetes node to be assigned to another bare-metal instance (which will be master). I also started working on my presentation for tripod presentation on Friday and a presentation for the Demo on Friday. 
+
+#### Errors/Problems

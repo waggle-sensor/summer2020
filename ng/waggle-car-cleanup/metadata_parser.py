@@ -164,16 +164,29 @@ def draw_bounding_box(md_file):
 
     img = cv2.imread(path)
     for obj in root.findall(".//object"):
-        bot_left, top_right = get_rect_bounds(obj)
+        (x0, y0), top_right = get_rect_bounds(obj)
+        attr_dict = get_attr_dict(obj, ["make", "model", "model_conf"])
 
-        if bot_left is None:
+        if x0 is None:
             continue
+        if "model_conf" not in attr_dict.keys():
+            continue
+        name = (
+            attr_dict["make"]
+            + " "
+            + attr_dict["model"]
+            + " "
+            + str(attr_dict["model_conf"])
+        )
+        cv2.putText(
+            img, name, (x0, y0 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 10, 0), 4
+        )
+        cv2.rectangle(img, (x0, y0), top_right, (0, 255, 0), 5)
 
-        cv2.rectangle(img, bot_left, top_right, (0, 255, 0), 5)
-
-    disp_img = imutils.resize(img, width=1024)
+    disp_img = imutils.resize(img, width=1500)
     cv2.imshow("Bounding box", disp_img)
     cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 
 def read_file_as_list(filename):
@@ -201,7 +214,7 @@ def generate_txt_labels(vehicle_md, classes):
             class_name = f"{attr['make']} {attr['model']}"
             if class_name not in classes:
                 continue
-            
+
             (x0, y0), (x1, y1) = get_rect_bounds(obj)
             rect_h = y1 - y0
             rect_w = x1 - x0
@@ -224,6 +237,7 @@ def generate_txt_labels(vehicle_md, classes):
     with open(OUTPUT + "cars.data", "a+") as out:
         out.write("\n".join(paths))
 
+
 def main():
     md = get_metadata()
 
@@ -234,10 +248,11 @@ def main():
     else:
         vehicle_md = filter_metadata(md, valid_names)
 
-    # draw_bounding_box(vehicle_md[4])
+    for i in range(0, 100):
+        draw_bounding_box(vehicle_md[i])
 
     if not os.path.exists(OUTPUT + "cars.names"):
-       parse_metadata(vehicle_md)
+        parse_metadata(vehicle_md)
 
     classes = read_file_as_list("topclasses.names")
     generate_txt_labels(vehicle_md, classes)
