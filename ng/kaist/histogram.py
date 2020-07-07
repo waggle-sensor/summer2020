@@ -4,12 +4,14 @@ import csv
 import pandas as pd
 import benchmark
 
+OUTPUT = "output/"
+
 
 def get_conf_data(result_list):
     return [float(row["conf"]) for row in result_list]
 
 
-def generate_graphs(results):
+def generate_graphs(results, filename="hist.pdf"):
     num_rows = len(results)
     fig, axs = plt.subplots(num_rows, 3)
     plt.subplots_adjust(hspace=0.35)
@@ -28,12 +30,12 @@ def generate_graphs(results):
         axs[i][2].hist(hit_miss, bins=10, color=colors, range=(0.8, 1.0), stacked=True)
 
         axs[i][1].set_title(
-            f"Class: {res.name} (acc={round(res.accuracy(), 3)}, pres={round(res.precision(), 3)}, n={res.pop})"
+            f"Class: {res.name} (acc={round(res.accuracy(), 3)}, prec={round(res.precision(), 3)}, n={res.pop})"
         )
 
-    fig.set_figheight(20)
+    fig.set_figheight(2.5 * num_rows)
     fig.set_figwidth(10)
-    fig.savefig("output/hist.pdf", bbox_inches="tight")
+    fig.savefig(OUTPUT + filename, bbox_inches="tight")
 
 
 if __name__ == "__main__":
@@ -41,8 +43,12 @@ if __name__ == "__main__":
 
     Usage: python3 histogram.py output/benchmark.csv
     """
-    results, mat = benchmark.load_data(sys.argv[1])
-    generate_graphs(results)
+    results, mat = benchmark.load_data(sys.argv[1], by_actual=False)
+    generate_graphs(results, filename="hist_by_pred.pdf")
+    results, _ = benchmark.load_data(sys.argv[1], by_actual=True)
+    generate_graphs(results, filename="hist_by_actual.pdf")
+
     names = [res.name for res in results if res.name != "All"] + [""]
     df = pd.DataFrame(mat, index=names, columns=names)
+    df.to_csv("output/confusion.csv")
     print(df)

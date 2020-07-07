@@ -33,6 +33,8 @@ def generate_all_classes():
 # Implementation of iterative stratification
 # Based on https://link.springer.com/content/pdf/10.1007%2F978-3-642-23808-6_10.pdf
 def split_test_train(annots, classes, prop_train, output):
+    random.seed("sage")
+
     train = open(output + "train.txt", "w+")
     test = open(output + "test.txt", "w+")
 
@@ -216,9 +218,6 @@ def clean(
     img_paths = [img for img in get_img_paths(data, img_exts) if "_" not in img]
 
     annots = parse_annots(img_paths, annot_ext, annot_parser)
-
-    for i in range(1, 100):
-        annots[i].draw_bounding_boxes()
 
     freq = sort_freq_dict(get_freq(annots))
     with open(output + "freq.txt", "w+") as out:

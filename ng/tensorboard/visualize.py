@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 import math
-from tensorboard.backend.event_processing import event_accumulator
 from scipy.interpolate import make_interp_spline, BSpline, interp1d
 
 """
@@ -11,25 +10,8 @@ This script was primarily written to convert Tensorboard log data from the YOLOv
 scripts to a parsable format, but it can be adapted to other purposes
 """
 
-X_SCALE = 1 / 19137
-
-
-def tensorboard_to_csv(out_dir):
-    event_acc = event_accumulator.EventAccumulator(out_dir)
-    event_acc.Reload()
-
-    metrics = event_acc.Tags()["scalars"]
-
-    for m in metrics:
-        dicts = list()
-        for s in event_acc.Scalars(m):
-            dicts.append({"step": s.step, "value": s.value})
-
-        output = open(f"{out_dir}/{m}.csv", "a+")
-        writer = csv.DictWriter(output, fieldnames=list(dicts[0].keys()))
-        writer.writeheader()
-        for r in dicts:
-            writer.writerow(r)
+BATCHES_PER_EPOCH = 6458
+X_SCALE = 1 / BATCHES_PER_EPOCH
 
 
 def add_plot(data, title, color="b", label="", header=None, spline=None):
@@ -85,5 +67,4 @@ def plot(data, title, spline=None):
 
 
 if __name__ == "__main__":
-    # tensorboard_to_csv(".")
     plot(sys.argv[1], sys.argv[2], 1000)

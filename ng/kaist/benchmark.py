@@ -1,5 +1,5 @@
 import yolov3
-import yolov3.detect as detect
+import yolov3.evaluate as evaluate
 import yolov3.models as models
 import yolov3.utils.datasets as datasets
 import yolov3.utils.utils as utils
@@ -11,6 +11,7 @@ from sklearn.metrics import confusion_matrix
 import pandas as pd
 import csv
 import itertools
+import sys
 
 """
 Runs initial test of object detection models on
@@ -20,7 +21,7 @@ Contains helper methods to parse generated output data.
 """
 
 
-def load_data(output):
+def load_data(output, by_actual=True):
     samples = dict()
     all_data = list()
 
@@ -31,14 +32,17 @@ def load_data(output):
         reader = csv.DictReader(csvfile)
 
         for row in reader:
-            actual_class = row["actual"]
-            if actual_class not in samples.keys():
-                samples[actual_class] = [row]
-            else:
-                samples[actual_class].append(row)
-            all_data.append(row)
-            actual.append(actual_class)
+            actual.append(row["actual"])
             pred.append(row["detected"])
+
+            key_val = row["actual"] if by_actual else row["detected"]
+            if key_val == str():
+                continue
+            if key_val not in samples.keys():
+                samples[key_val] = [row]
+            else:
+                samples[key_val].append(row)
+            all_data.append(row)
     results = [ClassResults(k, v) for k, v in samples.items()]
     mat = confusion_matrix(actual, pred, labels=list(samples.keys()) + [""])
 
@@ -95,14 +99,15 @@ class ClassResults:
 
 
 if __name__ == "__main__":
+    check_num = int(sys.argv[1])
     model = models.get_eval_model(
-        "yolov3/config/yolov3.cfg", 416, "checkpoints/yolov3_ckpt_14.pth"
+        "config/yolov3.cfg", 256, f"checkpoints/yolov3_ckpt_{check_num}.pth"
     )
 
-    classes = utils.load_classes("yolov3/config/chars.names")
+    classes = utils.load_classes("config/chars.names")
 
     loader = DataLoader(
-        datasets.ImageFolder("data/objs/", img_size=416),
+        datasets.ImageFolder("data/objs/", img_size=256),
         batch_size=1,
         shuffle=False,
         num_workers=8,
@@ -120,11 +125,11 @@ if __name__ == "__main__":
         props["file"] = img_paths[0]
         props["actual"] = img_paths[0].split("-")[1][:1]
 
-        detections = detect.detect(input_imgs, 0.5, model)
+        detections = evaluate.detect(input_imgs, 0.5, model)
 
         # conf is the confident that it's an object
         # cls_conf is the confidence of the classification
-        most_conf = detect.get_most_conf(detections)
+        most_conf = evaluate.get_most_conf(detections)
 
         if most_conf is not None:
             (_, _, _, _, conf, cls_conf, cls_pred) = most_conf.numpy()[0]

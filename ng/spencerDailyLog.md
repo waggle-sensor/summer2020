@@ -166,3 +166,16 @@
   * New parameters: 256x256 image, batch size of 16
   * Preventing class imbalance by undersampling based on the class with the fewest number of images
 * Beginning to work on sampling and retraining pipeline
+
+**Tuesday, July 7**
+
+* Attended scrum meeting
+* After training 30-class model overnight for 40 epochs, analyzed [results](https://drive.google.com/drive/u/1/folders/18W9wIzQ5cVryueoFM2kgPzl26BI9hFnK)
+  * Accuracy remains low: 0.541 on all data, 0.386 when accounting for complete misses
+  * Many complete misses compared to 8 class model
+    * Could be due to needing more training time
+    * Fewer complete misses as time went on
+  * Loss curves show large decreases early on
+  * mAP is less than 0.10 throughout, possibly due to many bounding boxes being generated
+* Next steps: retrain basline model with commonly-confused classes?
+* Continued streamlining tools for retraining and sampling, for more general use cases
