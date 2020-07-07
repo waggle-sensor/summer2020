@@ -3,12 +3,10 @@ from __future__ import division, absolute_import
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.autograd import Variable
 import numpy as np
 
-import yolov3
 from yolov3.utils.parse_config import *
-from yolov3.utils.utils import build_targets, to_cpu, non_max_suppression
+from yolov3.utils.utils import build_targets, to_cpu
 
 
 def create_modules(module_defs):
@@ -382,7 +380,7 @@ class Darknet(nn.Module):
         self.header_info.tofile(fp)
 
         # Iterate through layers
-        for i, (module_def, module) in enumerate(
+        for _, (module_def, module) in enumerate(
             zip(self.module_defs[:cutoff], self.module_list[:cutoff])
         ):
             if module_def["type"] == "convolutional":
