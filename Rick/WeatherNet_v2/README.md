@@ -76,3 +76,8 @@ Run Scale_Train_Test.ipynb to create two .csv files: train_weather.csv and test_
 
 
 <br>
+
+## 5. Create img seq .npy files by running make_npy_samples.ipynb
+In make_npy_samples.ipynb, select the length of the images sequences. Like the LSTM experiment that used four samples to form an hour long sequence, four ordered photos were used to make a sample. The script creates a dir called npy_dataset and make three dirs inside called top, bottom, and flir. The program places the npy sequence samples in the respective folder based on what type on the type of image.
+
+<br>
