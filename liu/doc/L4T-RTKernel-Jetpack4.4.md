@@ -15,22 +15,22 @@ Clone the jetson-agx-build repo into it.
 ```
 git clone https://github.com/jtagxhub/jetpack-agx-build.git build
 ```
-Add Xavier-4.4 into config:
+Add Xavier-4.4-DP into config:
 ```
 cd config
 vim Xavier-4.4
 ```
 ```
-# JetPack 4.4
+# JetPack 4.4-DP
 
 source $CONFIG_DIR/common/TX2_Xavier-4.4
 
 # OUT
 OUT_ROOT=$TOP/Xavier
 ```
-Under common folder, add TX2_Xavier-4.4, which is for the builng of L4T supporting jetPack 4.4:
+Under common folder, add TX2_Xavier-4.4-DP, which is for the builng of L4T supporting jetPack 4.4-DP:
 ```
-# JetPack 4.4
+# JetPack 4.4-DP
 
 ## Download Links
 KERNEL_TOOLCHAIN_LINK=https://developer.nvidia.com/embedded/dlc/l4t-gcc-7-3-1-toolchain-64-bit
