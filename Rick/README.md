@@ -7,11 +7,12 @@
 4.  [Done] Document new lstm experiment 
 5.  [Done] Update paper
 6.  [Done] Make image sequence .npy files for ConvLSTM
-7.  [ ] Build new dataloader that takes images and weather data
-8.  [ ] Test ConvLSTM on sequences
-9.  [ ] Update github/paper 
-10. [ ] Test ConvLSTM with weather data
-11. [ ] Update github/paper
+7.  [Done] Build new dataloader that takes images and weather data
+8.  [ ] Build .py scripts to rebuild dataset on server
+9.  [ ] Test ConvLSTM on sequences
+10. [ ] Update github/paper 
+11. [ ] Test ConvLSTM with weather data
+12. [ ] Update github/paper
 
 <br>
 
