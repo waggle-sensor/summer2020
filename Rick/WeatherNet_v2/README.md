@@ -81,3 +81,17 @@ Run Scale_Train_Test.ipynb to create two .csv files: train_weather.csv and test_
 In make_npy_samples.ipynb, select the length of the images sequences. Like the LSTM experiment that used four samples to form an hour long sequence, four ordered photos were used to make a sample. The script creates a dir called npy_dataset and make three dirs inside called top, bottom, and flir. The program places the npy sequence samples in the respective folder based on what type on the type of image.
 
 <br>
+
+## 6. Create scaled input and label dataframes for npy dataset for 15, 30, 45, 60, 75, and 90 min weather data.
+This script will scale the data based on training size (training data goes up to the date, 2020_05_24_04_30). This is done by running make_weather_data_npy.ipynb.
+
+<br> 
+
+## 7. ImgSeqGen.ipynb
+This notebook holds and demos the generator class that will be used my the model. It takes in data from a labels csv, a weather csv, and the three cameras and outputs shaped batches for the model.
+
+<br>
+
+
+
+
