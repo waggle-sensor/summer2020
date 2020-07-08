@@ -87,5 +87,11 @@ This script will scale the data based on training size (training data goes up to
 
 <br> 
 
+## 7. ImgSeqGen.ipynb
+This notebook holds and demos the generator class that will be used my the model. It takes in data from a labels csv, a weather csv, and the three cameras and outputs shaped batches for the model.
+
+<br>
+
+
 
 
