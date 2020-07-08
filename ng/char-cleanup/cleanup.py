@@ -6,7 +6,12 @@ import random
 
 DATA = "./data/"
 OUTPUT = "./output/"
-NUM_CLASSES = 30
+NUM_CLASSES = 12
+FILTER = ["B", "E", "F", "P", "e", "D", "L", "I", "t", "K", "S", "O"]
+
+
+def get_class_list(characters):
+    return sorted([c for c in characters if c in FILTER][:NUM_CLASSES])
 
 
 def generate_all_classes():
@@ -100,9 +105,7 @@ def main():
         for k, v in sorted_freq.items():
             out.write(f"{k}: {v}\n")
 
-    classes = [c for c in list(sorted_freq.keys()) if c not in "1234567890"][
-        :NUM_CLASSES
-    ]
+    classes = get_class_list(list(sorted_freq.keys()))
 
     with open(OUTPUT + "chars.names", "w+") as out:
         out.write("\n".join(classes) + "\n")

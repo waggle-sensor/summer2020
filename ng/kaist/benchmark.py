@@ -43,6 +43,7 @@ def load_data(output, by_actual=True):
             else:
                 samples[key_val].append(row)
             all_data.append(row)
+    samples = {k: samples[k] for k in sorted(samples)}
     results = [ClassResults(k, v) for k, v in samples.items()]
     mat = confusion_matrix(actual, pred, labels=list(samples.keys()) + [""])
 

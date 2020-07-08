@@ -179,3 +179,34 @@
   * mAP is less than 0.10 throughout, possibly due to many bounding boxes being generated
 * Next steps: retrain basline model with commonly-confused classes?
 * Continued streamlining tools for retraining and sampling, for more general use cases
+
+**Wednesday, July 8**
+
+* Attended student seminars for scientific presentations
+* Met with Nicola to discuss how to move forward with creating a better baseline
+* Examined confusion matrix of characters for poor fits
+* Criteria for poor fit: 10% or more of an actual class were predicted to be an alternative class
+  * Normalized ratio, ignoring any images with no object detection
+* Poor fits:
+  * B: E, e
+  * D: P, e
+  * E: F
+  * I: L, l, t
+  * L: l
+  * M: K, V
+  * N: K
+  * O: e, o
+  * P: t
+  * R: H
+  * S: e, s
+  * T: t
+  * U: P
+  * a: e
+  * i: L, l, t
+  * l: L, r
+  * o: e, t
+  * r: l, t
+  * s: S, e
+  * t: L
+* Best fits (30%+ predicted to be actual class): A, I, K, P, R, V, W, e, t
+* Final list of 12 classes: B, E, F, P, e, D, L, I, t, K, S, O
