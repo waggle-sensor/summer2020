@@ -1,4 +1,4 @@
-presentationpresentation# Daily Notes - Akhil Kodumuri
+Sage-Chameleonpresentationpresentation# Daily Notes - Akhil Kodumuri
 
 ## Week 1
 
@@ -216,6 +216,27 @@ none
 - 11:15am - 1pm -> Scrum meeting and Backlog refinement
 
 #### Work done/Things learned
-I am building a Chameleon bare-metal instance with the Chameleon-Sage image with the additions that I made to it. From there, I will make it into a Kubernetes node to be assigned to another bare-metal instance (which will be master). I also started working on my presentation for tripod presentation on Friday and a presentation for the Demo on Friday. 
+I am building a Chameleon bare-metal instance with the Chameleon-Sage image with the additions that I made to it. From there, I will make it into a Kubernetes node to be assigned to another bare-metal instance (which will be master). I also started working on my presentation for tripod presentation on Friday and a presentation for the Demo on Friday.
+
+#### Errors/Problems
+
+### Tuesday July 7, 2020
+#### Meetings/Out of work
+11am - 11:30am -> Daily scrum meeting
+1pm - 2:30pm -> Meeting with Jake
+#### Work done/Things learned
+I worked on fixing the error reguarding the Sage-Chameleon image. Jake and I talked on call and fixed the some more errors, and we are now able to create a virtual waggle session.
+
+
+#### Errors/Problems
+- deploying beehive
+
+### Wednesday July 8, 2020
+#### Meetings/Out of work
+10:30am - 11am -> Daily Scrm meeting
+11am - 12pm -> Weekly speaker series
+
+#### Work done/Things learned
+Jake and I ironed out the final error regarding the Sage-Chameleon image. The image can now have a user cc run docker commands without sudo, deploy beehive, and create a virtual waggle instance. This image will be used within a pod in the kubernetes cluster I will create. I also got approved to merge my branch to the master branch of Chameleon-Sage-Image-Builder. Sage users now have detailed steps on creating their own Chameleon-Sage image.
 
 #### Errors/Problems
