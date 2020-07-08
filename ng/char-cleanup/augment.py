@@ -11,6 +11,7 @@ from shutil import copyfile
 AUGS_PER_TRANSFORM = 120
 COMPOSE = True
 
+
 def get_augmentations():
     return {
         "blur": trans.GaussianBlur(7, always_apply=True),
@@ -23,7 +24,9 @@ def get_augmentations():
         "hsv": trans.HueSaturationValue(30, 40, 50, always_apply=True),
         "rgb": trans.RGBShift(30, 30, 30, always_apply=True),
         "distort": trans.OpticalDistortion(0.2, always_apply=True),
-        "elastic": trans.ElasticTransform(alpha=0.6, border_mode=cv2.BORDER_WRAP, always_apply=True),
+        "elastic": trans.ElasticTransform(
+            alpha=0.6, border_mode=cv2.BORDER_WRAP, always_apply=True
+        ),
     }
 
 
@@ -47,7 +50,7 @@ def multi_aug(augs):
                     augs["hsv"],
                     augs["rgb"],
                 ],
-                p=1.0
+                p=1.0,
             ),
             alb.OneOf(
                 [
@@ -72,9 +75,9 @@ def augment(train_list):
     orig_imgs = imgs.copy()
 
     if COMPOSE:
-            compose_aug = multi_aug(augs)
-            augs = {"comp": compose_aug}
-    
+        compose_aug = multi_aug(augs)
+        augs = {"comp": compose_aug}
+
     for k, img_path in enumerate(orig_imgs):
         if (k + 1) % 10 == 0:
             print(f"{k+1}/{len(orig_imgs)}")

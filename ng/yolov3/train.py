@@ -6,14 +6,15 @@ import datetime
 import argparse
 
 import torch
+from torch.autograd import Variable
 
 from terminaltables import AsciiTable
 
-from yolov3.models import Darknet, Variable
-from yolov3.utils.logger import Logger
 import yolov3.utils.utils as utils
-from yolov3.utils.datasets import ListDataset
 import yolov3.utils.parse_config as parse
+from yolov3.models import Darknet
+from yolov3.utils.logger import Logger
+from yolov3.utils.datasets import ListDataset
 from yolov3.evaluate import evaluate
 
 

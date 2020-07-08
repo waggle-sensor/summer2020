@@ -54,7 +54,7 @@ def main():
     img_paths = cleanup.get_img_paths(DATA, exts)
     annots = cleanup.parse_annots(img_paths, ".xml", annot_parser)
 
-    classes = open("yolov3/config/chars.names", "r").read().split("\n")[:-1]
+    classes = open("config/chars.names", "r").read().split("\n")[:-1]
     for a in annots:
         a.crop_labels(classes, DATA + "objs/")
 

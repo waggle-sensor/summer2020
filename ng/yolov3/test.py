@@ -3,10 +3,10 @@ from __future__ import division
 import argparse
 import torch
 
-from yolov3.utils.logger import Logger
 import yolov3.utils.utils as utils
 import yolov3.utils.parse_config as parse
 import yolov3.evaluate as evaluate
+from yolov3.utils.logger import Logger
 
 
 if __name__ == "__main__":

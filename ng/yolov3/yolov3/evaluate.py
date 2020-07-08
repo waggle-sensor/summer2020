@@ -13,7 +13,6 @@ from matplotlib.ticker import NullLocator
 
 from terminaltables import AsciiTable
 
-# from yolov3.models import *
 import yolov3.utils.utils as utils
 from yolov3.utils.datasets import ListDataset
 
@@ -25,7 +24,7 @@ def detect(input_imgs, conf_thres, model, nms_thres=0.4):
 
     with torch.no_grad():
         detections = model(input_imgs)
-        detections = non_max_suppression(detections, conf_thres, nms_thres)
+        detections = utils.non_max_suppression(detections, conf_thres, nms_thres)
 
     return detections
 

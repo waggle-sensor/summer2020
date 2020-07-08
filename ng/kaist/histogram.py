@@ -25,9 +25,9 @@ def generate_graphs(results, filename="hist.pdf"):
     for i, res in enumerate(results):
         hit_miss = [get_conf_data(data) for data in res.hits_misses()]
 
-        axs[i][0].hist(hit_miss[0], bins=10, color=colors[0], range=(0.9, 1.0))
+        axs[i][0].hist(hit_miss[0], bins=10, color=colors[0], range=(0.5, 1.0))
         axs[i][1].hist(hit_miss[1], bins=20, color=colors[1], range=(0.0, 1.0))
-        axs[i][2].hist(hit_miss, bins=10, color=colors, range=(0.8, 1.0), stacked=True)
+        axs[i][2].hist(hit_miss, bins=10, color=colors, range=(0.5, 1.0), stacked=True)
 
         axs[i][1].set_title(
             f"Class: {res.name} (acc={round(res.accuracy(), 3)}, prec={round(res.precision(), 3)}, n={res.pop})"

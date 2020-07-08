@@ -210,3 +210,13 @@
   * t: L
 * Best fits (30%+ predicted to be actual class): A, I, K, P, R, V, W, e, t
 * Final list of 12 classes: B, E, F, P, e, D, L, I, t, K, S, O
+* Began training new model
+  * Batch size: 32
+  * Image size: 256x256
+  * Still using undersampling, this time using 100/34 train/test split
+* Tested new model and analyzed results
+  * Higher accuracy/precision as training went on
+  * New issue: not detecting any objects, leading to low mAP
+* Trying to retrain with the same classes/splits, using new image augmenting method to see if results improve
+  * Using one "major" transformation (shift, distort, crop, etc.) combined with 1-2 "minor" transformations (RGB shift, noise, blur, etc.)
+* Wrote some documentation on using the KAIST scripts

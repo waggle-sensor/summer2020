@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import csv
+import sys
 from tensorboard.backend.event_processing import event_accumulator
 
 
@@ -22,4 +23,5 @@ def tensorboard_to_csv(out_dir):
 
 
 if __name__ == "__main__":
-    tensorboard_to_csv(".")
+    path = sys.argv[1] if len(sys.argv) > 1 else "."
+    tensorboard_to_csv(path)

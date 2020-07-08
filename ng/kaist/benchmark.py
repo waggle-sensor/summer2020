@@ -79,8 +79,13 @@ class ClassResults:
             self.pop += 1
 
     def precision(self):
-        predicted_cond_pos = len(self.data["true_pos"]) + len(self.data["false_pos"])
-        return len(self.data["true_pos"]) / predicted_cond_pos
+        try:
+            predicted_cond_pos = len(self.data["true_pos"]) + len(
+                self.data["false_pos"]
+            )
+            return len(self.data["true_pos"]) / predicted_cond_pos
+        except ZeroDivisionError:
+            return 0.0
 
     def accuracy(self):
         return (len(self.data["true_pos"]) + len(self.data["true_neg"])) / self.pop
@@ -118,7 +123,7 @@ if __name__ == "__main__":
     confusion_mat = dict()
 
     header = "file,actual,detected,conf,hit".split(",")
-    output = open("output/benchmark.csv", "w+")
+    output = open(f"output/benchmark_{check_num}.csv", "w+")
     writer = csv.DictWriter(output, fieldnames=header)
     writer.writeheader()
     for (img_paths, input_imgs) in loader:

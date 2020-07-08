@@ -7,6 +7,15 @@ OUTPUT = "./output/"
 
 
 def sample(result, desired, prob_func):
+    """Generate a list of files for sampling.
+    result:     a ClassResult holding a list of images
+    desired:    number of samples to extract per class
+    prob_func:  a function that takes a confidence score as an input and
+                outputs the probability of sampling the image with that confidence
+
+    The function continues sampling until the desired number of samples is hit.
+    Consequently, the probability function should be well-chosen to prevent long runtimes.
+    """
     pool = result.get_all()
     random.shuffle(pool)
     chosen = list()
@@ -32,10 +41,8 @@ def const(conf):
 
 
 if __name__ == "__main__":
-    # NOTE: Load data currently loads data by *actual* class,
-    # not *predicted* class. This should be changed.
     random.seed("sage")
-    results, _ = benchmark.load_data(sys.argv[1])
+    results, _ = benchmark.load_data(sys.argv[1], by_actual=False)
     retrain = list()
 
     for result in results:
