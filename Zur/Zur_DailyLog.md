@@ -74,3 +74,17 @@ Thursday 7/2
 6. PyImageSearch tutorial: Contour Center Finder (https://www.pyimagesearch.com/2016/02/01/opencv-center-of-contour/)
 7. PyImageSearch tutorial: Object Color Detection (https://www.pyimagesearch.com/2016/02/15/determining-object-color-with-opencv/)
 8. Continued research on crowd analysis using computer vision and bird's eye view image transformation techniques
+
+Week 4 (7/6 - 7/10)
+Monday 7/6: OUT OF TOWN, hours to be made up throughout the week
+
+Tuesday 7/7
+1. AI/ML Scrum
+2. NAISE Check In
+3. YouTube OpenCV Tutorial part 35 - 38
+4. PyImageSearch tutorial: Ordering Object Coordinates (https://www.pyimagesearch.com/2016/03/21/ordering-coordinates-clockwise-with-python-and-opencv/)
+5. PyImageSearch tutorial: Size of Objects (https://www.pyimagesearch.com/2016/03/28/measuring-size-of-objects-in-an-image-with-opencv/)
+6. PyImageSearch Course day 6 (https://www.pyimagesearch.com/2016/04/04/measuring-distance-between-objects-in-an-image-with-opencv/)
+7. Looked for examples of already completed social distancing detectors to use as templates
+8. Install tensorflow and keras for deep learning tutorials
+9. Keras Introduction Tutorial (https://www.pyimagesearch.com/2018/09/10/keras-tutorial-how-to-get-started-with-keras-deep-learning-and-python/)

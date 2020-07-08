@@ -1,27 +1,20 @@
 from __future__ import division
 
-from models import *
-from utils.logger import *
-from utils.utils import *
-from utils.datasets import *
-from utils.parse_config import *
-from test import evaluate
-
-from terminaltables import AsciiTable
-
 import os
-import sys
 import time
 import datetime
 import argparse
 
-
 import torch
-from torch.utils.data import DataLoader
-from torchvision import datasets
-from torchvision import transforms
-from torch.autograd import Variable
-import torch.optim as optim
+
+from terminaltables import AsciiTable
+
+from yolov3.models import Darknet, Variable
+from yolov3.utils.logger import Logger
+import yolov3.utils.utils as utils
+from yolov3.utils.datasets import ListDataset
+import yolov3.utils.parse_config as parse
+from yolov3.evaluate import evaluate
 
 
 if __name__ == "__main__":
@@ -88,22 +81,22 @@ if __name__ == "__main__":
 
     logger = Logger("logs")
 
-    device_str = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"Using {device_str} for training")
-    device = torch.device(device_str)
+    DEVICE_STR = "cuda" if torch.cuda.is_available() else "cpu"
+    print(f"Using {DEVICE_STR} for training")
+    device = torch.device(DEVICE_STR)
 
     os.makedirs("output", exist_ok=True)
     os.makedirs("checkpoints", exist_ok=True)
 
     # Get data configuration
-    data_config = parse_data_config(opt.data_config)
+    data_config = parse.parse_data_config(opt.data_config)
     train_path = data_config["train"]
     valid_path = data_config["valid"]
-    class_names = load_classes(data_config["names"])
+    class_names = utils.load_classes(data_config["names"])
 
     # Initiate model
     model = Darknet(opt.model_def).to(device)
-    model.apply(weights_init_normal)
+    model.apply(utils.weights_init_normal)
 
     if opt.resume != -1:
         opt.pretrained_weights = f"checkpoints/yolov3_ckpt_{int(opt.resume)}.pth"
@@ -239,4 +232,4 @@ if __name__ == "__main__":
             print(f"---- mAP {AP.mean()}")
 
         if epoch % opt.checkpoint_interval == 0:
-            torch.save(model.state_dict(), f"checkpoints/yolov3_ckpt_%d.pth" % epoch)
+            torch.save(model.state_dict(), f"checkpoints/yolov3_ckpt_{epoch}.pth")

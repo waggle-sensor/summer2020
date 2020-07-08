@@ -1,18 +1,17 @@
 # Rick's Repo Home Page
 
 ## To do list :)
-1. [Done] Make update slides for ML Demo for Thursday (July 2, 2020).
-2. [Done] Update data split script for weather data work on 15min.
-3. [Done] Re-run lstm experiment using 15min data.
-4. [Done] Document new lstm experiment 
-5. [ ] Update paper
-6. [ ] Build new dataloader for images
-7. [ ] Run experiment with only images
-8. [ ] Document and update paper
-9. [ ] Build data loader for tower data and images
-10. [ ] Run experiment using images and tower data.
-11. [ ] Document experiment
-12. [ ] Work on paper
+1.  [Done] Make update slides for ML Demo for Thursday (July 2, 2020).
+2.  [Done] Update data split script for weather data work on 15min.
+3.  [Done] Re-run lstm experiment using 15min data.
+4.  [Done] Document new lstm experiment 
+5.  [Done] Update paper
+6.  [Done] Make image sequence .npy files for ConvLSTM
+7.  [ ] Build new dataloader that takes images and weather data
+8.  [ ] Test ConvLSTM on sequences
+9.  [ ] Update github/paper 
+10. [ ] Test ConvLSTM with weather data
+11. [ ] Update github/paper
 
 <br>
 

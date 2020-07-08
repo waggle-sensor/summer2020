@@ -149,3 +149,64 @@
 * Presented on my work so far and listened to other presentations
 * Attended peer cohort session
 * Beginning to create tools to benchmark model performance against KAIST dataset
+
+## Week 4
+
+**Monday, July 6**
+
+* Created script to view benchmark results
+  * Histograms for hits, misses, and a combinations
+  * On a class-by-class basis or aggregate results
+  * Also computes precision/accuracy values and confusion matrix
+* Plots are *very* left-skewed for the character model with the 8 most frequent characters
+  * High confidence and overall high accuracy -> not much room for improvement
+  * See results at [this link](https://drive.google.com/file/d/1Yykr0N00bwvucnBode34G4PR7dPdC4Wj/view?usp=sharing)
+* Will retrain on 30-class model, using 84 images per class for training, to determine if it leads to a good benchmark
+  * May need to adjust number of classes and samples
+  * New parameters: 256x256 image, batch size of 16
+  * Preventing class imbalance by undersampling based on the class with the fewest number of images
+* Beginning to work on sampling and retraining pipeline
+
+**Tuesday, July 7**
+
+* Attended scrum meeting
+* After training 30-class model overnight for 40 epochs, analyzed [results](https://drive.google.com/drive/u/1/folders/18W9wIzQ5cVryueoFM2kgPzl26BI9hFnK)
+  * Accuracy remains low: 0.541 on all data, 0.386 when accounting for complete misses
+  * Many complete misses compared to 8 class model
+    * Could be due to needing more training time
+    * Fewer complete misses as time went on
+  * Loss curves show large decreases early on
+  * mAP is less than 0.10 throughout, possibly due to many bounding boxes being generated
+* Next steps: retrain basline model with commonly-confused classes?
+* Continued streamlining tools for retraining and sampling, for more general use cases
+
+**Wednesday, July 8**
+
+* Attended student seminars for scientific presentations
+* Met with Nicola to discuss how to move forward with creating a better baseline
+* Examined confusion matrix of characters for poor fits
+* Criteria for poor fit: 10% or more of an actual class were predicted to be an alternative class
+  * Normalized ratio, ignoring any images with no object detection
+* Poor fits:
+  * B: E, e
+  * D: P, e
+  * E: F
+  * I: L, l, t
+  * L: l
+  * M: K, V
+  * N: K
+  * O: e, o
+  * P: t
+  * R: H
+  * S: e, s
+  * T: t
+  * U: P
+  * a: e
+  * i: L, l, t
+  * l: L, r
+  * o: e, t
+  * r: l, t
+  * s: S, e
+  * t: L
+* Best fits (30%+ predicted to be actual class): A, I, K, P, R, V, W, e, t
+* Final list of 12 classes: B, E, F, P, e, D, L, I, t, K, S, O

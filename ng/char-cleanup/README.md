@@ -38,5 +38,5 @@ Navigate to the `yolov3` folder. You'll then need to create your own `chars.data
 
 ```
 pip3 install -r requirements.txt
-python3 train.py --data_config config/chars.data
+python3 train.py --data_config config/chars.data --epochs 20 --model_def config/yolov3.cfg --data_config config/chars.data
 ```

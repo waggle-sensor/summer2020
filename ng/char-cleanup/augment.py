@@ -4,6 +4,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
+import random
 from shutil import copyfile
 
 
@@ -23,11 +24,15 @@ def get_augmentations():
 
 
 def augment(train_list):
+    random.seed("sage")
+
     augs = get_augmentations()
     imgs = open(train_list, "r").read().split("\n")[:-1]
     orig_imgs = imgs.copy()
 
-    for img_path in orig_imgs:
+    for k, img_path in enumerate(orig_imgs):
+        if k % 10 == 0:
+            print(f"{k+1}/{len(orig_imgs)}")
         img = cv2.imread(img_path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
