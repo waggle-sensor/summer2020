@@ -25,9 +25,9 @@ def generate_graphs(results, filename="hist.pdf"):
     for i, res in enumerate(results):
         hit_miss = [get_conf_data(data) for data in res.hits_misses()]
 
-        axs[i][0].hist(hit_miss[0], bins=10, color=colors[0], range=(0.5, 1.0))
+        axs[i][0].hist(hit_miss[0], bins=10, color=colors[0], range=(0.6, 1.0))
         axs[i][1].hist(hit_miss[1], bins=20, color=colors[1], range=(0.0, 1.0))
-        axs[i][2].hist(hit_miss, bins=10, color=colors, range=(0.5, 1.0), stacked=True)
+        axs[i][2].hist(hit_miss, bins=10, color=colors, range=(0.8, 1.0), stacked=True)
 
         axs[i][1].set_title(
             f"Class: {res.name} (acc={round(res.accuracy(), 3)}, prec={round(res.precision(), 3)}, n={res.pop})"
@@ -44,11 +44,17 @@ if __name__ == "__main__":
     Usage: python3 histogram.py output/benchmark.csv
     """
     results, mat = benchmark.load_data(sys.argv[1], by_actual=False)
-    generate_graphs(results, filename="hist_by_pred.pdf")
+    
+    if "benchmark_" in sys.argv[1]:
+        suffix = f"_{sys.argv[1].split('benchmark_')[1].split('.csv')[0]}.pdf"
+    else:
+        suffix = ".pdf"
+
+    generate_graphs(results, filename="hist_by_pred" + suffix)
     results, _ = benchmark.load_data(sys.argv[1], by_actual=True)
-    generate_graphs(results, filename="hist_by_actual.pdf")
+    generate_graphs(results, filename="hist_by_actual" + suffix)
 
     names = [res.name for res in results if res.name != "All"] + [""]
     df = pd.DataFrame(mat, index=names, columns=names)
-    df.to_csv("output/confusion.csv")
+    df.to_csv("output/confusion" + suffix[:-4] + ".csv")
     print(df)
