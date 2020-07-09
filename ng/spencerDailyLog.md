@@ -219,4 +219,29 @@
   * New issue: not detecting any objects, leading to low mAP
 * Trying to retrain with the same classes/splits, using new image augmenting method to see if results improve
   * Using one "major" transformation (shift, distort, crop, etc.) combined with 1-2 "minor" transformations (RGB shift, noise, blur, etc.)
+  * Batch size modified to 64 for reduced processing time per epoch
+  * Modified image size to 416x416, after reading that YOLO works better on small objects with higher resolutions
 * Wrote some documentation on using the KAIST scripts
+
+
+**Thursday, July 9**
+
+* Attended scrum meeting
+* Benchmark results from augmented 12-class model ran overnight
+  * mAP of 0.75 after 100 epochs
+  * Converged after 50 epochs
+  * Going to use as a baseline
+* Attended seminar on climate change modeling
+* Attended Sage development tutorial
+* Added test set mAP to custom benchmark tool
+* Continued implementing sampling methods, accounting for class imbalance via undersmapling
+* Completed label generation for new training/sampled files
+  * Bit of a hack, as this doesn't create a new `labels` folder
+* To do: develop actual pipeline for sampling
+  * Thinking of executing one command per sampling method (`python3 sample.py <method>`)
+  * Need to rename testing file, accounting for different data paths
+  * Autogenerate data config
+  * Custom naming for checkpoint weights to differentiate
+  * Need to call `augment.py` and a custom version of `train.py`
+    * Modularizing functions there even more might help
+  * Rely on existing files in `config`
