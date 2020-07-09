@@ -1,8 +1,8 @@
-import yolov3
 import yolov3.evaluate as evaluate
 import yolov3.models as models
 import yolov3.utils.datasets as datasets
 import yolov3.utils.utils as utils
+import yolov3.utils.parse_config as parser
 
 import torch
 from torch.utils.data import DataLoader
@@ -106,14 +106,18 @@ class ClassResults:
 
 if __name__ == "__main__":
     check_num = int(sys.argv[1])
+
+    options = parser.parse_model_config("config/yolov3.cfg")[0]
+    img_size = max(int(options["width"]), int(options["height"]))
+
     model = models.get_eval_model(
-        "config/yolov3.cfg", 256, f"checkpoints/yolov3_ckpt_{check_num}.pth"
+        "config/yolov3.cfg", img_size, f"checkpoints/yolov3_ckpt_{check_num}.pth"
     )
 
     classes = utils.load_classes("config/chars.names")
 
     loader = DataLoader(
-        datasets.ImageFolder("data/objs/", img_size=256),
+        datasets.ImageFolder("data/objs/", img_size=img_size),
         batch_size=1,
         shuffle=False,
         num_workers=8,

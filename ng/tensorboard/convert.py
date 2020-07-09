@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import csv
 import sys
+import os
 from tensorboard.backend.event_processing import event_accumulator
 
 
@@ -15,9 +16,17 @@ def tensorboard_to_csv(out_dir):
         for s in event_acc.Scalars(m):
             dicts.append({"step": s.step, "value": s.value})
 
+        # This option is for appending multiple logs without the overhead
+        # of processing the original log(s) again. Note that you'll need
+        # to move the original log to a different directory first due
+        # to Tensorboard's behavior.
+        prev_exist = os.path.exists(f"{out_dir}/{m}.csv")
+
         output = open(f"{out_dir}/{m}.csv", "a+")
         writer = csv.DictWriter(output, fieldnames=list(dicts[0].keys()))
-        writer.writeheader()
+
+        if not prev_exist:
+            writer.writeheader()
         for r in dicts:
             writer.writerow(r)
 
