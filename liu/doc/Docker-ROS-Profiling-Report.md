@@ -205,10 +205,10 @@ Power Analysis             |  CDF with Runtime Scheduling Config
 ## Timeline and breakdown
 
 Single model inference:
-![image](../Perf-Profiling-Docker-ROS_1/timeline_analysis-TF/time_01.png)
+![image](../profile-ROS1/timeline_analysis-TF/time_01.png)
 
 10 model inference:
-![image](../Perf-Profiling-Docker-ROS_1/timeline_analysis-TF/time_10.png)
+![image](../profile-ROS2/timeline_analysis-TF/time_10.png)
 
 yolov3:
 ```
