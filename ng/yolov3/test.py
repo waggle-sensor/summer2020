@@ -45,7 +45,7 @@ if __name__ == "__main__":
         help="iou threshold required to qualify as detected",
     )
     parser.add_argument(
-        "--conf_thres", type=float, default=0.001, help="object confidence threshold"
+        "--conf_thres", type=float, default=0.5, help="object confidence threshold"
     )
     parser.add_argument(
         "--nms_thres",

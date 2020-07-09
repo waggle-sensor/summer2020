@@ -17,7 +17,7 @@ import yolov3.utils.utils as utils
 from yolov3.utils.datasets import ListDataset
 
 
-def detect(input_imgs, conf_thres, model, nms_thres=0.4):
+def detect(input_imgs, conf_thres, model, nms_thres=0.5):
     # Configure input
     Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
     input_imgs = Variable(input_imgs.type(Tensor))

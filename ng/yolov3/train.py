@@ -75,7 +75,7 @@ if __name__ == "__main__":
         "--multiscale_training", default=True, help="allow for multi-scale training"
     )
     parser.add_argument(
-        "--resume", default=-1, help="resume training from a specific epoch"
+        "--resume", default=-1, type=int, help="resume training from a specific epoch"
     )
     opt = parser.parse_args()
     print(opt)
