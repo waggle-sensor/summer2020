@@ -655,3 +655,31 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
 #### To Do List:
  * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
  * Performance profiling of the ROS 2 based image
+
+## Week 10 (June 6 to July 10)
+
+### July 6
+#### Work Done
+ * Config the execution of yolov3 in ROS2 and Docker container collecting logs like latency, system resource, and power
+ * Do experiments to collect logs
+
+#### To Do List:
+ * Get a report about the usage of messaging queueing, ROS1, and ROS2 for the data sharing architecture
+ * Performance profiling of the ROS 2 based image
+  
+### July 7
+#### Work Done
+ * Do experiments to collect logs on generic/RT kernel, with different power modes, and compare it with ROS1
+
+#### To Do List:
+ * Performance profiling of the ROS 2 based image
+
+### July 8
+#### Work Done
+ * Do experiments to collect logs on generic/RT kernel, with different power modes, and compare it with ROS1
+ * Solve the issue brought by the new jetpack 4.4, reflash all the Xavier boards to jetpack 4.4 DP. The issue can be found at: https://forums.developer.nvidia.com/t/jetpack-4-4-l4t-r32-4-3-production-release/140864.
+ * Discuss with Raj about the demos of datashing in ROS1/ROS2
+
+#### To Do List:
+ * Performance profiling of the ROS 2 based image
+ * Set up the demos for data sharing in ROS1 and ROS2
