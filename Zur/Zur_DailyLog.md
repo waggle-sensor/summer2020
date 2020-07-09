@@ -88,3 +88,20 @@ Tuesday 7/7
 7. Looked for examples of already completed social distancing detectors to use as templates
 8. Install tensorflow and keras for deep learning tutorials
 9. Keras Introduction Tutorial (https://www.pyimagesearch.com/2018/09/10/keras-tutorial-how-to-get-started-with-keras-deep-learning-and-python/)
+
+Wednesday 7/8
+1. Student Seminar (Virtual Presentation Prep)
+2. NAISE SciComm Training
+3. CELS Student Hang
+4. Finished Youtube OpenCV Tutorial (part 39 - 41)
+5. PyImageSearch Course day 7 & 8 (https://www.pyimagesearch.com/2017/04/03/facial-landmarks-dlib-opencv-python/)
+6. PyImageSearch Tutorial: Simple Object Tracking (https://www.pyimagesearch.com/2018/07/23/simple-object-tracking-with-opencv/)
+7. PyImageSearch Tutorial: Tracking Multiple Objects (https://www.pyimagesearch.com/2018/08/06/tracking-multiple-objects-with-opencv/)
+8. More social distancing research
+
+Thursday 7/9
+1. AI/ML Scrum
+2. Argonne Student Lecture
+3. SAGE Workshop
+4. PyImageSearch Course day 9 (https://www.pyimagesearch.com/2017/04/24/eye-blink-detection-opencv-python-dlib/)
+5. AI/ML Demo Presentation Prep
