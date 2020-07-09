@@ -10,11 +10,10 @@ This script was primarily written to convert Tensorboard log data from the YOLOv
 scripts to a parsable format, but it can be adapted to other purposes
 """
 
-BATCHES_PER_EPOCH = 1538
-X_SCALE = 1 / BATCHES_PER_EPOCH
+BATCHES_PER_EPOCH = 2269
 
 
-def add_plot(data, title, color="b", label="", header=None, spline=None):
+def add_plot(data, title, color="b", label="", header=None, spline=None, x_scale=1):
     x = np.array([], dtype=np.float128)
     y = np.array([], dtype=np.float128)
 
@@ -40,7 +39,7 @@ def add_plot(data, title, color="b", label="", header=None, spline=None):
         spl = interp1d(x, y, kind=3)
         y = spl(x_new)
         x = x_new
-    x = X_SCALE * x
+    x = x_scale * x
     plt.plot(x, y, color, label=label)
 
     plt.title(title)
@@ -61,10 +60,13 @@ def plot_diff(data, data2, title):
     plt.show()
 
 
-def plot(data, title, spline=None):
-    add_plot(data, title, header=["Epoch", "Loss Value"], spline=spline)
+def plot(data, title, spline=None, x_scale=1, ylab=""):
+    add_plot(data, title, header=["Epoch", ylab], spline=spline, x_scale=x_scale)
     plt.show()
 
 
 if __name__ == "__main__":
-    plot(sys.argv[1], sys.argv[2], 50)
+    title = sys.argv[2] if len(sys.argv) >= 3 else "Title"
+    x_scale = 1 if "val_" in sys.argv[1] else 1 / BATCHES_PER_EPOCH
+    ylab = sys.argv[1].split(".csv")[0]
+    plot(sys.argv[1], title, 50, x_scale=x_scale, ylab=ylab)
