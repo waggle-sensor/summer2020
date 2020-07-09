@@ -208,7 +208,7 @@ Single model inference:
 ![image](../profile-ROS1/timeline_analysis-TF/time_01.png)
 
 10 model inference:
-![image](../profile-ROS2/timeline_analysis-TF/time_10.png)
+![image](../profile-ROS1/timeline_analysis-TF/time_10.png)
 
 yolov3:
 ```
