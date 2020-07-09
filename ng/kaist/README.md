@@ -51,13 +51,24 @@ Note that neither of these metrics account for false negatives (which should pro
 
 To be completed...
 
+
 ## Results
 
-On the Google Drive, there are several sets of checkpoints, log file outputs, and benchmark results. Corresponding configurations exist in the `[yolov3](../yolov3)` folder, checked into GitHub. The checkpoints and log files are a *primary* copy of the data generated from training, while benchmarks can be regenerated from running the scripts in this folder with the corresponding class names.
+On the Google Drive, there are several sets of checkpoints, log file outputs, and benchmark results. Corresponding configurations exist in the [`yolov3`](../yolov3) folder, checked into GitHub. The checkpoints and log files are a *primary* copy of the data generated from training, while benchmarks can be regenerated from running the scripts in this folder with the corresponding class names.
 
 Model Number | Config Folder | Description | Augmentation | Image Size | Batch Size
------------- | ------------- | ----------- | ------------ | ------
+------------ | ------------- | ----------- | ------------ | ---------- | --------
 1 | `config-char-orig` | Original baseline with ~0.92 mAP, using the 8 most frequent characters in the 74K data set and stratified random sampling | 8 filters, ran 5x each for 41x increase per training image | 416x416 | 64
 2 | `config-char-30` | Model with 30 most frequent alphabetical characters, trained using undersampling. Near-zero mAP on test set, ~0.275 precision on KAIST data. Poor results likely due to small training set size (84 raw images per class) and low image size. | Same as (1) | 128x128 | 16
 3 | `config` | Curated set of 12 classes with high confusion rates based on (2), trained using undersampling (100 training images per class). Near-zero mAP on test set, ~0.56 precision on KAIST data. *Very* few object detections, leading to a small (<100 images) and/or inaccurate sampling pool.  | Same as (1) | 256x256 | 32
 4 | `config` (batch size=64, image size=416 now) | Train/test splits are the same as (3), only with new augmentation techniques. ~0.6 mAP on test set, ~0.86 precision on KAIST data. Model after 100 epochs used as baseline (converges after around epoch 50) | Composite transformation of one "major" transformation and 1-2 "minor" ones, applied randomly. 121x increase per training image. | 416x416 | 64
+
+## Sampling Methods
+
+These algorithms are meant to be scalable to any number of classes and any model, not just the KAIST data set. 
+
+Before any sampling is done, we determine **Smax**, the maximum desired **number of retraining samples per class**. Assuming we have a list of `ClassResults` objects by *predicted* (not actual) class, this is done by first determining the number of (KAIST) samples we have above a user-defined **confidence threshold** (T>=0.5) for each class. The smallest number of samples we have above T for any class then becomes **Smax**.
+
+### Threshold Sampling
+
+We randomly sample a proportion (up to 1.00) of the samples above a threshold Tsample, equal to the median confidence of a particular class. 

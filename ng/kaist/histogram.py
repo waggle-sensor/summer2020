@@ -8,7 +8,7 @@ OUTPUT = "output/"
 
 
 def get_conf_data(result_list):
-    return [float(row["conf"]) for row in result_list]
+    return [row["conf"] for row in result_list]
 
 
 def generate_graphs(results, filename="hist.pdf"):
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     Usage: python3 histogram.py output/benchmark.csv
     """
     results, mat = benchmark.load_data(sys.argv[1], by_actual=False)
-    
+
     if "benchmark_" in sys.argv[1]:
         suffix = f"_{sys.argv[1].split('benchmark_')[1].split('.csv')[0]}.pdf"
     else:

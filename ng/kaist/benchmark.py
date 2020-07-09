@@ -4,6 +4,8 @@ import yolov3.utils.datasets as datasets
 import yolov3.utils.utils as utils
 import yolov3.utils.parse_config as parser
 
+import os
+import sys
 import torch
 from torch.utils.data import DataLoader
 from sklearn.metrics import confusion_matrix
@@ -19,6 +21,8 @@ the segmented letters from the KAIST dataset
 
 Contains helper methods to parse generated output data.
 """
+
+OUTPUT = "./output/"
 
 
 def load_data(output, by_actual=True):
@@ -65,7 +69,8 @@ class ClassResults:
                 self.data[f"{actual}_{cond}"] = list()
 
         for row in output_rows:
-            if float(row["conf"]) >= conf_thresh:
+            row["conf"] = float(row["conf"])
+            if row["conf"] >= conf_thresh:
                 if row["hit"] == "True":
                     result = "true_pos"
                 else:
@@ -103,11 +108,42 @@ class ClassResults:
     def get_all(self):
         return list(itertools.chain.from_iterable(self.hits_misses()))
 
+    def get_confidences(self):
+        return [result["conf"] for result in self.get_all()]
+
+
+def test(model, classes, img_size, valid_path, check_num):
+    """Tests weights against the test data set."""
+
+    class Options(object):
+        pass
+
+    opt = Options()
+    opt.iou_thres = 0.5
+    opt.conf_thres = 0.5
+    opt.nms_thres = 0.5
+    opt.img_size = img_size
+
+    with open(valid_path, "r") as valid:
+        new_valid = valid.read().replace("data/", "../yolov3/data/")
+        new_valid_path = valid_path + ".temp"
+        with open(new_valid_path, "w+") as new_valid_file:
+            new_valid_file.write(new_valid)
+
+    old_stdout = sys.stdout
+    sys.stdout = open(OUTPUT + f"mAP_{check_num}.txt", "w+")
+    evaluate.get_results(model, new_valid_path, opt, classes)
+
+    os.remove(new_valid_path)
+    sys.stdout = old_stdout
+
 
 if __name__ == "__main__":
     check_num = int(sys.argv[1])
 
     options = parser.parse_model_config("config/yolov3.cfg")[0]
+    data_opts = parser.parse_data_config("config/chars.data")
+
     img_size = max(int(options["width"]), int(options["height"]))
 
     model = models.get_eval_model(
@@ -115,6 +151,8 @@ if __name__ == "__main__":
     )
 
     classes = utils.load_classes("config/chars.names")
+
+    test(model, classes, img_size, data_opts["valid"], check_num)
 
     loader = DataLoader(
         datasets.ImageFolder("data/objs/", img_size=img_size),
@@ -127,7 +165,7 @@ if __name__ == "__main__":
     confusion_mat = dict()
 
     header = "file,actual,detected,conf,hit".split(",")
-    output = open(f"output/benchmark_{check_num}.csv", "w+")
+    output = open(OUTPUT + f"benchmark_{check_num}.csv", "w+")
     writer = csv.DictWriter(output, fieldnames=header)
     writer.writeheader()
     for (img_paths, input_imgs) in loader:
