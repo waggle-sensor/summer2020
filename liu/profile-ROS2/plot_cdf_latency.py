@@ -38,12 +38,20 @@ from scipy.ndimage.filters import gaussian_filter1d
 def main():
 
     data_0 = np.loadtxt('0_power_mode/generic_latency_power0.log')
-    data_1 = np.loadtxt('1_power_mode/generic_latency_power1.log')
-    data_2 = np.loadtxt('2_power_mode/generic_latency_power2.log')
-    data_3 = np.loadtxt('3_power_mode/generic_latency_power3.log')
+    data_1 = np.loadtxt('0_power_mode/rt_latency_power0.log')
+    data_2 = np.loadtxt('../profile-ROS1/0_power_mode/latency.log')
+    data_3 = np.loadtxt('../profile-ROS1/0_power_mode/latency-rt.log')
     data_4 = np.loadtxt('4_power_mode/generic_latency_power4.log')
     data_5 = np.loadtxt('5_power_mode/generic_latency_power5.log')
     data_6 = np.loadtxt('6_power_mode/generic_latency_power6.log')
+
+    # data_0 = np.loadtxt('0_power_mode/generic_latency_power0.log')
+    # data_1 = np.loadtxt('1_power_mode/generic_latency_power1.log')
+    # data_2 = np.loadtxt('2_power_mode/generic_latency_power2.log')
+    # data_3 = np.loadtxt('3_power_mode/generic_latency_power3.log')
+    # data_4 = np.loadtxt('4_power_mode/generic_latency_power4.log')
+    # data_5 = np.loadtxt('5_power_mode/generic_latency_power5.log')
+    # data_6 = np.loadtxt('6_power_mode/generic_latency_power6.log')
 
     data_0 = np.multiply(data_0,1000)
     print(data_0.max(),data_0.min(),data_0.mean())
@@ -111,19 +119,20 @@ def main():
     # plt.plot(bin_edges_6[1:], cdf_6,color="purple",label="mode 6",linestyle="-")
 
     # plt.plot(bin_edges_base[1:], cdf_base_smooth,label="Baseline", color="black", linestyle="-",linewidth=3)
-    plt.plot(bin_edges_0[1:], cdf_0_smooth,color="red", label="mode 0",linestyle="-")
-    plt.plot(bin_edges_1[1:], cdf_1_smooth,color="green", label="mode 1",linestyle="-")
-    plt.plot(bin_edges_2[1:], cdf_2_smooth,color="blue",label="mode 2",linestyle="-")
-    plt.plot(bin_edges_3[1:], cdf_3_smooth,color="gray",label="mode 3",linestyle="-")
-    plt.plot(bin_edges_4[1:], cdf_4_smooth,color="black",label="mode 4",linestyle="-")
-    plt.plot(bin_edges_5[1:], cdf_5_smooth,color="orange",label="mode 5",linestyle="-")
-    plt.plot(bin_edges_6[1:], cdf_6_smooth,color="purple",label="mode 6",linestyle="-")
+    plt.plot(bin_edges_0[1:], cdf_0_smooth,color="red", label="ROS2 generic kernel",linestyle="-")
+    plt.plot(bin_edges_1[1:], cdf_1_smooth,color="red", label="ROS2 RT kernel",linestyle=":")
+    plt.plot(bin_edges_2[1:], cdf_2_smooth,color="blue",label="ROS1 generic kernel",linestyle="-")
+    plt.plot(bin_edges_3[1:], cdf_3_smooth,color="blue",label="ROS1 RT kernel",linestyle=":")
+    # plt.plot(bin_edges_4[1:], cdf_4_smooth,color="black",label="mode 4",linestyle="-")
+    # plt.plot(bin_edges_5[1:], cdf_5_smooth,color="orange",label="mode 5",linestyle="-")
+    # plt.plot(bin_edges_6[1:], cdf_6_smooth,color="purple",label="mode 6",linestyle="-")
 
 
     rcParams.update({'figure.autolayout': True})
     plt.tick_params(labelsize=12)
     plt.legend(ncol=1, fontsize = 10)
     plt.xlabel('ms',fontsize=12,fontweight='bold')
+    plt.xlabel('End to end latency of YOLOv3 in power mode 0 (ms)',fontsize=8,fontweight='bold')
     plt.ylabel('CDF', fontsize=12, fontweight='bold')
 
     # plt.savefig('Xavier-Yolov3-latency.png', bbox_inches = "tight")
