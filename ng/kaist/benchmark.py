@@ -7,6 +7,7 @@ import utils
 
 import os
 import torch
+import tqdm
 from torch.utils.data import DataLoader
 
 import pandas as pd
@@ -132,7 +133,8 @@ def benchmark(check_prefix, check_num, config, data_config, classes, sample_dir)
     output = open(OUTPUT + f"benchmark_{check_num}.csv", "w+")
     writer = csv.DictWriter(output, fieldnames=header)
     writer.writeheader()
-    for (img_paths, input_imgs) in loader:
+
+    for (img_paths, input_imgs) in tqdm.tqdm(loader, "Inferencing on samples"):
         props = dict()
         props["file"] = img_paths[0]
         props["actual"] = img_paths[0].split("-")[1][:1]
@@ -167,5 +169,5 @@ if __name__ == "__main__":
         "config/yolov3.cfg",
         "config/chars.data",
         "config/chars.names",
-        "data/objs/",
+        "data/images/objs/",
     )

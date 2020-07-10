@@ -65,7 +65,10 @@ def create_labels(retrain_list):
     classes = open("config/chars.names").read().split("\n")[:-1]
     for result in retrain_list:
         idx = classes.index(result["detected"])
-        with open(result["file"].replace(".png", ".txt"), "w+") as label:
+
+        label_path = result["file"].replace("images", "labels")[:-4] + ".txt"
+        os.makedirs(os.path.dirname(label_path), exist_ok=True)
+        with open(label_path, "w+") as label:
             label.write(f"{idx} 0.5 0.5 1 1")
 
 
@@ -95,33 +98,38 @@ def create_config(samples, sample_name, data_config):
             new_data_config.write(f"{k} = {v}\n")
 
 
-def create_sample(data_file, results, sample_name, sample_func, *sample_func_args):
+def create_sample(data_config, results, undersample, name, sample_func, *func_args):
     retrain_by_class = list()
 
-    print(f"===== {sample_name} ======")
+    print(f"===== {name} ======")
     for result in results:
         if result.name == "All":
             continue
-        retrain_by_class.append(sample_func(result, *sample_func_args))
+        retrain_by_class.append(sample_func(result, *func_args))
 
-    max_samp = float("inf")
-    for class_list in retrain_by_class:
-        max_samp = min(max_samp, len(class_list))
-
-    print(f"Samples per class: {max_samp}")
+    if undersample:
+        max_samp = float("inf")
+        for class_list in retrain_by_class:
+            max_samp = min(max_samp, len(class_list))
+        print(f"Samples per class: {max_samp}")
 
     retrain = list()
     for sample_list in retrain_by_class:
-        retrain += sample_list[:max_samp]
+        if undersample:
+            retrain += sample_list[:max_samp]
+        else:
+            retrain += sample_list
 
     hit_rate = sum(int(img["hit"] == "True") for img in retrain) / len(retrain)
     print(f"Hit rate: {hit_rate}")
 
     create_labels(retrain)
-    create_config(retrain, sample_name, data_file)
+    create_config(retrain, name, data_config)
 
 
 if __name__ == "__main__":
     random.seed("sage")
     results, _ = utils.load_data(sys.argv[1], by_actual=False)
-    create_sample("config/chars.data", results, "median-thresh", median_thresh_sample)
+    create_sample(
+        "config/chars.data", results, False, "median-thresh", median_thresh_sample
+    )

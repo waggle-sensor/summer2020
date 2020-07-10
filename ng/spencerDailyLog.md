@@ -252,7 +252,16 @@
   * Need to modularize more code so we don't rely on system calls for training and augmentation
   * Many constants still programmed in - need to decide what to keep
 * Running simple retraining test using a median threshold sampling
-  * Samples per class: 73 (via undersampling)
+  * No undersampling used
   * Hit rate of sample: 0.9840182648401826
-  * 876 training images in total
+  * 1741 raw training images in total (roughly half of sample)
 * Used augmentation techniques on new training set, keeping the old testing set
+  * Instead of running the composition function 120 times per image, we set a scale factor based on the number of images in the inferred class
+  * This prevents class imbalance without having undersampling
+  * Technique could be useful for batch processing in the future 
+  * Targeting 15,000 images per class
+  * Numbers are slightly off due to rounding scale factors early on in the process and having a set number of augmentations per image in a particular class
+  * Roughly 100-150 transformations per image
+* To do
+  * Modularize code more in preparation for dockerizing 
+  * Investigate more sampling methods - optimize hit rate while having hard cases

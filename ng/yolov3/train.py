@@ -103,7 +103,7 @@ if __name__ == "__main__":
     model = Darknet(opt.model_def).to(device)
     model.apply(utils.weights_init_normal)
 
-    if opt.resume != -1:
+    if opt.resume != -1 and opt.pretrained_weights is None:
         opt.pretrained_weights = f"checkpoints/{opt.prefix}_ckpt_{int(opt.resume)}.pth"
 
     # If specified we start from checkpoint

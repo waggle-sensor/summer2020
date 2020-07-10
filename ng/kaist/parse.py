@@ -61,7 +61,7 @@ def main():
     print("Cropping letters...")
     classes = open("config/chars.names", "r").read().split("\n")[:-1]
     for a in annots:
-        a.crop_labels(classes, DATA + "objs/")
+        a.crop_labels(classes, DATA + "images/objs/")
 
 
 if __name__ == "__main__":

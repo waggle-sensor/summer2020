@@ -27,7 +27,7 @@ if __name__ == "__main__":
         "config/yolov3.cfg",
         data_file,
         "config/chars.names",
-        "data/objs/",
+        "data/images/objs/",
     )
     results, _ = utils.load_data(f"output/benchmark_{check_num}.csv", by_actual=False)
 
@@ -36,16 +36,17 @@ if __name__ == "__main__":
 
         train_list = f"output/configs-retrain/{name}/train.txt"
 
-        aug_cmd = f"python3 ../char-cleanup/augment.py {train_list}"
+        aug_cmd = f"python3 ../char-cleanup/augment.py {train_list} --balance"
         aug_cmd = aug_cmd.split(" ")
         sp.run(aug_cmd, check=True)
 
         data_config = f"output/configs-retrain/{name}/chars.data"
         bench_weights = f"checkpoints/yolov3_ckpt_{check_num}.pth"
 
+        epoch_num = check_num + 51
         train_cmd = (
-            f"python3 ../yolov3/train.py --data_config {data_config}"
-            + f"--pretrained_weights {bench_weights} --img_size 416 --resume 99"
+            f"python3 ../yolov3/train.py --epoch {epoch_num} --data_config {data_config} "
+            + f"--pretrained_weights {bench_weights} --img_size 416 --resume {check_num} "
             + f"--prefix {name}"
         )
         train_cmd = train_cmd.split(" ")
