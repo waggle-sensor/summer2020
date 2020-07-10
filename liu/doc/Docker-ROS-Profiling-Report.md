@@ -195,7 +195,7 @@ Single test with Yolov3 results:
 
 
 
-## Runtime Scheduling Configuration
+## Runtime Scheduling Configuration Analysis
 
 Power Analysis             |  CDF with Runtime Scheduling Config
 :-------------------------:|:-------------------------:
