@@ -245,3 +245,14 @@
   * Need to call `augment.py` and a custom version of `train.py`
     * Modularizing functions there even more might help
   * Rely on existing files in `config`
+
+  **Friday, July 10**
+
+* Wrote pipeline for benchmarking, sampling, and retraining
+  * Need to modularize more code so we don't rely on system calls for training and augmentation
+  * Many constants still programmed in - need to decide what to keep
+* Running simple retraining test using a median threshold sampling
+  * Samples per class: 73 (via undersampling)
+  * Hit rate of sample: 0.9840182648401826
+  * 876 training images in total
+* Used augmentation techniques on new training set, keeping the old testing set

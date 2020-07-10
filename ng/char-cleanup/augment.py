@@ -7,6 +7,7 @@ import numpy as np
 import sys
 import random
 from shutil import copyfile
+import tqdm
 
 AUGS_PER_TRANSFORM = 120
 COMPOSE = True
@@ -78,9 +79,8 @@ def augment(train_list):
         compose_aug = multi_aug(augs)
         augs = {"comp": compose_aug}
 
-    for k, img_path in enumerate(orig_imgs):
-        if (k + 1) % 10 == 0:
-            print(f"{k+1}/{len(orig_imgs)}")
+    for k, img_path in enumerate(tqdm.tqdm(orig_imgs, "Augmenting images")):
+
         img = cv2.imread(img_path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
