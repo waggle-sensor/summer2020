@@ -50,10 +50,15 @@ def annot_path_to_img(annot_path):
 
 def main():
     exts = [".JPG", ".jpg"]
+
+    print("Cleaning up data...")
     cleanup.clean(DATA, OUTPUT, exts, ".xml", annot_parser, annot_path_to_img)
     img_paths = cleanup.get_img_paths(DATA, exts)
+
+    print("Parsing annotations...")
     annots = cleanup.parse_annots(img_paths, ".xml", annot_parser)
 
+    print("Cropping letters...")
     classes = open("config/chars.names", "r").read().split("\n")[:-1]
     for a in annots:
         a.crop_labels(classes, DATA + "objs/")
