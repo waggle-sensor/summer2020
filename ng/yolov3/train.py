@@ -77,6 +77,10 @@ if __name__ == "__main__":
     parser.add_argument(
         "--resume", default=-1, type=int, help="resume training from a specific epoch"
     )
+    parser.add_argument(
+        "--prefix", default="yolov3", type=str, help="prefix for checkpoint files"
+    )
+
     opt = parser.parse_args()
     print(opt)
 
@@ -100,7 +104,7 @@ if __name__ == "__main__":
     model.apply(utils.weights_init_normal)
 
     if opt.resume != -1:
-        opt.pretrained_weights = f"checkpoints/yolov3_ckpt_{int(opt.resume)}.pth"
+        opt.pretrained_weights = f"checkpoints/{opt.prefix}_ckpt_{int(opt.resume)}.pth"
 
     # If specified we start from checkpoint
     if opt.pretrained_weights:
@@ -206,31 +210,7 @@ if __name__ == "__main__":
             model.seen += imgs.size(0)
 
         if epoch % opt.evaluation_interval == 0:
-            print("\n---- Evaluating Model ----")
-            # Evaluate the model on the validation set
-            precision, recall, AP, f1, ap_class = evaluate(
-                model,
-                path=valid_path,
-                iou_thres=0.5,
-                conf_thres=0.5,
-                nms_thres=0.5,
-                img_size=opt.img_size,
-                batch_size=8,
-            )
-            evaluation_metrics = [
-                ("val_precision", precision.mean()),
-                ("val_recall", recall.mean()),
-                ("val_mAP", AP.mean()),
-                ("val_f1", f1.mean()),
-            ]
-            logger.list_of_scalars_summary(evaluation_metrics, epoch)
-
-            # Print class APs and mAP
-            ap_table = [["Index", "Class name", "AP"]]
-            for i, c in enumerate(ap_class):
-                ap_table += [[c, class_names[c], "%.5f" % AP[i]]]
-            print(AsciiTable(ap_table).table)
-            print(f"---- mAP {AP.mean()}")
+            evaluate.get_results(model, valid_path, opt, class_names, logger, epoch)
 
         if epoch % opt.checkpoint_interval == 0:
-            torch.save(model.state_dict(), f"checkpoints/yolov3_ckpt_{epoch}.pth")
+            torch.save(model.state_dict(), f"checkpoints/{opt.prefix}_ckpt_{epoch}.pth")
