@@ -15,6 +15,7 @@
 
 ### 3.1 End-to-End Latency
 
+CDF              |  CDF 
 :-------------------------:|:-------------------------:
 ![](../image/ros2-results/latency_ros2_generic.png)  |  ![](../image/ros2-results/latency_ros2_rt.png)
 ![](../image/ros2-results/latency_mode0.png)  |  ![](../image/ros2-results/latency_mode1.png)
