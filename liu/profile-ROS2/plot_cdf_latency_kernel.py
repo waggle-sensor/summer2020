@@ -59,18 +59,18 @@ def main():
     data_6 = np.loadtxt('5_power_mode/generic_latency_power5.log')
     data_7 = np.loadtxt('6_power_mode/generic_latency_power6.log')
 
-    data_8 = np.loadtxt('0_power_mode/rt_latency_power0.log')
-    data_9 = np.loadtxt('1_power_mode/rt_latency_power1.log')
-    data_10 = np.loadtxt('2_power_mode/rt_latency_power2.log')
-    data_11 = np.loadtxt('3_power_mode/rt_latency_power3.log')
-    data_12= np.loadtxt('4_power_mode/rt_latency_power4.log')
-    data_13 = np.loadtxt('5_power_mode/rt_latency_power5.log')
-    data_14 = np.loadtxt('6_power_mode/rt_latency_power6.log')
+    # data_8 = np.loadtxt('0_power_mode/rt_latency_power0.log')
+    # data_9 = np.loadtxt('1_power_mode/rt_latency_power1.log')
+    # data_10 = np.loadtxt('2_power_mode/rt_latency_power2.log')
+    # data_11 = np.loadtxt('3_power_mode/rt_latency_power3.log')
+    # data_12= np.loadtxt('4_power_mode/rt_latency_power4.log')
+    # data_13 = np.loadtxt('5_power_mode/rt_latency_power5.log')
+    # data_14 = np.loadtxt('6_power_mode/rt_latency_power6.log')
 
-    # data = [data_1,data_2,data_3,data_4,data_5,data_6,data_7]
-    data = [data_8,data_9,data_10,data_11,data_12,data_13,data_14]
-    # color = ["green","blue","red","black","orange"]
-    color = ["green","blue","red","black"]
+    data = [data_1,data_2,data_3,data_4,data_5,data_6,data_7]
+    # data = [data_8,data_9,data_10,data_11,data_12,data_13,data_14]
+    color = ["green","blue","red","black","orange","gray","purple"]
+    # color = ["green","blue","red","black"]
     line_style = ["-",":"]
     label = ["mode 0", "mode 1", "mode 2", "mode 3", "mode 4", "mode 5", "mode 6"]
 
@@ -85,7 +85,7 @@ def main():
     # plt.tick_params(labelsize=8)
     # plt.xlim((0, 2))
     plt.legend(ncol=1, fontsize = 10,loc='lower right')
-    plt.xlabel('End to end latency of YOLOv3 on ROS2 and RT Kernel (ms)',fontsize=8,fontweight='bold')
+    plt.xlabel('End to end latency of YOLOv3 on ROS2 and Generic Kernel (ms)',fontsize=8,fontweight='bold')
     plt.ylabel('CDF', fontsize=10, fontweight='bold')
 
     # plt.savefig('cdf-latency-1k.png', bbox_inches = "tight")

@@ -37,10 +37,10 @@ from scipy.ndimage.filters import gaussian_filter1d
 
 def main():
 
-    data_0 = np.loadtxt('0_power_mode/generic_latency_power0.log')
-    data_1 = np.loadtxt('0_power_mode/rt_latency_power0.log')
-    data_2 = np.loadtxt('../profile-ROS1/0_power_mode/latency.log')
-    data_3 = np.loadtxt('../profile-ROS1/0_power_mode/latency-rt.log')
+    data_0 = np.loadtxt('6_power_mode/generic_latency_power6.log')
+    data_1 = np.loadtxt('6_power_mode/rt_latency_power6.log')
+    data_2 = np.loadtxt('../profile-ROS1/6_power_mode/latency.log')
+    data_3 = np.loadtxt('../profile-ROS1/6_power_mode/rt_latency_power6.log')
     data_4 = np.loadtxt('4_power_mode/generic_latency_power4.log')
     data_5 = np.loadtxt('5_power_mode/generic_latency_power5.log')
     data_6 = np.loadtxt('6_power_mode/generic_latency_power6.log')
@@ -132,7 +132,7 @@ def main():
     plt.tick_params(labelsize=12)
     plt.legend(ncol=1, fontsize = 10)
     plt.xlabel('ms',fontsize=12,fontweight='bold')
-    plt.xlabel('End to end latency of YOLOv3 in power mode 0 (ms)',fontsize=8,fontweight='bold')
+    plt.xlabel('End to end latency of YOLOv3 in power mode 6 (ms)',fontsize=8,fontweight='bold')
     plt.ylabel('CDF', fontsize=12, fontweight='bold')
 
     # plt.savefig('Xavier-Yolov3-latency.png', bbox_inches = "tight")
