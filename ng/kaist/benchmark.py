@@ -1,14 +1,13 @@
 import yolov3.evaluate as evaluate
 import yolov3.models as models
 import yolov3.utils.datasets as datasets
-import yolov3.utils.utils as utils
+import yolov3.utils.utils as yoloutils
 import yolov3.utils.parse_config as parser
+import utils
 
 import os
-import sys
 import torch
 from torch.utils.data import DataLoader
-from sklearn.metrics import confusion_matrix
 
 import pandas as pd
 import csv
@@ -23,37 +22,7 @@ Contains helper methods to parse generated output data.
 """
 
 OUTPUT = "./output/"
-
-
-def load_data(output, by_actual=True):
-    samples = dict()
-    all_data = list()
-
-    actual = list()
-    pred = list()
-
-    with open(output, newline="\n") as csvfile:
-        reader = csv.DictReader(csvfile)
-
-        for row in reader:
-            actual.append(row["actual"])
-            pred.append(row["detected"])
-
-            key_val = row["actual"] if by_actual else row["detected"]
-            if key_val == str():
-                continue
-            if key_val not in samples.keys():
-                samples[key_val] = [row]
-            else:
-                samples[key_val].append(row)
-            all_data.append(row)
-    samples = {k: samples[k] for k in sorted(samples)}
-    results = [ClassResults(k, v) for k, v in samples.items()]
-    mat = confusion_matrix(actual, pred, labels=list(samples.keys()) + [""])
-
-    results.append(ClassResults("All", all_data))
-
-    return results, mat
+ORIG_DATA = "../yolov3/data/"
 
 
 class ClassResults:
@@ -124,38 +93,33 @@ def test(model, classes, img_size, valid_path, check_num):
     opt.nms_thres = 0.5
     opt.img_size = img_size
 
-    with open(valid_path, "r") as valid:
-        new_valid = valid.read().replace("data/", "../yolov3/data/")
-        new_valid_path = valid_path + ".temp"
-        with open(new_valid_path, "w+") as new_valid_file:
-            new_valid_file.write(new_valid)
-
-    old_stdout = sys.stdout
-    sys.stdout = open(OUTPUT + f"mAP_{check_num}.txt", "w+")
-    evaluate.get_results(model, new_valid_path, opt, classes)
-
-    os.remove(new_valid_path)
-    sys.stdout = old_stdout
+    utils.rewrite_test_list(valid_path, ORIG_DATA)
+    utils.save_stdout(
+        OUTPUT + f"mAP_{check_num}.txt",
+        evaluate.get_results,
+        model,
+        valid_path.replace(".txt", "-new.txt"),
+        opt,
+        classes,
+    )
 
 
-if __name__ == "__main__":
-    check_num = int(sys.argv[1])
-
+def benchmark(check_prefix, check_num, config, data_config, classes, sample_dir):
     options = parser.parse_model_config("config/yolov3.cfg")[0]
     data_opts = parser.parse_data_config("config/chars.data")
 
     img_size = max(int(options["width"]), int(options["height"]))
 
     model = models.get_eval_model(
-        "config/yolov3.cfg", img_size, f"checkpoints/yolov3_ckpt_{check_num}.pth"
+        config, img_size, f"checkpoints/{check_prefix}_ckpt_{check_num}.pth"
     )
 
-    classes = utils.load_classes("config/chars.names")
+    classes = yoloutils.load_classes(classes)
 
     test(model, classes, img_size, data_opts["valid"], check_num)
 
     loader = DataLoader(
-        datasets.ImageFolder("data/objs/", img_size=img_size),
+        datasets.ImageFolder(sample_dir, img_size=img_size),
         batch_size=1,
         shuffle=False,
         num_workers=8,
@@ -175,7 +139,7 @@ if __name__ == "__main__":
 
         detections = evaluate.detect(input_imgs, 0.5, model)
 
-        # conf is the confident that it's an object
+        # conf is the confidence that it's an object
         # cls_conf is the confidence of the classification
         most_conf = evaluate.get_most_conf(detections)
 
@@ -193,3 +157,15 @@ if __name__ == "__main__":
         writer.writerow(props)
 
     output.close()
+
+
+if __name__ == "__main__":
+    check_num = int(sys.argv[1])
+    benchmark(
+        "yolov3",
+        check_num,
+        "config/yolov3.cfg",
+        "config/chars.data",
+        "config/chars.names",
+        "data/objs/",
+    )

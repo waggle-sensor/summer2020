@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import sys
 import csv
 import pandas as pd
-import benchmark
+import utils
 
 OUTPUT = "output/"
 
@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
     Usage: python3 histogram.py output/benchmark.csv
     """
-    results, mat = benchmark.load_data(sys.argv[1], by_actual=False)
+    results, mat = utils.load_data(sys.argv[1], by_actual=False)
 
     if "benchmark_" in sys.argv[1]:
         suffix = f"_{sys.argv[1].split('benchmark_')[1].split('.csv')[0]}.pdf"
@@ -51,7 +51,7 @@ if __name__ == "__main__":
         suffix = ".pdf"
 
     generate_graphs(results, filename="hist_by_pred" + suffix)
-    results, _ = benchmark.load_data(sys.argv[1], by_actual=True)
+    results, _ = utils.load_data(sys.argv[1], by_actual=True)
     generate_graphs(results, filename="hist_by_actual" + suffix)
 
     names = [res.name for res in results if res.name != "All"] + [""]
