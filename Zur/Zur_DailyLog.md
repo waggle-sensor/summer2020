@@ -113,3 +113,12 @@ Friday 7/10
 4. AI / ML Demo meeting
 5. PyImageSearch course day 10 (https://www.pyimagesearch.com/2017/05/08/drowsiness-detection-opencv/)
 6. Compiled some more tutorials on Deep learning / PyTorch to begin next week
+
+Week 5 (7/13 - 7/17)
+Monday 7/13
+1. PyImageSearch Tutorial: Deep Learning Object Detection (https://www.pyimagesearch.com/2017/09/11/object-detection-with-deep-learning-and-opencv/)
+2. PyImageSearch Tutorial: Real-Time Deep Learning Object Detection (https://www.pyimagesearch.com/2017/09/18/real-time-object-detection-with-deep-learning-and-opencv/)
+3. Deep Learning and Neural Networks with PyTorch Tutorial Part 1 (https://www.youtube.com/watch?v=BzcBsTou0C0&list=PLQVvvaa0QuDdeMyHEYc0gxFpYwHY2Qfdh&index=1)
+4. PyImageSearch course day 11 & 12 (https://www.pyimagesearch.com/2016/09/26/a-simple-neural-network-with-python-and-keras/)
+5. Planning data collection photo shoot
+6. NAISE SciComm Deliverables
