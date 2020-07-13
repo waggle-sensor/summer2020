@@ -7,6 +7,7 @@ import utils
 import yolov3.utils.parse_config as parser
 import numpy as np
 import scipy.stats
+import matplotlib.pyplot as plt
 
 
 OUTPUT = "./output/"
@@ -159,6 +160,27 @@ def create_sample(data_config, results, undersample, name, sample_func, *func_ar
     create_labels(retrain)
     create_config(retrain, name, data_config)
 
+    return retrain
+
+
+def sample_histogram(retrain, title):
+    colors = ["lightgreen", "red"]
+
+    hit = list()
+    miss = list()
+
+    for data in retrain:
+        if data["hit"] == "True":
+            hit.append(data["conf"])
+        else:
+            miss.append(data["conf"])
+    hit_miss = [hit, miss]
+
+    plt.figure()
+    plt.hist(hit_miss, bins=10, color=colors, stacked=True)
+    plt.title(title)
+    plt.show()
+
 
 if __name__ == "__main__":
     random.seed("sage")
@@ -171,4 +193,5 @@ if __name__ == "__main__":
     }
 
     for k, v in methods.items():
-        create_sample("config/chars.data", results, False, k, v)
+        sample = create_sample("config/chars.data", results, False, k, v)
+        sample_histogram(sample, k)

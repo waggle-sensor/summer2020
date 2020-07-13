@@ -105,7 +105,7 @@ def augment(train_list, compose, balance, imgs_per_class):
         augs = {"comp": compose_aug}
 
     if balance:
-        incr_factors = get_incr_factors(orig_imgs)
+        incr_factors = get_incr_factors(orig_imgs, imgs_per_class)
 
     for k, img_path in enumerate(tqdm.tqdm(orig_imgs, "Augmenting images")):
 
@@ -159,7 +159,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--train_list", required=True, help="text file of training images"
     )
-    parser.add_argument("--imgs_per_class", default=15000)
+    parser.add_argument("--imgs_per_class", default=15000, required=False, type=int)
     opt = parser.parse_args()
 
     augment(opt.train_list, opt.compose, opt.balance, opt.imgs_per_class)

@@ -22,14 +22,16 @@ if __name__ == "__main__":
     # methods = {"median_thresh": sample.median_thresh_sample}
     data_file = "config/chars.data"
 
-    benchmark.benchmark(
-        "yolov3",
-        check_num,
-        "config/yolov3.cfg",
-        data_file,
-        "config/chars.names",
-        "data/images/objs/",
-    )
+    if not os.path.exists(f"output/benchmark_{check_num}.csv"):
+        benchmark.benchmark(
+            "yolov3",
+            check_num,
+            "config/yolov3.cfg",
+            data_file,
+            "config/chars.names",
+            "data/images/objs/",
+        )
+
     results, _ = utils.load_data(f"output/benchmark_{check_num}.csv", by_actual=False)
 
     for name, func in methods.items():
