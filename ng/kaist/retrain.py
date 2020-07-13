@@ -32,7 +32,7 @@ if __name__ == "__main__":
     results, _ = utils.load_data(f"output/benchmark_{check_num}.csv", by_actual=False)
 
     for name, func in methods.items():
-        sample.create_sample(data_file, results, name, func)
+        sample.create_sample(data_file, results, False, name, func)
 
         train_list = f"output/configs-retrain/{name}/train.txt"
 

@@ -105,7 +105,9 @@ def test(model, classes, img_size, valid_path, check_num):
     )
 
 
-def benchmark(check_prefix, check_num, config, data_config, classes, sample_dir):
+def benchmark(
+    check_prefix, check_num, config, data_config, classes, sample_dir, out_name=None
+):
     options = parser.parse_model_config("config/yolov3.cfg")[0]
     data_opts = parser.parse_data_config("config/chars.data")
 
@@ -130,7 +132,10 @@ def benchmark(check_prefix, check_num, config, data_config, classes, sample_dir)
     confusion_mat = dict()
 
     header = "file,actual,detected,conf,hit".split(",")
-    output = open(OUTPUT + f"benchmark_{check_num}.csv", "w+")
+    if out_name is not None:
+        output = open(OUTPUT + f"{out_name}_{check_num}.csv", "w+")
+    else:
+        output = open(OUTPUT + f"benchmark_{check_num}.csv", "w+")
     writer = csv.DictWriter(output, fieldnames=header)
     writer.writeheader()
 
@@ -162,9 +167,9 @@ def benchmark(check_prefix, check_num, config, data_config, classes, sample_dir)
 
 
 if __name__ == "__main__":
-    check_num = int(sys.argv[1])
+    check_num = int(sys.argv[2])
     benchmark(
-        "yolov3",
+        sys.argv[1],
         check_num,
         "config/yolov3.cfg",
         "config/chars.data",
