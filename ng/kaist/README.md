@@ -31,7 +31,12 @@ The script also crops out characters from scene images, sorting them into subfol
 
 ### Benchmark
 
-After copying your YOLO weights to `checkpoints`, run `python3 benchmark.py <epoch number>`, which will benchmark inferencing results for `checkpoints/yolov3_ckpt_<epoch number>.pth`.
+After copying your YOLO weights to `checkpoints`, run
+```
+python3 benchmark.py <prefix> <epoch number>`
+```
+
+This will benchmark inferencing results for `checkpoints/<prefix>_ckpt_<epoch number>.pth`.
 
 Inferencing is done on the images files  currentlyin `data/obj/`, which should only contain images of classes the model has been trained on. If not, re-run `parse.py`. Results are saved in `output/benchmark_<epoch>.csv`. Keep in mind that the script takes only the detected label/class with the highest confidence and saves it.
 

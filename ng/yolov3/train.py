@@ -12,10 +12,10 @@ from terminaltables import AsciiTable
 
 import yolov3.utils.utils as utils
 import yolov3.utils.parse_config as parse
+import yolov3.evaluate as evaluate
 from yolov3.models import Darknet
 from yolov3.utils.logger import Logger
 from yolov3.utils.datasets import ListDataset
-from yolov3.evaluate import evaluate
 
 
 if __name__ == "__main__":
@@ -210,6 +210,9 @@ if __name__ == "__main__":
             model.seen += imgs.size(0)
 
         if epoch % opt.evaluation_interval == 0:
+            opt.iou_thres = 0.5
+            opt.conf_thres = 0.5
+            opt.nms_thres = 0.5
             evaluate.get_results(model, valid_path, opt, class_names, logger, epoch)
 
         if epoch % opt.checkpoint_interval == 0:

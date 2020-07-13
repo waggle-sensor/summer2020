@@ -5,6 +5,7 @@
 import lxml.etree as ET
 import os
 import cleanup
+import tqdm
 
 DATA = "./data/"
 OUTPUT = "./output/"
@@ -58,9 +59,8 @@ def main():
     print("Parsing annotations...")
     annots = cleanup.parse_annots(img_paths, ".xml", annot_parser)
 
-    print("Cropping letters...")
     classes = open("config/chars.names", "r").read().split("\n")[:-1]
-    for a in annots:
+    for a in tqdm.tqdm(annots, "Cropping letters"):
         a.crop_labels(classes, DATA + "images/objs/")
 
 
