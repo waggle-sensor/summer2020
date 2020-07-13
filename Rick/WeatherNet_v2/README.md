@@ -93,5 +93,59 @@ This notebook holds and demos the generator class that will be used my the model
 <br>
 
 
+## 7. Camera Data Test 
+Run the WeatherNetV2_Model_Test.ipynb using the only the images, time, and previous period target values. The results of this experiment correspond to experiment two within the paper.
+
+### Forecast solar radiation with ConvLSTM using images, time, and previous target values results
+
+|                              |           |        |          |         | 
+|------------------------------|-----------|--------|----------|---------|
+| 15 Minutes: Input length = 4 | Precision | Recall | F1-Score | Support |  
+| Low                          | 0.90      | 0.88   | 0.89     | 240     |  
+| Mid                          | 0.78      | 0.79   | 0.78     | 165     |  
+| High                         | 0.97      | 0.97   | 0.97     | 331     |     
+| Accuracy                     |           |        | 0.90     | 736     |  
+|                              |           |        |          |         |   
+|                              |           |        |          |         |    
+|                              |           |        |          |         |     
+| 30 Minutes: Input length = 4 | Precision | Recall | F1-Score | Support |     
+| Low                          | 0.82      | 0.87   | 0.84     | 209     |     
+| Mid                          | 0.77      | 0.67   | 0.72     | 165     |     
+| High                         | 0.95      | 0.98   | 0.96     | 266     |     
+| Accuracy                     |           |        | 0.86     | 640     |   
+
+
+|                              |           |        |          |         |     
+|                              |           |        |          |         |     
+| 45 Minutes: Input length = 4 | Precision | Recall | F1-Score | Support |     
+| Low                          | 0.94      | 0.85   | 0.89     | 249     |     
+| Mid                          | 0.51      | 0.73   | 0.60     | 106     |     
+| High                         | 0.94      | 0.89   | 0.91     | 391     |     
+| Accuracy                     |           |        | 0.85     | 745     |     
+|                              |           |        |          |         |     
+|                              |           |        |          |         |     
+|                              |           |        |          |         |     
+| 60 Minutes: Input length = 4 | Precision | Recall | F1-Score | Support |    
+| Low                          | 0.86      | 0.80   | 0.83     | 249     |     
+| Mid                          | 0.46      | 0.59   | 0.52     | 106     |     
+| High                         | 0.94      | 0.90   | 0.92     | 391     |     
+| Accuracy                     |           |        | 0.82     | 746     |     
+|                              |           |        |          |         |     
+|                              |           |        |          |         |     
+| 75 Minutes: Input length = 4 | Precision | Recall | F1-Score | Support |    
+| Low                          | 0.83      | 0.74   | 0.78     | 249     |     
+| Mid                          | 0.38      | 0.57   | 0.45     | 106     |     
+| High                         | 0.94      | 0.88   | 0.91     | 391     |     
+| Accuracy                     |           |        | 0.79     | 746     |     
+|                              |           |        |          |         |     
+| 90 Minutes: Input length = 4 | Precision | Recall | F1-Score | Support |     
+| Low                          | 0.78      | 0.70   | 0.74     | 249     |     
+| Mid                          | 0.35      | 0.52   | 0.42     | 106     |     
+| High                         | 0.95      | 0.88   | 0.91     | 391     |     
+| Accuracy                     |           |        | 0.77     | 746     | 
+
+
+
+
 
 
