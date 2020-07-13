@@ -12,3 +12,8 @@ Week 3 (6/22-6/26/2020)
 
 Week 4 (6/29-7/2/2020)
 - I continued sorting through ballpark water detection images.
+
+Week 5 (7/6-7/10/2020)
+- I worked on the student and team pages for the Sage website.
+
+Week 6 (7/13-7/17/2020)
