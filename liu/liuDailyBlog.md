@@ -683,3 +683,19 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
 #### To Do List:
  * Performance profiling of the ROS 2 based image
  * Set up the demos for data sharing in ROS1 and ROS2
+
+### July 9
+#### Work Done
+ * Analysis the logs collected for the YOLOv3 object detection model inference and get the profiling report
+ * Set up demos of data sharing in ROS2 with four containers launching on the same machine
+
+#### To Do List:
+ * Set up the demos for data sharing in ROS1 and ROS2
+
+### July 10
+#### Work Done
+ * Present the profiling report of ROS2
+ * Discuss with Raj about the data sharing demos
+
+#### To Do List:
+ * Set up and analysis the data dahring demos using ROS and ROS2
