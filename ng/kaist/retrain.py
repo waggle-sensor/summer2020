@@ -18,7 +18,8 @@ if __name__ == "__main__":
 
     check_num = int(sys.argv[1])
 
-    methods = {"median_thresh": sample.median_thresh_sample}
+    methods = {"normal": sample.normal_sample, "iqr": sample.iqr_sample}
+    # methods = {"median_thresh": sample.median_thresh_sample}
     data_file = "config/chars.data"
 
     benchmark.benchmark(
