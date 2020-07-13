@@ -221,13 +221,14 @@
   * Using one "major" transformation (shift, distort, crop, etc.) combined with 1-2 "minor" transformations (RGB shift, noise, blur, etc.)
   * Batch size modified to 64 for reduced processing time per epoch
   * Modified image size to 416x416, after reading that YOLO works better on small objects with higher resolutions
+  * Created 120 augmentations per image
 * Wrote some documentation on using the KAIST scripts
 
 
 **Thursday, July 9**
 
 * Attended scrum meeting
-* Benchmark results from augmented 12-class model ran overnight
+* Benchmarked results from augmented 12-class model ran overnight
   * mAP of 0.75 after 100 epochs
   * Converged after 50 epochs
   * Going to use as a baseline
@@ -246,7 +247,7 @@
     * Modularizing functions there even more might help
   * Rely on existing files in `config`
 
-  **Friday, July 10**
+**Friday, July 10**
 
 * Wrote pipeline for benchmarking, sampling, and retraining
   * Need to modularize more code so we don't rely on system calls for training and augmentation
@@ -265,3 +266,37 @@
 * To do
   * Modularize code more in preparation for dockerizing 
   * Investigate more sampling methods - optimize hit rate while having hard cases
+
+## Week 5
+
+**Monday, July 13**
+
+* Analyzed results from median threshold resampling technique
+  * Against the test set, precision (with a hard classification, not mAP) decreased from benchmark of 0.862 around 0.81, depending on the epoch
+  * Against the sample set, precision increased from 0.859 to peak of 0.893 at epoch 103, then dropped and hovered around 0.875
+  * Large number of augmented images per class from samples used for training might have led to overfitting occurring quickly
+* Retraining has more important implications for improving detection at environments where sampling occurred, not the original test data
+  * I.e. opposite of generalization
+  * Could still be useful if Sage nodes are deployed to a set of specific environments and trained on generic data (e.g. COCO)
+  * A for of continuous, unsupervised learning
+* Further tests:
+  * Lowering augmentation (images per class) parameters to prevent overfitting
+  * Lowering proportion ("bandwidth problem") of images that are sampled, instead of 100%
+  * Normalizing precision to be the mean of precision by class
+  * Iterative retraining? Could split up KAIST data further
+  * Actual object detection
+* Generated plot of precision vs. confidence range, general positive trend
+* Currently retraining models based on new sampling methods with more "hard" cases:
+  * **IQR**: samples a proportion (currently 100%) of the data within the interquartile range
+  * **Normal distribution**: assumes a Normal distribution for the confidences of the data (not true, currently very left-skewed) and samples using a normal probability distribution function until a certain quota is met (currently )
+  * Hit rate: 0.873 for normal, 0.821 for IQR
+    * Goal is to optimize hard cases while maintaining a high hit rate
+  * Spread is generally between 0.9 and 0.999 for IQR, between 0.75 and 1.00 for Normal
+    * Samples are still very left-skewed - unsure if there's a way to resolve this
+* Researched literature on existing unsupervised and active learning methods for retraining
+  * Shouldn't have large changes to baseline network weights when retraining
+  * Look into Expectation Maximization algorithms to examine the probability space without knowing the ground truth
+  * Should I make a test set for the KAIST data?
+  * It's reasonable that performance improves on KAIST data, but not on 74K data, from results obtained by Bruzzone and Prieto on remote sensing data
+    * They used a Maximum Likelihood Classifier rather than an object detector - should train something similar (expanding beyond letters)
+  * Equal amounts of training data for baseline and retraining should be good
