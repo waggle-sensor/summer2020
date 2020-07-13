@@ -1,8 +1,5 @@
 # Rick's Repo Home Page
 
-## Notes:
-* Scale seq generator images by /255 
-
 <br>
 
 ## To do list :)
@@ -13,11 +10,17 @@
 5.  [Done] Update paper
 6.  [Done] Make image sequence .npy files for ConvLSTM
 7.  [Done] Build new dataloader that takes images and weather data
-8.  [ ] Build .py scripts to rebuild npy dataset on server. Combine  make_npy_samples.ipynb and make_weather_data_ipynb.
-9.  [ ] Test ConvLSTM on sequences
-10. [ ] Update github/paper 
-11. [ ] Test ConvLSTM with weather data
-12. [ ] Update github/paper
+8.  [Done] Build .py scripts to rebuild npy dataset on server. Combine  make_npy_samples.ipynb and make_weather_data_ipynb.
+9.  [Done] Test ConvLSTM on sequences /Monday
+10. [ ] Test ConvLSTM with weather data /Tuesday
+11. [ ] Work on poster /Tuesday
+12. [ ] Benchmark models on docker images /Tuesday and Wednsday
+13. [ ] Work on poster /Thursday
+14. [ ] Get poster reviewed /Friday
+15. [ ] Revise poster /Friday
+16. [ ] Make recording /Friday
+17. [ ] Submit poster and recording / Saturday
+17. [ ] Update github/paper
 
 <br>
 
