@@ -256,3 +256,23 @@ spec has 3 subfields:
 
 
 #### Errors/Problems
+
+### July 9, 2020
+#### Meetings/Out of work
+11am-11:30am -> Daily Scrum meeting
+
+#### Work done/ Things Learned
+I worked one and finished my cluster presentation. I continued working on the YAML script to launch a k8 cluster to deploy instances of virtual waggle.
+
+#### Errors/Problems
+
+### July 10, 2020
+#### Meetings/Out of work
+10am - 11am -> Cluster presentaions
+11am - 11:30am -> Daily Scrum Meeting
+3pm-5:30pm -> Demos
+
+#### Work done/Things learned
+I demoed my progress that I made this sprint and gave my presentation to my cluster group.
+
+#### Errors/Problems

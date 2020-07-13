@@ -105,3 +105,11 @@ Thursday 7/9
 3. SAGE Workshop
 4. PyImageSearch Course day 9 (https://www.pyimagesearch.com/2017/04/24/eye-blink-detection-opencv-python-dlib/)
 5. AI/ML Demo Presentation Prep
+
+Friday 7/10
+1. PyImageSearch Tutorial: Deep Learning with OpenCV (https://www.pyimagesearch.com/2017/08/21/deep-learning-with-opencv/)
+2. NAISE Seminar
+3. AI / ML Demo Presentation prep
+4. AI / ML Demo meeting
+5. PyImageSearch course day 10 (https://www.pyimagesearch.com/2017/05/08/drowsiness-detection-opencv/)
+6. Compiled some more tutorials on Deep learning / PyTorch to begin next week
