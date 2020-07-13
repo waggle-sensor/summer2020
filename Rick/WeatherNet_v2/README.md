@@ -96,6 +96,9 @@ This notebook holds and demos the generator class that will be used my the model
 ## 7. Camera Data Test 
 Run the WeatherNetV2_Model_Test.ipynb using the only the images, time, and previous period target values. The results of this experiment correspond to experiment two within the paper.
 
+![tree](WeatherNet_v2_Images/WeatherNet_model.png) 
+
+
 ### Forecast solar radiation with ConvLSTM using images, time, and previous target values results
 
 |                              |           |        |          |         | 
