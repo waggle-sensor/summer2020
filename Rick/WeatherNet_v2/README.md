@@ -113,17 +113,18 @@ Run the WeatherNetV2_Model_Test.ipynb using the only the images, time, and previ
 | Mid                          | 0.77      | 0.67   | 0.72     | 165     |     
 | High                         | 0.95      | 0.98   | 0.96     | 266     |     
 | Accuracy                     |           |        | 0.86     | 640     |   
-
-
 |                              |           |        |          |         |     
 |                              |           |        |          |         |     
 | 45 Minutes: Input length = 4 | Precision | Recall | F1-Score | Support |     
-| Low                          | 0.94      | 0.85   | 0.89     | 249     |     
-| Mid                          | 0.51      | 0.73   | 0.60     | 106     |     
-| High                         | 0.94      | 0.89   | 0.91     | 391     |     
-| Accuracy                     |           |        | 0.85     | 745     |     
+| Low                          | 0.80      | 0.83   | 0.82     | 217     |     
+| Mid                          | 0.72      | 0.64   | 0.68     | 168     |     
+| High                         | 0.95      | 0.98   | 0.96     | 255     |     
+| Accuracy                     |           |        | 0.84     | 640     |     
 |                              |           |        |          |         |     
-|                              |           |        |          |         |     
+|                              |           |        |          |         | 
+
+
+
 |                              |           |        |          |         |     
 | 60 Minutes: Input length = 4 | Precision | Recall | F1-Score | Support |    
 | Low                          | 0.86      | 0.80   | 0.83     | 249     |     
