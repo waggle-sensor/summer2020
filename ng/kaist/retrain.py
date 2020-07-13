@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
         train_list = f"output/configs-retrain/{name}/train.txt"
 
-        aug_cmd = f"python3 ../char-cleanup/augment.py {train_list} --balance"
+        aug_cmd = f"python3 ../char-cleanup/augment.py --train_list {train_list} --balance --compose"
         aug_cmd = aug_cmd.split(" ")
         sp.run(aug_cmd, check=True)
 

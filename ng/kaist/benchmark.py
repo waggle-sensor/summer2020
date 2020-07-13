@@ -81,6 +81,37 @@ class ClassResults:
     def get_confidences(self):
         return [result["conf"] for result in self.get_all()]
 
+    def generate_prec_distrib(self, output, delta=0.05):
+        """Generate a spreadsheet of confidence range vs. rolling precision."""
+        out = open(output, "w+")
+        out.write("conf,rolling precision\n")
+        x = delta / 2
+        while x < 1.00 + (delta / 2):
+            true_pos = len(
+                [
+                    d
+                    for d in self.data["true_pos"]
+                    if x + (delta / 2) > d["conf"] >= x - (delta / 2)
+                ]
+            )
+            false_pos = len(
+                [
+                    d
+                    for d in self.data["false_pos"]
+                    if x + (delta / 2) > d["conf"] >= x - (delta / 2)
+                ]
+            )
+
+            try:
+                precision = true_pos / (true_pos + false_pos)
+                out.write(f"{x},{precision},{true_pos+false_pos}\n")
+            except ZeroDivisionError:
+                x += delta
+                continue
+
+            x += delta
+        out.close()
+
 
 def test(model, classes, img_size, valid_path, check_num):
     """Tests weights against the test data set."""

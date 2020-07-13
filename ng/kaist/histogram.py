@@ -14,7 +14,7 @@ def get_conf_data(result_list):
     return [row["conf"] for row in result_list]
 
 
-def generate_graphs(results, filename="hist.pdf"):
+def generate_hist(results, filename="hist.pdf"):
     num_rows = len(results)
     fig, axs = plt.subplots(num_rows, 3)
     plt.subplots_adjust(hspace=0.35)
@@ -48,16 +48,18 @@ if __name__ == "__main__":
 
     Usage: python3 histogram.py output/benchmark.csv
     """
-    results, mat = utils.load_data(sys.argv[1], by_actual=False)
 
     if "benchmark_" in sys.argv[1]:
         suffix = f"_{sys.argv[1].split('benchmark_')[1].split('.csv')[0]}.pdf"
     else:
         suffix = ".pdf"
 
-    generate_graphs(results, filename="hist_by_pred" + suffix)
+    results, mat = utils.load_data(sys.argv[1], by_actual=False)
+    generate_hist(results, filename="hist_by_pred" + suffix)
+    results[-1].generate_prec_distrib("output/all_prec.csv", 0.01)
+
     results, _ = utils.load_data(sys.argv[1], by_actual=True)
-    generate_graphs(results, filename="hist_by_actual" + suffix)
+    generate_hist(results, filename="hist_by_actual" + suffix)
 
     names = [res.name for res in results if res.name != "All"] + [""]
     df = pd.DataFrame(mat, index=names, columns=names)

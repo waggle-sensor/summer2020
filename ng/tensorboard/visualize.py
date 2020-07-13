@@ -10,7 +10,7 @@ This script was primarily written to convert Tensorboard log data from the YOLOv
 scripts to a parsable format, but it can be adapted to other purposes
 """
 
-BATCHES_PER_EPOCH = 2269
+BATCHES_PER_EPOCH = 1  # 2269
 
 
 def add_plot(data, title, color="b", label="", header=None, spline=None, x_scale=1):
@@ -61,7 +61,7 @@ def plot_diff(data, data2, title):
 
 
 def plot(data, title, spline=None, x_scale=1, ylab=""):
-    add_plot(data, title, header=["Epoch", ylab], spline=spline, x_scale=x_scale)
+    add_plot(data, title, header=["Conf", ylab], spline=spline, x_scale=x_scale)
     plt.show()
 
 
@@ -69,4 +69,4 @@ if __name__ == "__main__":
     title = sys.argv[2] if len(sys.argv) >= 3 else "Title"
     x_scale = 1 if "val_" in sys.argv[1] else 1 / BATCHES_PER_EPOCH
     ylab = sys.argv[1].split(".csv")[0]
-    plot(sys.argv[1], title, 50, x_scale=x_scale, ylab=ylab)
+    plot(sys.argv[1], title, 20, x_scale=x_scale, ylab=ylab)

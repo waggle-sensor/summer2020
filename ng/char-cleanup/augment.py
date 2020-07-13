@@ -9,9 +9,9 @@ import random
 from shutil import copyfile
 import tqdm
 import os
+import argparse
 
 AUGS_PER_IMG = 120
-COMPOSE = True
 
 
 def get_augmentations():
@@ -73,7 +73,7 @@ def multi_aug(augs):
     )
 
 
-def get_incr_factors(imgs, imgs_per_class=15000):
+def get_incr_factors(imgs, imgs_per_class):
     class_counts = dict()
     img_classes = dict()
 
@@ -95,12 +95,12 @@ def get_incr_factors(imgs, imgs_per_class=15000):
     return img_factors
 
 
-def augment(train_list, balance=False):
+def augment(train_list, compose, balance, imgs_per_class):
     augs = get_augmentations()
     imgs = open(train_list, "r").read().split("\n")[:-1]
     orig_imgs = imgs.copy()
 
-    if COMPOSE:
+    if compose:
         compose_aug = multi_aug(augs)
         augs = {"comp": compose_aug}
 
@@ -143,8 +143,23 @@ def augment(train_list, balance=False):
 
 if __name__ == "__main__":
     random.seed("sage")
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--balance",
+        action="store_true",
+        default=False,
+        help="balance augmentation based on class size",
+    )
+    parser.add_argument(
+        "--compose",
+        action="store_true",
+        default=False,
+        help="use a composition of augmentations, not individual transforms",
+    )
+    parser.add_argument(
+        "--train_list", required=True, help="text file of training images"
+    )
+    parser.add_argument("--imgs_per_class", default=15000)
+    opt = parser.parse_args()
 
-    if "--balance" in sys.argv:
-        augment(sys.argv[1], True)
-    else:
-        augment(sys.argv[1])
+    augment(opt.train_list, opt.compose, opt.balance, opt.imgs_per_class)

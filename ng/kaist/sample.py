@@ -1,10 +1,12 @@
 import random
 import benchmark
 import sys
-import statistics
+import statistics as stats
 import os
 import utils
 import yolov3.utils.parse_config as parser
+import numpy as np
+import scipy.stats
 
 
 OUTPUT = "./output/"
@@ -47,18 +49,49 @@ def prob_sample(result, desired, prob_func, *prob_func_args):
 def median_thresh_sample(result):
     confidences = result.get_confidences()
     avg = sum(confidences) / len(confidences)
-    median = statistics.median(confidences)
+    median = stats.median(confidences)
 
     print(f"avg: {avg}")
     print(f"median: {median}")
 
-    return prob_sample(result, above_thresh(result, median), const, median)
+    return prob_sample(result, in_range(result, median), const, median)
 
 
-def const(conf, thresh=0.5):
-    if conf >= thresh:
+def iqr_sample(result):
+    confidences = result.get_confidences()
+    q1 = np.quantile(confidences, 0.25)
+    q3 = np.quantile(confidences, 0.5)
+
+    print(f"q1: {q1}, q3: {q3}")
+
+    return prob_sample(result, in_range(result, q1, q3), const, q1, q3)
+
+
+def normal_sample(result):
+    """Sample all within one standard deviation of mean."""
+    confidences = result.get_confidences()
+
+    avg = stats.mean(confidences)
+    stdev = stats.stdev(confidences)
+    print(f"avg: {avg}, stdev: {stdev}")
+
+    return prob_sample(
+        result,
+        round(0.5 * in_range(result, avg - stdev, avg + stdev)),
+        norm,
+        avg,
+        stdev,
+    )
+
+
+def const(conf, thresh=0.5, max_val=1.0):
+    if max_val >= conf >= thresh:
         return 1.0
     return 0.0
+
+
+def norm(conf, mean, std):
+    return scipy.stats.norm(mean, std).pdf(conf)
 
 
 def create_labels(retrain_list):
@@ -72,9 +105,9 @@ def create_labels(retrain_list):
             label.write(f"{idx} 0.5 0.5 1 1")
 
 
-def above_thresh(result, thresh):
+def in_range(result, min_val, max_val=1.0):
     """Get the number of elements in a ClassResult above a threshold."""
-    return len([res for res in result.get_all() if res["conf"] >= thresh])
+    return len([res for res in result.get_all() if max_val >= res["conf"] >= min_val])
 
 
 def create_config(samples, sample_name, data_config):
@@ -130,6 +163,12 @@ def create_sample(data_config, results, undersample, name, sample_func, *func_ar
 if __name__ == "__main__":
     random.seed("sage")
     results, _ = utils.load_data(sys.argv[1], by_actual=False)
-    create_sample(
-        "config/chars.data", results, False, "median-thresh", median_thresh_sample
-    )
+
+    methods = {
+        "median-thresh": median_thresh_sample,
+        "iqr": iqr_sample,
+        "normal": normal_sample,
+    }
+
+    for k, v in methods.items():
+        create_sample("config/chars.data", results, False, k, v)
