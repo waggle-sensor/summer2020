@@ -65,7 +65,7 @@ $ roslaunch usb_cam usb_cam-test.launch
 ```
 $ roslaunch darknet_ros yolo_v3.launch
 ```
-3. Check the bandwidth, frequency, etc. using rostopic:
+3. Inside other containers, check the bandwidth, frequency, etc. using rostopic:
 ```
 $ rostopic bw /images   # bandwidth
 $ rostopic hz /images   # frequency
@@ -81,7 +81,7 @@ $ ros2 run image_tools cam2image 1
 ```
 $ ros2 launch darknet_ros darknet_ros.launch.py
 ```
-3. Check the bandwidth, frequency, etc. using rostopic:
+3. Inside other containers, check the bandwidth, frequency, etc. using rostopic:
 ```
 $ ros2 topic bw /images
 $ ros2 topic hz /images
