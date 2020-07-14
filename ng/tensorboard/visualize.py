@@ -60,13 +60,14 @@ def plot_diff(data, data2, title):
     plt.show()
 
 
-def plot(data, title, spline=None, x_scale=1, ylab=""):
-    add_plot(data, title, header=["Conf", ylab], spline=spline, x_scale=x_scale)
+def plot(data, title, spline=None, x_scale=1, xlab="", ylab=""):
+    add_plot(data, title, header=[xlab, ylab], spline=spline, x_scale=x_scale)
     plt.show()
 
 
 if __name__ == "__main__":
     title = sys.argv[2] if len(sys.argv) >= 3 else "Title"
     x_scale = 1 if "val_" in sys.argv[1] else 1 / BATCHES_PER_EPOCH
-    ylab = sys.argv[1].split(".csv")[0]
-    plot(sys.argv[1], title, 20, x_scale=x_scale, ylab=ylab)
+    xlab = sys.argv[3] if len(sys.argv) >= 4 else "Epoch"
+    ylab = sys.argv[4] if len(sys.argv) >= 5 else sys.argv[1].split(".csv")[0]
+    plot(sys.argv[1], title, 20, x_scale=x_scale, xlab=xlab, ylab=ylab)
