@@ -70,4 +70,4 @@ if __name__ == "__main__":
     x_scale = 1 if "val_" in sys.argv[1] else 1 / BATCHES_PER_EPOCH
     xlab = sys.argv[3] if len(sys.argv) >= 4 else "Epoch"
     ylab = sys.argv[4] if len(sys.argv) >= 5 else sys.argv[1].split(".csv")[0]
-    plot(sys.argv[1], title, 20, x_scale=x_scale, xlab=xlab, ylab=ylab)
+    plot(sys.argv[1], title, 100, x_scale=x_scale, xlab=xlab, ylab=ylab)

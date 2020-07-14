@@ -163,7 +163,7 @@ if __name__ == "__main__":
 
             if batches_done % opt.gradient_accumulations:
                 # Accumulates gradient before each step
-                torch.nn.clip_grad_norm_(model.parameters(), opt.clip)
+                torch.nn.utils.clip_grad_norm_(model.parameters(), opt.clip)
                 optimizer.step()
                 optimizer.zero_grad()
 

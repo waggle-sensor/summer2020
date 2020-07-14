@@ -314,3 +314,4 @@
 * Began retraining baseline character data based on modified parameters and augmentation techniques to determine changes/improvments
   * Using full data set to train/test, not undersampling
   * Batch size of 32, 15K images per class
+* Beginning to rewrite image augmentation pipeline to account for bounding box transforms

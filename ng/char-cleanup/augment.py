@@ -20,7 +20,7 @@ def get_augmentations():
         "noise": trans.GaussNoise((20.0, 40.0), always_apply=True),
         "shift-scale-rot": trans.ShiftScaleRotate(shift_limit=0.05, always_apply=True),
         "crop": trans.RandomResizedCrop(
-            100, 100, scale=(0.7, 0.95), ratio=(0.8, 1.2), always_apply=True
+            100, 100, scale=(0.8, 0.95), ratio=(0.8, 1.2), always_apply=True
         ),
         "bright-contrast": trans.RandomBrightnessContrast(0.4, 0.4, always_apply=True),
         "hsv": trans.HueSaturationValue(30, 40, 50, always_apply=True),
@@ -30,7 +30,7 @@ def get_augmentations():
             alpha=0.8,
             alpha_affine=10,
             sigma=40,
-            border_mode=cv2.BORDER_WRAP,
+            border_mode=cv2.BORDER_CONSTANT,
             always_apply=True,
         ),
     }
@@ -95,6 +95,24 @@ def get_incr_factors(imgs, imgs_per_class):
     return img_factors
 
 
+def parse_label(label_path):
+    labels = open(txt_path, "r").split("\n")
+
+    boxes = list()
+    field_ids = list()
+
+    for label in labels:
+        box = list()
+        for i, info in enumerate(label.split(" ")):
+            if i == 0:
+                field_ids.append(int(info))
+            else:
+                box.append(float(info))
+        boxes.append(box)
+
+    return boxes, field_ids
+
+
 def augment(train_list, compose, balance, imgs_per_class):
     augs = get_augmentations()
     imgs = open(train_list, "r").read().split("\n")[:-1]
@@ -114,6 +132,10 @@ def augment(train_list, compose, balance, imgs_per_class):
 
         base_name = img_path[:-4]
 
+        txt_path = img_path.replace("images", "labels")[:-4] + ".txt"
+        boxes, field_ids = parse_label(txt_path)
+        bbox_params = {"format": "yolo", "min_visibility": 0.50}
+
         if balance:
             incr_factor = incr_factors[img_path]
         else:
@@ -121,9 +143,19 @@ def augment(train_list, compose, balance, imgs_per_class):
 
         augs_per_trans = int(incr_factor / len(augs.keys()))
 
-        for name, func in augs.items():
+        for name, aug in augs.items():
             for i in range(augs_per_trans):
-                aug_img = func(image=img)["image"]
+                result = aug(
+                    image=img,
+                    bboxes=boxes,
+                    category_id=field_ids,
+                    bbox_params=bbox_params,
+                )
+                aug_img = result["image"]
+                new_bbox = result["bboxes"]
+                print(new_bbox)
+                # TODO test this
+
                 img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
                 aug_path = f"{base_name.replace('images', 'aug-images')}_{name}-{i}.png"
@@ -132,7 +164,6 @@ def augment(train_list, compose, balance, imgs_per_class):
 
                 imgs.append(aug_path)
 
-                txt_path = img_path.replace("images", "labels")[:-4] + ".txt"
                 new_txt_path = aug_path.replace("images", "labels")[:-4] + ".txt"
                 os.makedirs(os.path.dirname(new_txt_path), exist_ok=True)
                 copyfile(txt_path, new_txt_path)

@@ -4,6 +4,7 @@ import os
 import utils
 from shutil import copyfile
 import argparse
+import string
 
 """
 Helper script to plot average precision as a function of
@@ -11,10 +12,19 @@ epoch/checkpoint number
 """
 
 
+def generate_all_classes():
+    classes = [str(i) for i in range(10)]
+    for c in string.ascii_uppercase:
+        classes.append(c)
+    for c in string.ascii_lowercase:
+        classes.append(c)
+    return classes
+
+
 def copy_test(test_file):
     """Small helper function to copy test set into separate folder"""
     with open(test_file, "r") as file:
-        lines = file.read().split("\n")[-1]
+        lines = file.read().split("\n")[:-1]
     for f in lines:
         idx = int(f.split("Sample0")[1].split("/")[0]) - 1
         new_name = f"data/temp/Class-{generate_all_classes()[idx]}/{f.split('/')[-1]}"
@@ -54,7 +64,9 @@ if __name__ == "__main__":
                     f"{opt.output}/benchmark{test}",
                 )
 
-            results, _ = utils.load_data(f"{opt.output}/benchmark{test}_{i}.csv", True)
+            results, _ = utils.load_data(
+                f"{opt.output}/benchmark{test}_{i}.csv", by_actual=True
+            )
             output.write(f"{i},{benchmark.mean_precision(results[:-1])}\n")
 
         output.close()

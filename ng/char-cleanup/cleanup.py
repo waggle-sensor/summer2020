@@ -20,7 +20,6 @@ def generate_all_classes():
         classes.append(c)
     for c in string.ascii_lowercase:
         classes.append(c)
-
     return classes
 
 
