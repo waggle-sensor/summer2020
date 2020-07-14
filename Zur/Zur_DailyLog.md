@@ -122,3 +122,12 @@ Monday 7/13
 4. PyImageSearch course day 11 & 12 (https://www.pyimagesearch.com/2016/09/26/a-simple-neural-network-with-python-and-keras/)
 5. Planning data collection photo shoot
 6. NAISE SciComm Deliverables
+
+Tuesday 7/14
+1. AI/ML Scrum
+2. NAISE Seminar
+3, Deep Learning and Neural Networks with PyTorch Tutorial Part 2 (https://www.youtube.com/watch?v=i2yPxY2rOzs&list=PLQVvvaa0QuDdeMyHEYc0gxFpYwHY2Qfdh&index=2)
+4. PyImageSearch course day 13 (https://www.pyimagesearch.com/2017/08/21/deep-learning-with-opencv/)
+5. PyImageSearch Tutorial: Convolutions with Python and OpenCV (https://www.pyimagesearch.com/2016/07/25/convolutions-with-opencv-and-python/)
+6. PyImageSearch Tutorial: Pedestrian Detection with OpenCV (https://www.pyimagesearch.com/2015/11/09/pedestrian-detection-opencv/)
+7. Data Collection Photoshoot
