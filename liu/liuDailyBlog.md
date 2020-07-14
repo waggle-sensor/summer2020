@@ -699,3 +699,12 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
 
 #### To Do List:
  * Set up and analysis the data dahring demos using ROS and ROS2
+
+## Week 11 (June 13 to July 17)
+
+### July 11
+#### Work Done
+ * Set up demos of data sharing in ROS1 and ROS2 ready, the notes can be found at: https://github.com/waggle-sensor/summer2020/blob/master/liu/doc/Demo-Docker-ROS.md.
+
+#### To Do List:
+ * Analysis the data sharing demos using ROS and ROS2 and get a report about it
