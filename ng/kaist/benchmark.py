@@ -26,12 +26,15 @@ Contains helper methods to parse generated output data.
 OUTPUT = "./output/"
 ORIG_DATA = "../yolov3/data/"
 
+
 def mean_precision(class_results):
     """Computes mean precision for a least of classes, which shouldn't include All."""
     return stats.mean([res.precision() for res in class_results])
 
+
 def mean_accuracy(class_results):
     return stats.mean([res.accuracy() for res in class_results])
+
 
 class ClassResults:
     def __init__(self, name, output_rows, conf_thresh=0.5):

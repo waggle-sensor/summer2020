@@ -30,7 +30,7 @@ After linking the `data` directory to the right locations:
 
 ```
 python3 cleanup.py
-python3 augment.py output/config/train.txt
+python3 augment.py --train_list output/config/train.txt [--balance] [--compose]
 mv output/* ../yolov3/config
 ```
 

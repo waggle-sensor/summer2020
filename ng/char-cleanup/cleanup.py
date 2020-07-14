@@ -113,7 +113,7 @@ def main():
     filtered_dict = filter_img_dict(img_dict, classes)
 
     create_labels(filtered_dict, classes)
-    split_test_train(filtered_dict, 0.75, True)
+    split_test_train(filtered_dict, 0.75, False)
 
 
 if __name__ == "__main__":

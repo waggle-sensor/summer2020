@@ -80,6 +80,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--prefix", default="yolov3", type=str, help="prefix for checkpoint files"
     )
+    parser.add_argument(
+        "--clip",
+        default=float("inf"),
+        type=float,
+        help="cutoff value for gradient clipping",
+    )
 
     opt = parser.parse_args()
     print(opt)
@@ -157,6 +163,7 @@ if __name__ == "__main__":
 
             if batches_done % opt.gradient_accumulations:
                 # Accumulates gradient before each step
+                torch.nn.clip_grad_norm_(model.parameters(), opt.clip)
                 optimizer.step()
                 optimizer.zero_grad()
 

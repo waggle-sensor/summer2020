@@ -295,8 +295,22 @@
     * Samples are still very left-skewed - unsure if there's a way to resolve this
 * Researched literature on existing unsupervised and active learning methods for retraining
   * Shouldn't have large changes to baseline network weights when retraining
-  * Look into Expectation Maximization algorithms to examine the probability space without knowing the ground truth
+  * Look into Expectation-Maximization algorithms to examine the probability space without knowing the ground truth
   * Should I make a test set for the KAIST data?
   * It's reasonable that performance improves on KAIST data, but not on 74K data, from results obtained by Bruzzone and Prieto on remote sensing data
     * They used a Maximum Likelihood Classifier rather than an object detector - should train something similar (expanding beyond letters)
-  * Equal amounts of training data for baseline and retraining should be good
+  * Equal amounts of training data for baseline and retraining should be good - augment with goal of 10K images per class
+
+**Tuesday, July 14**
+
+* Attended daily scrum meeting
+* Read about hyperparameter optimization, batch size vs. learning rate, and gradient optimization
+* Investigated results of normal curve
+  * Model improvement decreased to around 0.80 average precision
+  * Likely due to lowered hit rate and easy overfitting of current model parameters
+* Modified precision/accuracy metrics in time series to be the mean prec/acc, not the *overall* prec/acc
+  * Shifts results slightly, but not significantly
+  * Same trends for median thresh sampling are evident
+* Began retraining baseline character data based on modified parameters and augmentation techniques to determine changes/improvments
+  * Using full data set to train/test, not undersampling
+  * Batch size of 32, 15K images per class
