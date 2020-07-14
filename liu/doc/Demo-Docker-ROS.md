@@ -51,9 +51,9 @@ $ sudo docker run --runtime nvidia  --network host -it -e DISPLAY=$DISPLAY -v /t
 #### Launch several containers with the same Docker images
 Add "--name XX"
 ```
-$ sudo docker run --runtime nvidia  --network host -it -e DISPLAY=$DISPLAY -v /tmp/.X11-unix/:/tmp/.X11-unix --device=/dev/video0:/dev/video1 --name MyContainer2 liangkailiu/plugin-tensorflow-ros:v2.0.7
-$ sudo docker run --runtime nvidia  --network host -it -e DISPLAY=$DISPLAY -v /tmp/.X11-unix/:/tmp/.X11-unix --device=/dev/video0:/dev/video1 --name MyContainer3 liangkailiu/plugin-tensorflow-ros:v2.0.7
-$ sudo docker run --runtime nvidia  --network host -it -e DISPLAY=$DISPLAY -v /tmp/.X11-unix/:/tmp/.X11-unix --device=/dev/video0:/dev/video1 --name MyContainer4 liangkailiu/plugin-tensorflow-ros:v2.0.7   
+$ sudo docker run --runtime nvidia -it -e DISPLAY=$DISPLAY -v /tmp/.X11-unix/:/tmp/.X11-unix --device=/dev/video0:/dev/video1 --name MyContainer2 liangkailiu/plugin-tensorflow-ros:v2.0.7
+$ sudo docker run --runtime nvidia -it -e DISPLAY=$DISPLAY -v /tmp/.X11-unix/:/tmp/.X11-unix --device=/dev/video0:/dev/video1 --name MyContainer3 liangkailiu/plugin-tensorflow-ros:v2.0.7
+$ sudo docker run --runtime nvidia -it -e DISPLAY=$DISPLAY -v /tmp/.X11-unix/:/tmp/.X11-unix --device=/dev/video0:/dev/video1 --name MyContainer4 liangkailiu/plugin-tensorflow-ros:v2.0.7   
 ```
 
 ### Set up object detection application runnning inside ROS1
@@ -87,4 +87,3 @@ $ ros2 topic bw /images
 $ ros2 topic hz /images
 $ ros2 topic echo /images
 ```
-
