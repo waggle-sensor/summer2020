@@ -18,7 +18,7 @@
 CDF              |  CDF        | CDF              |
 :-------------------------:|:-------------------------:|:-------------------------:
 ![](../image/ros2-results/latency_ros2_generic.png)  |  ![](../image/ros2-results/latency_ros2_rt.png) | ![](../image/ros2-results/latency_mode0.png)
-![](../image/ros2-results/latency_mode1.png) | ![](../image/ros2-results/latency_mode2.png) |![](../image/ros2-results/latency_mode3.png)
+![](../image/ros2-results/latency_mode1.png)  |  ![](../image/ros2-results/latency_mode2.png) |![](../image/ros2-results/latency_mode3.png)
 ![](../image/ros2-results/latency_mode4.png)  |  ![](../image/ros2-results/latency_mode5.png) |![](../image/ros2-results/latency_mode6.png)
 
 
