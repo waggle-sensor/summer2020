@@ -146,6 +146,61 @@ Run the WeatherNetV2_Model_Test.ipynb using the only the images, time, and previ
 | Accuracy                     |           |        | 0.75     | 640     | 
 
 
+<br>
+
+
+## 8. Camera and Weather Tower Data Test
+
+
+### Forecast solar radiation with ConvLSTM using images and tower data
+
+|                              |           |        |          |         | 
+|------------------------------|-----------|--------|----------|---------|
+| 15 Minutes: Input length = 4 | Precision | Recall | F1-Score | Support |  
+| Low                          | 0.85      | 0.88   | 0.87     | 201     |  
+| Mid                          | 0.75      | 0.75   | 0.75     | 162     |  
+| High                         | 0.96      | 0.94   | 0.95     | 277     |     
+| Accuracy                     |           |        | 0.87     | 640     |  
+|                              |           |        |          |         |   
+|                              |           |        |          |         |    
+|                              |           |        |          |         |     
+| 30 Minutes: Input length = 4 | Precision | Recall | F1-Score | Support |     
+| Low                          | 0.82      | 0.83   | 0.82     | 209     |     
+| Mid                          | 0.67      | 0.70   | 0.68     | 165     |     
+| High                         | 0.96      | 0.92   | 0.94     | 266     |     
+| Accuracy                     |           |        | 0.83     | 640     |   
+|                              |           |        |          |         |     
+|                              |           |        |          |         |     
+| 45 Minutes: Input length = 4 | Precision | Recall | F1-Score | Support |     
+| Low                          | 0.83      | 0.76   | 0.79     | 217     |     
+| Mid                          | 0.63      | 0.72   | 0.67     | 168     |     
+| High                         | 0.95      | 0.92   | 0.93     | 255     |     
+| Accuracy                     |           |        | 0.81     | 640     |     
+|                              |           |        |          |         |     
+|                              |           |        |          |         | 
+|                              |           |        |          |         | 
+
+
+| 60 Minutes: Input length = 4 | Precision | Recall | F1-Score | Support |    
+| Low                          | 0.78      | 0.79   | 0.78     | 222     |     
+| Mid                          | 0.67      | 0.63   | 0.65     | 174     |     
+| High                         | 0.94      | 0.97   | 0.96     | 244     |     
+| Accuracy                     |           |        | 0.81     | 640     |     
+|                              |           |        |          |         |     
+|                              |           |        |          |         |   
+| 75 Minutes: Input length = 4 | Precision | Recall | F1-Score | Support |    
+| Low                          | 0.61      | 0.87   | 0.71     | 228     |     
+| Mid                          | 0.43      | 0.21   | 0.28     | 178     |     
+| High                         | 0.94      | 0.92   | 0.93     | 234     |     
+| Accuracy                     |           |        | 0.70     | 640     |     
+|                              |           |        |          |         |    
+| 90 Minutes: Input length = 4 | Precision | Recall | F1-Score | Support |     
+| Low                          | 0.75      | 0.67   | 0.71     | 232     |     
+| Mid                          | 0.56      | 0.65   | 0.60     | 184     |     
+| High                         | 0.94      | 0.92   | 0.93     | 224     |     
+| Accuracy                     |           |        | 0.75     | 640     | 
+
+
 
 
 
