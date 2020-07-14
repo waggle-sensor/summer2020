@@ -3,6 +3,7 @@ import csv
 import os
 import utils
 from shutil import copyfile
+import argparse
 
 """
 Helper script to plot average precision as a function of
@@ -24,23 +25,36 @@ def copy_test(test_file):
 
 
 if __name__ == "__main__":
-    test = "_test"
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--start", required=True, type=int, help="starting benchmark epoch",
+    )
+    parser.add_argument(
+        "--end", required=True, type=int, help="ending benchmark epoch",
+    )
+    parser.add_argument(
+        "--delta", type=int, help="interval to plot", default=3, required=False
+    )
+    parser.add_argument("--prefix", required=True, help="prefix of model to test")
+    parser.add_argument("--output", required=False, default="./output/")
+    opt = parser.parse_args()
 
-    output = open(f"output/val_precision{test}_time.csv", "w+")
-    output.write("epoch,all_precision\n")
-    for i in range(99, 150, 3):
-        if not os.path.exists(f"output/benchmark{test}_{i}.csv"):
-            benchmark.benchmark(
-                "median_thresh",
-                i,
-                "config/yolov3.cfg",
-                "config/chars.data",
-                "config/chars.names",
-                "data/images/objs/" if test == str() else "data/temp/",
-                f"benchmark{test}",
-            )
+    for test in ("", "_test"):
+        output = open(f"{opt.output}/val_precision{test}_time.csv", "w+")
+        output.write("epoch,all_precision\n")
+        for i in range(opt.start, opt.end, opt.delta):
+            if not os.path.exists(f"{opt.output}/benchmark{test}_{i}.csv"):
+                benchmark.benchmark(
+                    opt.prefix,
+                    i,
+                    "config/yolov3.cfg",
+                    "config/chars.data",
+                    "config/chars.names",
+                    "data/images/objs/" if test == str() else "data/temp/",
+                    f"{opt.output}/benchmark{test}",
+                )
 
-        results, _ = utils.load_data(f"output/benchmark{test}_{i}.csv", True)
-        output.write(f"{i},{results[-1].precision()}\n")
+            results, _ = utils.load_data(f"{opt.output}/benchmark{test}_{i}.csv", True)
+            output.write(f"{i},{benchmark.mean_precision(results[:-1])}\n")
 
-    output.close()
+        output.close()

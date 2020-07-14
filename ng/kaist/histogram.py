@@ -3,6 +3,8 @@ import sys
 import csv
 import pandas as pd
 import utils
+import statistics as stats
+import benchmark as bench
 
 OUTPUT = "output/"
 
@@ -14,7 +16,7 @@ def get_conf_data(result_list):
     return [row["conf"] for row in result_list]
 
 
-def generate_hist(results, filename="hist.pdf"):
+def generate_hist(results, filename="hist.pdf", mean_stats=True):
     num_rows = len(results)
     fig, axs = plt.subplots(num_rows, 3)
     plt.subplots_adjust(hspace=0.35)
@@ -34,13 +36,19 @@ def generate_hist(results, filename="hist.pdf"):
             hit_miss, bins=10, color=colors, range=(STACKED_MIN, 1.0), stacked=True
         )
 
-        axs[i][1].set_title(
-            f"Class: {res.name} (acc={round(res.accuracy(), 3)}, prec={round(res.precision(), 3)}, n={res.pop})"
-        )
+        if res.name == "All" and mean_stats:
+            acc = round(bench.mean_accuracy(results[:-1]), 3)
+            prec = round(bench.mean_precision(results[:-1]), 3)
+        else:
+            acc = round(res.accuracy(), 3)
+            prec = round(res.precision(), 3)
+
+        title = f"Class: {res.name} (acc={acc}, " + f"prec={prec}, n={res.pop})"
+        axs[i][1].set_title(title)
 
     fig.set_figheight(2.5 * num_rows)
     fig.set_figwidth(10)
-    fig.savefig(OUTPUT + filename, bbox_inches="tight")
+    fig.savefig(OUTPUT + "/" + filename, bbox_inches="tight")
 
 
 if __name__ == "__main__":
@@ -50,9 +58,12 @@ if __name__ == "__main__":
     """
 
     if "benchmark_" in sys.argv[1]:
-        suffix = f"_{sys.argv[1].split('benchmark_')[1].split('.csv')[0]}.pdf"
+        suffix = f"_{sys.argv[1].split('benchmark_')[1][:-4]}.pdf"
     else:
         suffix = ".pdf"
+
+    OUTPUT = "/".join(sys.argv[1].split("/")[:-1])
+    print(OUTPUT)
 
     results, mat = utils.load_data(sys.argv[1], by_actual=False)
     generate_hist(results, filename="hist_by_pred" + suffix)

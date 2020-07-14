@@ -4,6 +4,7 @@ import yolov3.utils.datasets as datasets
 import yolov3.utils.utils as yoloutils
 import yolov3.utils.parse_config as parser
 import utils
+import statistics as stats
 
 import os
 import torch
@@ -25,6 +26,12 @@ Contains helper methods to parse generated output data.
 OUTPUT = "./output/"
 ORIG_DATA = "../yolov3/data/"
 
+def mean_precision(class_results):
+    """Computes mean precision for a least of classes, which shouldn't include All."""
+    return stats.mean([res.precision() for res in class_results])
+
+def mean_accuracy(class_results):
+    return stats.mean([res.accuracy() for res in class_results])
 
 class ClassResults:
     def __init__(self, name, output_rows, conf_thresh=0.5):
@@ -164,7 +171,7 @@ def benchmark(
 
     header = "file,actual,detected,conf,hit".split(",")
     if out_name is not None:
-        output = open(OUTPUT + f"{out_name}_{check_num}.csv", "w+")
+        output = open(f"{out_name}_{check_num}.csv", "w+")
     else:
         output = open(OUTPUT + f"benchmark_{check_num}.csv", "w+")
     writer = csv.DictWriter(output, fieldnames=header)
