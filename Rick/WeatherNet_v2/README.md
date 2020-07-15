@@ -154,51 +154,76 @@ Run the WeatherNetV2_Model_Test.ipynb using the only the images, time, and previ
 
 ### Forecast solar radiation with ConvLSTM using images and tower data
 
-|                              |           |        |          |         | 
-|------------------------------|-----------|--------|----------|---------|
-| 15 Minutes: Input length = 4 | Precision | Recall | F1-Score | Support |  
-| Low                          | 0.85      | 0.88   | 0.87     | 201     |  
-| Mid                          | 0.75      | 0.75   | 0.75     | 162     |  
-| High                         | 0.96      | 0.94   | 0.95     | 277     |     
-| Accuracy                     |           |        | 0.87     | 640     |  
-|                              |           |        |          |         |   
-|                              |           |        |          |         |    
-|                              |           |        |          |         |     
-| 30 Minutes: Input length = 4 | Precision | Recall | F1-Score | Support |     
-| Low                          | 0.82      | 0.83   | 0.82     | 209     |     
-| Mid                          | 0.67      | 0.70   | 0.68     | 165     |     
-| High                         | 0.96      | 0.92   | 0.94     | 266     |     
-| Accuracy                     |           |        | 0.83     | 640     |   
-|                              |           |        |          |         |     
-|                              |           |        |          |         |     
-| 45 Minutes: Input length = 4 | Precision | Recall | F1-Score | Support |     
-| Low                          | 0.83      | 0.76   | 0.79     | 217     |     
-| Mid                          | 0.63      | 0.72   | 0.67     | 168     |     
-| High                         | 0.95      | 0.92   | 0.93     | 255     |     
-| Accuracy                     |           |        | 0.81     | 640     |     
-|                              |           |        |          |         |     
-|                              |           |        |          |         | 
-|                              |           |        |          |         | 
+|15m           |precision    |recall  |f1-score   |support|
+|--------------|-------------|--------|-----------|-------|
+|              |             |        |           |       |
+|         low  |0.85         |0.88    |0.87       |201    |
+|         mid  |0.75         |0.75    |0.75       |162    |
+|        high  |0.96         |0.94    |0.95       |277    |
+|              |             |        |           |       |
+|    accuracy  |             |        |0.87       |640    |
+|   macro avg  |0.85         |0.86    |0.85       |640    |
+|weighted avg  |0.87         |0.87    |0.87       |640    |
+|              |             |        |           |       |
+|              |             |        |           |       |
+|              |             |        |           |       |
+|30m           |precision    |recall  |f1-score   |support|
+|              |             |        |           |       |
+|         low  |0.82         |0.83    |0.82       |209    |
+|         mid  |0.67         |0.70    |0.68       |165    |
+|        high  |0.96         |0.92    |0.94       |266    |
+|              |             |        |           |       |
+|    accuracy  |             |        |0.83       |640    |
+|   macro avg  |0.81         |0.82    |0.81       |640    |
+|weighted avg  |0.84         |0.83    |0.83       |640    |
+|              |             |        |           |       |
+|              |             |        |           |       |
+|45m           |             |        |           |       |
+|              |precision    |recall  |f1-score   |support|
+|              |             |        |           |       |
+|         low  |0.83         |0.76    |0.79       |217    |
+|         mid  |0.63         |0.72    |0.67       |168    |
+|        high  |0.95         |0.92    |0.93       |255    |
+|              |             |        |           |       |
+|    accuracy  |             |        |0.81       |640    |
+|   macro avg  |0.80         |0.80    |0.80       |640    |
+|weighted avg  |0.82         |0.81    |0.82       |640    |
+|              |             |        |           |       |
+|              |             |        |           |       |
+|              |             |        |           |       |
+|              |             |        |           |       |
+|1h            |precision    |recall  |f1-score   |support|
+|              |             |        |           |       |
+|         low  |0.68         |0.83    |0.75       |222    |
+|         mid  |0.57         |0.43    |0.49       |174    |
+|        high  |0.95         |0.93    |0.94       |244    |
+|              |             |        |           |       |
+|    accuracy  |             |        |0.76       |640    |
+|   macro avg  |0.73         |0.73    |0.72       |640    |
+|weighted avg  |0.75         |0.76    |0.75       |640    |
+|              |             |        |           |       |
+|              |             |        |           |       |
+|1h 15m        |precision    |recall  |f1-score   |support|
+|              |             |        |           |       |
+|         low  |0.68         |0.89    |0.77       |228    |
+|         mid  |0.61         |0.40    |0.48       |178    |
+|        high  |0.95         |0.90    |0.92       |234    |
+|              |             |        |           |       |
+|    accuracy  |             |        |0.76       |640    |
+|   macro avg  |0.75         |0.73    |0.73       |640    |
+|weighted avg  |0.76         |0.76    |0.75       |640    |
+|              |             |        |           |       |
+|              |             |        |           |       |
+|1h 30m        |precision    |recall  |f1-score   |support|
+|              |             |        |           |       |
+|         low  |0.56         |1.00    |0.72       |232    |
+|         mid  |0.00         |0.00    |0.00       |184    |
+|        high  |0.92         |0.93    |0.92       |224    |
+|              |             |        |           |       |
+|    accuracy  |             |        |0.69       |640    |
+|   macro avg  |0.49         |0.64    |0.55       |640    |
+|weighted avg  |0.52         |0.69    |0.58       |640    |
 
-
-| 60 Minutes: Input length = 4 | Precision | Recall | F1-Score | Support |    
-| Low                          | 0.78      | 0.79   | 0.78     | 222     |     
-| Mid                          | 0.67      | 0.63   | 0.65     | 174     |     
-| High                         | 0.94      | 0.97   | 0.96     | 244     |     
-| Accuracy                     |           |        | 0.81     | 640     |     
-|                              |           |        |          |         |     
-|                              |           |        |          |         |   
-| 75 Minutes: Input length = 4 | Precision | Recall | F1-Score | Support |    
-| Low                          | 0.61      | 0.87   | 0.71     | 228     |     
-| Mid                          | 0.43      | 0.21   | 0.28     | 178     |     
-| High                         | 0.94      | 0.92   | 0.93     | 234     |     
-| Accuracy                     |           |        | 0.70     | 640     |     
-|                              |           |        |          |         |    
-| 90 Minutes: Input length = 4 | Precision | Recall | F1-Score | Support |     
-| Low                          | 0.75      | 0.67   | 0.71     | 232     |     
-| Mid                          | 0.56      | 0.65   | 0.60     | 184     |     
-| High                         | 0.94      | 0.92   | 0.93     | 224     |     
-| Accuracy                     |           |        | 0.75     | 640     | 
 
 
 
