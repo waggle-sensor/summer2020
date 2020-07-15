@@ -58,8 +58,10 @@ if __name__ == "__main__":
     """
 
     if "benchmark_" in sys.argv[1]:
-        suffix = f"_{sys.argv[1].split('benchmark_')[1][:-4]}.pdf"
+        check_str = sys.argv[1].split("benchmark_")[1][:-4]
+        suffix = f"_{check_str}.pdf"
     else:
+        check_str = str()
         suffix = ".pdf"
 
     OUTPUT = "/".join(sys.argv[1].split("/")[:-1])
@@ -67,7 +69,7 @@ if __name__ == "__main__":
 
     results, mat = utils.load_data(sys.argv[1], by_actual=False)
     generate_hist(results, filename="hist_by_pred" + suffix)
-    results[-1].generate_prec_distrib("output/all_prec.csv", 0.01)
+    results[-1].generate_prec_distrib(f"output/all_prec_{check_str}.csv", 0.01)
 
     results, _ = utils.load_data(sys.argv[1], by_actual=True)
     generate_hist(results, filename="hist_by_actual" + suffix)

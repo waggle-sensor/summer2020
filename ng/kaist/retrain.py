@@ -10,7 +10,7 @@ import random
 """
 This is a really hacky script right now, meant for testing.
 
-TODO generalize with actually modularize the code
+TODO generalize more
 """
 
 if __name__ == "__main__":
@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
         train_list = f"output/configs-retrain/{name}/train.txt"
 
-        aug_cmd = f"python3 ../char-cleanup/augment.py --train_list {train_list} --balance --compose"
+        aug_cmd = f"python3 ../char-cleanup/augment.py --train_list {train_list} --balance --compose --imgs_per_class 10000"
         aug_cmd = aug_cmd.split(" ")
         sp.run(aug_cmd, check=True)
 
@@ -50,7 +50,7 @@ if __name__ == "__main__":
         train_cmd = (
             f"python3 ../yolov3/train.py --epoch {epoch_num} --data_config {data_config} "
             + f"--pretrained_weights {bench_weights} --img_size 416 --resume {check_num} "
-            + f"--prefix {name} --clip 1.0 --batch_size 32"
+            + f"--prefix {name} --clip 1.0 --batch_size 16"
         )
         train_cmd = train_cmd.split(" ")
         sp.run(train_cmd, check=True)

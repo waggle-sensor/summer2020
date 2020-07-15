@@ -54,7 +54,15 @@ Note that neither of these metrics account for false negatives (which should pro
 
 ### Sampling and Retraining
 
-To be completed...
+Sampling on a particular `benchmark_<ckpt num>.csv` file will generate config files for retraining in `output/configs-retrain`:
+
+```
+python3 sample.py output/benchmark_<ckpt>.csv
+```
+
+These training lists can then be augmented and used with the YOLOv3 `train.py` script directly. The testing list is generated in `config/test-new.txt`, which contains redirected paths to the original testing images. 
+
+See `retrain.py` for how the whole pipeline interacts.
 
 
 ## Results
@@ -65,8 +73,9 @@ Model Number | Config Folder | Description | Augmentation | Image Size | Batch S
 ------------ | ------------- | ----------- | ------------ | ---------- | --------
 1 | `config-char-orig` | Original baseline with ~0.92 mAP, using the 8 most frequent characters in the 74K data set and stratified random sampling | 8 filters, ran 5x each for 41x increase per training image | 416x416 | 64
 2 | `config-char-30` | Model with 30 most frequent alphabetical characters, trained using undersampling. Near-zero mAP on test set, ~0.275 precision on KAIST data. Poor results likely due to small training set size (84 raw images per class) and low image size. | Same as (1) | 128x128 | 16
-3 | `config` | Curated set of 12 classes with high confusion rates based on (2), trained using undersampling (100 training images per class). Near-zero mAP on test set, ~0.56 precision on KAIST data. *Very* few object detections, leading to a small (<100 images) and/or inaccurate sampling pool.  | Same as (1) | 256x256 | 32
-4 | `config` (batch size=64, image size=416 now) | Train/test splits are the same as (3), only with new augmentation techniques. ~0.6 mAP on test set, ~0.86 precision on KAIST data. Model after 100 epochs used as baseline (converges after around epoch 50) | Composite transformation of one "major" transformation and 1-2 "minor" ones, applied randomly. 121x increase per training image. | 416x416 | 64
+3 | `config-char12-origaug` | Curated set of 12 classes with high confusion rates based on (2), trained using undersampling (100 training images per class). Near-zero mAP on test set, ~0.56 precision on KAIST data. *Very* few object detections, leading to a small (<100 images) and/or inaccurate sampling pool.  | Same as (1) | 256x256 | 32
+4 | `config-char12-origaug` (batch size=64, image size=416 now) | Train/test splits are the same as (3), only with new augmentation techniques. ~0.86 mAP on test set, ~0.86 precision on KAIST data. Model after 100 epochs used as baseline (converges after around epoch 50) | Composite transformation of one "major" transformation and 1-2 "minor" ones, applied randomly. 121x increase per training image. | 416x416 | 64
+5 | `config` | Train/test splits for the same 12 classes are stratified but not undersampled, using augmentation to balance classes. ~0.888 mAP on KAIST data,  ~0.906 mAP on test data | Composite transforms, 15K images per class | 416x416 | 32
 
 ## Sampling Methods
 

@@ -96,7 +96,7 @@ def get_incr_factors(imgs, imgs_per_class):
 
 
 def parse_label(label_path):
-    labels = open(txt_path, "r").split("\n")
+    labels = open(label_path, "r").read().split("\n")
 
     boxes = list()
     field_ids = list()
@@ -147,14 +147,14 @@ def augment(train_list, compose, balance, imgs_per_class):
             for i in range(augs_per_trans):
                 result = aug(
                     image=img,
-                    bboxes=boxes,
+                    # bboxes=boxes,
                     category_id=field_ids,
                     bbox_params=bbox_params,
                 )
                 aug_img = result["image"]
                 new_bbox = result["bboxes"]
+
                 print(new_bbox)
-                # TODO test this
 
                 img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 

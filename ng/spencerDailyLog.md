@@ -315,3 +315,14 @@
   * Using full data set to train/test, not undersampling
   * Batch size of 32, 15K images per class
 * Beginning to rewrite image augmentation pipeline to account for bounding box transforms
+
+**Wednesday, July 15**
+
+* Attended seminar on final presentations
+* Analyzed results from retrained character model
+  * Improved mAP from a baseline of 0.86 to 0.90 on test data
+* Ran median threshold retraining for 25 epochs, using 10K images per class and batch size of 16
+  * Similar results, with a slight peak in mAP for KAIST data (1.7% increase) then hovering around original value
+  * mAP for test data decreased again
+* Running tests on normal and IQR samples to determine if increased hit rates (89.95% IQR, 90.83% normal) have an impact while preserving "hard" cases
+* Rewriting albumentations source code to account for elastic transform bounding boxes

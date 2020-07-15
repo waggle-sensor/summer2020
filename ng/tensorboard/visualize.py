@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 import math
+import argparse
 from scipy.interpolate import make_interp_spline, BSpline, interp1d
 
 """
@@ -48,12 +49,12 @@ def add_plot(data, title, color="b", label="", header=None, spline=None, x_scale
     return x, y
 
 
-def plot_diff(data, data2, title):
-    x, y1 = add_plot(data, title)
-    _, y2 = add_plot(data2, title, color="r")
+def plot_diff(data, data2, title, spline=None, x_scale=1):
+    x, y1 = add_plot(data, title, spline=spline, x_scale=x_scale)
+    _, y2 = add_plot(data2, title, spline=spline, x_scale=x_scale, color="r")
 
     y3 = [y1[i] - y2[i] for i in range(len(x))]
-    plt.axhline(y=1.0, color="black", linestyle="dashed")
+    plt.axhline(y=0.0, color="black", linestyle="dashed")
     plt.plot(x, y3, "g", label="Difference")
 
     plt.legend()
@@ -66,8 +67,26 @@ def plot(data, title, spline=None, x_scale=1, xlab="", ylab=""):
 
 
 if __name__ == "__main__":
-    title = sys.argv[2] if len(sys.argv) >= 3 else "Title"
-    x_scale = 1 if "val_" in sys.argv[1] else 1 / BATCHES_PER_EPOCH
-    xlab = sys.argv[3] if len(sys.argv) >= 4 else "Epoch"
-    ylab = sys.argv[4] if len(sys.argv) >= 5 else sys.argv[1].split(".csv")[0]
-    plot(sys.argv[1], title, 100, x_scale=x_scale, xlab=xlab, ylab=ylab)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("file")
+    parser.add_argument("--title", default="Title")
+    parser.add_argument("--xlab", default="xlab")
+    parser.add_argument("--ylab", default="ylab")
+    parser.add_argument("--compare", default=None)
+    parser.add_argument("--xscale", default=1.0, type=float)
+    parser.add_argument("--spline", default=None, type=int)
+    args = parser.parse_args()
+
+    x_scale = 1 / args.xscale
+
+    if args.compare is None:
+        plot(
+            args.file,
+            args.title,
+            args.spline,
+            x_scale=x_scale,
+            xlab=args.xlab,
+            ylab=args.ylab,
+        )
+    else:
+        plot_diff(args.file, args.compare, args.title, args.spline, x_scale)

@@ -149,6 +149,9 @@ if __name__ == "__main__":
         "conf_noobj",
     ]
 
+    # Modify this if needed; intended to reduce log size
+    log_interval = int(len(dataloader) / 10)
+
     for epoch in range(opt.resume + 1, opt.epochs):
         model.train()
         start_time = time.time()
@@ -170,6 +173,9 @@ if __name__ == "__main__":
             # ----------------
             #   Log progress
             # ----------------
+
+            if batch_i % log_interval != 0:
+                continue
 
             log_str = "\n---- [Epoch %d/%d, Batch %d/%d] ----\n" % (
                 epoch,
