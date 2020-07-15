@@ -702,9 +702,17 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
 
 ## Week 11 (June 13 to July 17)
 
-### July 11
+### July 13
 #### Work Done
  * Set up demos of data sharing in ROS1 and ROS2 ready, the notes can be found at: https://github.com/waggle-sensor/summer2020/blob/master/liu/doc/Demo-Docker-ROS.md.
+
+#### To Do List:
+ * Analysis the data sharing demos using ROS and ROS2 and get a report about it
+
+### July 14
+#### Work Done
+ * Run demos of data sharing in ROS1 and ROS2 to analysis the performance
+ * Understand the pipeline of the data sharing and try to decrease the latency introduced by cv_bridge based on https://github.com/ros2/ros2/issues/509, https://github.com/ros2/rosidl_python/pull/35, and https://github.com/ros-perception/vision_opencv/tree/dashing/cv_bridge.
 
 #### To Do List:
  * Analysis the data sharing demos using ROS and ROS2 and get a report about it
