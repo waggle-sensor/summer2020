@@ -7,6 +7,7 @@ Week 1 (6/15 - 6/19)
 4. Met supervisor and mentor, figured out project topic
 
 Week 2 (6/22-6/26)
+
 Monday 6/22 
 1. Mac Software update
 2. Downloaded Xcode
@@ -41,6 +42,7 @@ Friday 6/26
 4. PyImageSearch OpenCV course day 1 (https://www.pyimagesearch.com/2018/02/26/face-detection-with-opencv-and-deep-learning/)
 
 Week 3 (6/29 - 7/2)
+
 Monday 6/29
 1. YouTube OpenCV Tutorials part 16 - 20
 2. PyImageSearch Course day 2 (https://www.pyimagesearch.com/2018/07/19/opencv-tutorial-a-guide-to-learn-opencv/)
@@ -76,6 +78,7 @@ Thursday 7/2
 8. Continued research on crowd analysis using computer vision and bird's eye view image transformation techniques
 
 Week 4 (7/6 - 7/10)
+
 Monday 7/6: OUT OF TOWN, hours to be made up throughout the week
 
 Tuesday 7/7
@@ -115,6 +118,7 @@ Friday 7/10
 6. Compiled some more tutorials on Deep learning / PyTorch to begin next week
 
 Week 5 (7/13 - 7/17)
+
 Monday 7/13
 1. PyImageSearch Tutorial: Deep Learning Object Detection (https://www.pyimagesearch.com/2017/09/11/object-detection-with-deep-learning-and-opencv/)
 2. PyImageSearch Tutorial: Real-Time Deep Learning Object Detection (https://www.pyimagesearch.com/2017/09/18/real-time-object-detection-with-deep-learning-and-opencv/)
@@ -131,3 +135,14 @@ Tuesday 7/14
 5. PyImageSearch Tutorial: Convolutions with Python and OpenCV (https://www.pyimagesearch.com/2016/07/25/convolutions-with-opencv-and-python/)
 6. PyImageSearch Tutorial: Pedestrian Detection with OpenCV (https://www.pyimagesearch.com/2015/11/09/pedestrian-detection-opencv/)
 7. Data Collection Photoshoot
+
+Wednesday 7/15
+1. Student Seminar
+2. NAISE SciComm Part 2
+3. CELS hang
+4. Prep Student Connects presentation
+5. Organize photos from yesterday, test with pedestrian detector tutorial
+6. PyImageSearch course day 14 (https://www.pyimagesearch.com/2018/04/09/how-to-quickly-build-a-deep-learning-image-dataset/)
+7. PyImageSearch tutorial: People Counter (https://www.pyimagesearch.com/2018/08/13/opencv-people-counter/)
+8. PyImageSearch tutorial: OpenCV Object Tracking (https://www.pyimagesearch.com/2018/07/30/opencv-object-tracking/)
+9. PyImageSearch tutorial: YOLO  Object Tracking (https://www.pyimagesearch.com/2018/11/12/yolo-object-detection-with-opencv/)
