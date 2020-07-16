@@ -1,0 +1,10 @@
+Sample Code Notes
+
+PyImageSearch
+    1. Uses YOLO for person detection
+    2. Only videos
+    3. Does not do any camera calibration or image transformation, only calculates pixel 	distance between centroids of bounding boxes, not accurate far from camera
+    4. Does not account for groups of people walking together
+
+
+
