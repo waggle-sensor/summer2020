@@ -130,7 +130,7 @@ Monday 7/13
 Tuesday 7/14
 1. AI/ML Scrum
 2. NAISE Seminar
-3, Deep Learning and Neural Networks with PyTorch Tutorial Part 2 (https://www.youtube.com/watch?v=i2yPxY2rOzs&list=PLQVvvaa0QuDdeMyHEYc0gxFpYwHY2Qfdh&index=2)
+3. Deep Learning and Neural Networks with PyTorch Tutorial Part 2 (https://www.youtube.com/watch?v=i2yPxY2rOzs&list=PLQVvvaa0QuDdeMyHEYc0gxFpYwHY2Qfdh&index=2)
 4. PyImageSearch course day 13 (https://www.pyimagesearch.com/2017/08/21/deep-learning-with-opencv/)
 5. PyImageSearch Tutorial: Convolutions with Python and OpenCV (https://www.pyimagesearch.com/2016/07/25/convolutions-with-opencv-and-python/)
 6. PyImageSearch Tutorial: Pedestrian Detection with OpenCV (https://www.pyimagesearch.com/2015/11/09/pedestrian-detection-opencv/)
@@ -146,3 +146,13 @@ Wednesday 7/15
 7. PyImageSearch tutorial: People Counter (https://www.pyimagesearch.com/2018/08/13/opencv-people-counter/)
 8. PyImageSearch tutorial: OpenCV Object Tracking (https://www.pyimagesearch.com/2018/07/30/opencv-object-tracking/)
 9. PyImageSearch tutorial: YOLO  Object Tracking (https://www.pyimagesearch.com/2018/11/12/yolo-object-detection-with-opencv/)
+
+Thursday 7/16
+1. AI/ML Scrum
+2. Argonne Student Lecture
+3. Deep Learning and Neural Networks with PyTorch Tutorial Part 3 (https://www.youtube.com/watch?v=ixathu7U-LQ&list=PLQVvvaa0QuDdeMyHEYc0gxFpYwHY2Qfdh&index=3)
+4. Tested family test pics with YOLO detector (worked a lot better then HOG)
+5. PyImageSearch course day 15 (https://www.pyimagesearch.com/2018/04/16/keras-and-convolutional-neural-networks-cnns/)
+6. PyImageSearch Tutorial: Face Mask Detection (https://www.pyimagesearch.com/2020/05/04/covid-19-face-mask-detector-with-opencv-keras-tensorflow-and-deep-learning/)
+7. Student Connects Meeting / Presentation
+8. Analyzed PyImageSearch Social Distancing Detector code (https://www.pyimagesearch.com/2020/06/01/opencv-social-distancing-detector/)
