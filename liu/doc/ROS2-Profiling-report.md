@@ -15,12 +15,66 @@
 
 ### 3.1 End-to-End Latency
 
+#### Latency CDF
+
 CDF              |  CDF        | CDF              |
 :-------------------------:|:-------------------------:|:-------------------------:
 ![](../image/ros2-results/latency_ros2_generic.png)  |  ![](../image/ros2-results/latency_ros2_rt.png) | ![](../image/ros2-results/latency_mode0.png)
 ![](../image/ros2-results/latency_mode1.png)  |  ![](../image/ros2-results/latency_mode2.png) |![](../image/ros2-results/latency_mode3.png)
 ![](../image/ros2-results/latency_mode4.png)  |  ![](../image/ros2-results/latency_mode5.png) |![](../image/ros2-results/latency_mode6.png)
 
+#### Latency Breakdown
+
+```
+demoTime_ = what_time_is_it_now();
+  double lat = 0;
+  double t0 = 0;
+  double t1 = 0;
+  double t2 = 0;
+  double t3 = 0;
+  double t4 = 0;
+
+  while (!demoDone_) {
+    buffIndex_ = (buffIndex_ + 1) % 3;
+
+    t0 = what_time_is_it_now();
+    fetch_thread = std::thread(&YoloObjectDetector::fetchInThread, this);
+    detect_thread = std::thread(&YoloObjectDetector::detectInThread, this);
+    t1 = what_time_is_it_now();
+
+    if (!demoPrefix_) {
+      fps_ = 1./(what_time_is_it_now() - demoTime_);
+      lat = what_time_is_it_now() - demoTime_;
+      //myfile << what_time_is_it_now() - demoTime_ << endl;
+      printf("%f\n", what_time_is_it_now() - demoTime_);
+      demoTime_ = what_time_is_it_now();
+      if (viewImage_) {
+        displayInThread(0);
+      } else {
+        generate_image(buff_[(buffIndex_ + 1)%3], ipl_);
+      }
+      publishInThread();
+    } else {
+      char name[256];
+      //sprintf(name, "%s_%08d", demoPrefix_, count);
+      save_image(buff_[(buffIndex_ + 1) % 3], name);
+    }
+    t2 = what_time_is_it_now();
+    fetch_thread.join();
+    t3 = what_time_is_it_now();
+
+    detect_thread.join();
+    t4 = what_time_is_it_now();
+
+    myfile << 1000*(t1-t0) << " " << 1000*(t2-t1) << " " << 1000*(t3-t2) << " " << 1000*(t4-t3) << " " << 1000*lat << endl;
+
+    ++count;
+    if (!isNodeRunning()) {
+      demoDone_ = true;
+      myfile.close();
+    }
+  }
+```
 
 ### 3.2 System Resource Utilization
 
