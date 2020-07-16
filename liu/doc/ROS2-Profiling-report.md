@@ -76,6 +76,68 @@ demoTime_ = what_time_is_it_now();
   }
 ```
 
+More breakdown:
+```
+demoTime_ = what_time_is_it_now();
+  double lat = 0;
+  double t0 = 0;
+  double t1 = 0;
+  double t2 = 0;
+  double t3 = 0;
+  double t4 = 0;
+  double ts = 0;
+  double td = 0;
+
+  while (!demoDone_) {
+    buffIndex_ = (buffIndex_ + 1) % 3;
+
+    t0 = what_time_is_it_now();
+    fetch_thread = std::thread(&YoloObjectDetector::fetchInThread, this);
+    detect_thread = std::thread(&YoloObjectDetector::detectInThread, this);
+    t1 = what_time_is_it_now();
+
+    if (!demoPrefix_) {
+      fps_ = 1./(what_time_is_it_now() - demoTime_);
+      lat = what_time_is_it_now() - demoTime_;
+      //myfile << what_time_is_it_now() - demoTime_ << endl;
+      printf("%f\n", what_time_is_it_now() - demoTime_);
+      demoTime_ = what_time_is_it_now();
+
+      ts = what_time_is_it_now();
+      printf("%c", viewImage_);
+      if (viewImage_) {
+        displayInThread(0);
+      } else {
+        generate_image(buff_[(buffIndex_ + 1)%3], ipl_);
+      }
+      td = what_time_is_it_now();
+
+      publishInThread();
+      //td = what_time_is_it_now();
+    } else {
+      char name[256];
+      //sprintf(name, "%s_%08d", demoPrefix_, count);
+      save_image(buff_[(buffIndex_ + 1) % 3], name);
+    }
+    t2 = what_time_is_it_now();
+    fetch_thread.join();
+    t3 = what_time_is_it_now();
+
+    detect_thread.join();
+    t4 = what_time_is_it_now();
+
+    myfile << 1000*(t1-t0) << " " << 1000*(t2-t1) << " " << 1000*(t3-t2) << " " << 1000*(t4-t3) << " " << 1000*lat << endl;
+    myfile << 1000*(td-ts) << endl;
+
+    ++count;
+    if (!isNodeRunning()) {
+      demoDone_ = true;
+      myfile.close();
+    }
+  }
+
+```
+
 ### 3.2 System Resource Utilization
 
 #### 3.2.1 CPU utilization
