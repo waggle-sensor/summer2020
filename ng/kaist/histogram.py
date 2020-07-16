@@ -9,11 +9,36 @@ import benchmark as bench
 OUTPUT = "output/"
 
 HIT_MIN = 0.6
-STACKED_MIN = 0.90
+STACKED_MIN = 0.80
 
 
 def get_conf_data(result_list):
     return [row["conf"] for row in result_list]
+
+
+def show_overall_hist(results):
+    acc = round(bench.mean_accuracy(results[:-1]), 3)
+    prec = round(bench.mean_precision(results[:-1]), 3)
+    hit_miss = [get_conf_data(data) for data in results[-1].hits_misses()]
+
+    colors = ["lightgreen", "red"]
+    plt.hist(hit_miss[0], bins=10, color=colors[0], range=(HIT_MIN, 1.0))
+    plt.show()
+    title = f"Misses on KAIST Data"
+    plt.title(title)
+    plt.xlabel("Confidence")
+    plt.ylabel("Count")
+    plt.hist(hit_miss[1], bins=20, color=colors[1], range=(0.0, 1.0))
+    plt.show()
+    title = (
+        f"Confidence Distribution on KAIST Data\n(acc={acc}, "
+        + f"prec={prec}, n={results[-1].pop})"
+    )
+    plt.title(title)
+    plt.xlabel("Confidence")
+    plt.ylabel("Count")
+    plt.hist(hit_miss, bins=10, color=colors, range=(STACKED_MIN, 1.0), stacked=True)
+    plt.show()
 
 
 def generate_hist(results, filename="hist.pdf", mean_stats=True):
@@ -65,7 +90,11 @@ if __name__ == "__main__":
         suffix = ".pdf"
 
     OUTPUT = "/".join(sys.argv[1].split("/")[:-1])
-    print(OUTPUT)
+
+    if "--show" in sys.argv:
+        results, _ = utils.load_data(sys.argv[1], by_actual=False)
+        show_overall_hist(results)
+        exit(0)
 
     results, mat = utils.load_data(sys.argv[1], by_actual=False)
     generate_hist(results, filename="hist_by_pred" + suffix)

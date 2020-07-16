@@ -150,7 +150,7 @@ if __name__ == "__main__":
     ]
 
     # Modify this if needed; intended to reduce log size
-    log_interval = int(len(dataloader) / 10)
+    log_interval = int(len(dataloader) / 50)
 
     for epoch in range(opt.resume + 1, opt.epochs):
         model.train()
@@ -173,9 +173,6 @@ if __name__ == "__main__":
             # ----------------
             #   Log progress
             # ----------------
-
-            if batch_i % log_interval != 0:
-                continue
 
             log_str = "\n---- [Epoch %d/%d, Batch %d/%d] ----\n" % (
                 epoch,
@@ -206,7 +203,8 @@ if __name__ == "__main__":
                         if name != "grid_size":
                             tensorboard_log += [(f"{name}_{j+1}", metric)]
                 tensorboard_log += [("loss", loss.item())]
-                logger.list_of_scalars_summary(tensorboard_log, batches_done)
+                if batch_i % log_interval == 0:
+                    logger.list_of_scalars_summary(tensorboard_log, batches_done)
 
             log_str += AsciiTable(metric_table).table
             log_str += f"\nTotal loss {loss.item()}"

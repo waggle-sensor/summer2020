@@ -123,7 +123,7 @@ class ClassResults:
         out.close()
 
 
-def test(model, classes, img_size, valid_path, check_num):
+def test(model, classes, img_size, valid_path, check_num, out_folder):
     """Tests weights against the test data set."""
 
     class Options(object):
@@ -137,7 +137,7 @@ def test(model, classes, img_size, valid_path, check_num):
 
     utils.rewrite_test_list(valid_path, ORIG_DATA)
     utils.save_stdout(
-        OUTPUT + f"mAP_{check_num}.txt",
+        out_folder + f"/mAP_{check_num}.txt",
         evaluate.get_results,
         model,
         valid_path.replace(".txt", "-new.txt"),
@@ -160,7 +160,8 @@ def benchmark(
 
     classes = yoloutils.load_classes(classes)
 
-    test(model, classes, img_size, data_opts["valid"], check_num)
+    out_folder = "/".join(out_name.split("/")[:-1]) if out_name is not None else OUTPUT
+    test(model, classes, img_size, data_opts["valid"], check_num, out_folder)
 
     loader = DataLoader(
         datasets.ImageFolder(sample_dir, img_size=img_size),

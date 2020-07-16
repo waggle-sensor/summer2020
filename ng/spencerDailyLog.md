@@ -326,3 +326,13 @@
   * mAP for test data decreased again
 * Running tests on normal and IQR samples to determine if increased hit rates (89.95% IQR, 90.83% normal) have an impact while preserving "hard" cases
 * Rewriting albumentations source code to account for elastic transform bounding boxes
+
+**Thursday, July 16**
+
+* Attended scrum meeting
+* Attended student seminar on scientific visualization
+* Benchmarked/analyzed results from IQR and Normal distribution sampling/retraining run overnight
+* Restarted median threshold and IQR retraining after starting from the wrong checkpoints (with less accurate baseline model)
+* Worked on presentation and compiling graphs/data
+* Attended student cohort session
+* Continued working on presentation and documenting code changes

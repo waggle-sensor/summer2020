@@ -147,14 +147,12 @@ def augment(train_list, compose, balance, imgs_per_class):
             for i in range(augs_per_trans):
                 result = aug(
                     image=img,
-                    # bboxes=boxes,
+                    bboxes=boxes,
                     category_id=field_ids,
                     bbox_params=bbox_params,
                 )
                 aug_img = result["image"]
                 new_bbox = result["bboxes"]
-
-                print(new_bbox)
 
                 img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
@@ -167,6 +165,7 @@ def augment(train_list, compose, balance, imgs_per_class):
                 new_txt_path = aug_path.replace("images", "labels")[:-4] + ".txt"
                 os.makedirs(os.path.dirname(new_txt_path), exist_ok=True)
                 copyfile(txt_path, new_txt_path)
+                print(new_bbox, new_txt_path)
 
     with open(train_list[:-4] + "-aug.txt", "w+") as out:
         out.write("\n".join(imgs))

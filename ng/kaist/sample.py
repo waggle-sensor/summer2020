@@ -49,10 +49,8 @@ def prob_sample(result, desired, prob_func, *prob_func_args):
 
 def median_thresh_sample(result):
     confidences = result.get_confidences()
-    avg = sum(confidences) / len(confidences)
-    median = stats.median(confidences)
 
-    print(f"avg: {avg}")
+    median = stats.median(confidences)
     print(f"median: {median}")
 
     return prob_sample(result, in_range(result, median), const, median)
@@ -60,8 +58,8 @@ def median_thresh_sample(result):
 
 def iqr_sample(result):
     confidences = result.get_confidences()
-    q1 = np.quantile(confidences, 0.25)
-    q3 = np.quantile(confidences, 0.5)
+    q1 = np.quantile(confidences, 0.25, interpolation="midpoint")
+    q3 = np.quantile(confidences, 0.5, interpolation="midpoint")
 
     print(f"q1: {q1}, q3: {q3}")
 
@@ -154,8 +152,9 @@ def create_sample(data_config, results, undersample, name, sample_func, *func_ar
         else:
             retrain += sample_list
 
-    hit_rate = sum(int(img["hit"] == "True") for img in retrain) / len(retrain)
-    print(f"Hit rate: {hit_rate}")
+    hit_rate = lambda x: sum(int(img["hit"] == "True") for img in x) / len(x)
+    avg_hit_rate = stats.mean(hit_rate(samples) for samples in retrain_by_class)
+    print(f"Avg. hit rate: {avg_hit_rate}")
 
     create_labels(retrain)
     create_config(retrain, name, data_config)
@@ -178,7 +177,11 @@ def sample_histogram(retrain, title):
 
     plt.figure()
     plt.hist(hit_miss, bins=10, color=colors, stacked=True)
-    plt.title(title)
+    plt.xlabel("Confidence")
+    plt.ylabel("Count of Chosen")
+    if title == "iqr":
+        title = "Quartile Range"
+    plt.title(title + f" (n={len(retrain)})")
     plt.show()
 
 
