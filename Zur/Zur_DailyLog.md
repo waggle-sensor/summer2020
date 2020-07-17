@@ -156,3 +156,13 @@ Thursday 7/16
 6. PyImageSearch Tutorial: Face Mask Detection (https://www.pyimagesearch.com/2020/05/04/covid-19-face-mask-detector-with-opencv-keras-tensorflow-and-deep-learning/)
 7. Student Connects Meeting / Presentation
 8. Analyzed PyImageSearch Social Distancing Detector code (https://www.pyimagesearch.com/2020/06/01/opencv-social-distancing-detector/)
+
+Friday 7/17
+1. Deep Learning and Neural Networks with PyTorch Tutorial Part 4 (https://www.youtube.com/watch?v=9j-_dOze4IM&list=PLQVvvaa0QuDdeMyHEYc0gxFpYwHY2Qfdh&index=4)
+2. PyImageSearch course day 16 (https://www.pyimagesearch.com/2017/09/18/real-time-object-detection-with-deep-learning-and-opencv/)
+3. Learned about and coded my own non-maxima suppression algorithm
+4. Learned about and coded my own centroid tracking algorithm
+5. YouTube tutorials by Rocket Systems (https://www.youtube.com/playlist?list=PLWw98q-Xe7iH8UHARl8RGk8MRj1raY4Eh)
+	a. Person detection
+	b. Person tracking
+6. NAISE 5 slide deliverable
