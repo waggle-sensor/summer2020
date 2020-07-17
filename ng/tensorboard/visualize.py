@@ -3,8 +3,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 import math
+import os
 import argparse
 from scipy.interpolate import make_interp_spline, BSpline, interp1d
+import cutecharts.charts
+import webview
 
 """
 This script was primarily written to convert Tensorboard log data from the YOLOv3
@@ -14,7 +17,9 @@ scripts to a parsable format, but it can be adapted to other purposes
 BATCHES_PER_EPOCH = 1  # 2269
 
 
-def add_plot(data, title, color="b", label="", header=None, spline=None, x_scale=1):
+def add_plot(
+    data, title, color="b", label="", header=None, spline=None, x_scale=1, cute=False
+):
     x = np.array([], dtype=np.float128)
     y = np.array([], dtype=np.float128)
 
@@ -41,6 +46,18 @@ def add_plot(data, title, color="b", label="", header=None, spline=None, x_scale
         y = spl(x_new)
         x = x_new
     x = x_scale * x
+
+    if cute:
+        chart = cutecharts.charts.Line(title)
+        chart.set_options(
+            labels=[round(float(xs), 3) for xs in x],
+            x_label=header[0],
+            y_label=header[1],
+            y_tick_count=5,
+        )
+        chart.add_series("Retrained Precision (%)", [float(ys * 100) for ys in y])
+        return x, y, chart
+
     plt.plot(x, y, color, label=label)
 
     plt.title(title)
@@ -49,11 +66,20 @@ def add_plot(data, title, color="b", label="", header=None, spline=None, x_scale
     return x, y
 
 
-def plot_diff(data, data2, title, spline=None, x_scale=1):
+def plot_diff(data, data2, title, spline=None, x_scale=1, cute=False):
+
     x, y1 = add_plot(data, title, spline=spline, x_scale=x_scale)
     _, y2 = add_plot(data2, title, spline=spline, x_scale=x_scale, color="r")
 
     y3 = [y1[i] - y2[i] for i in range(len(x))]
+
+    if cute:
+        _, _, chart = add_plot(data, title, spline=spline, x_scale=x_scale, cute=True)
+        chart.add_series("Baseline Precision (%)", [float(ys * 100) for ys in y2])
+        chart.add_series("Difference", [float(ys * 100) for ys in y3])
+        show_cute_chart(chart)
+        return
+
     plt.axhline(y=0.0, color="black", linestyle="dashed")
     plt.plot(x, y3, "g", label="Difference")
 
@@ -61,9 +87,21 @@ def plot_diff(data, data2, title, spline=None, x_scale=1):
     plt.show()
 
 
-def plot(data, title, spline=None, x_scale=1, xlab="", ylab=""):
-    add_plot(data, title, header=[xlab, ylab], spline=spline, x_scale=x_scale)
-    plt.show()
+def show_cute_chart(chart):
+    chart.render(dest="output/chart.html")
+    webview.create_window("title", f"{os.getcwd()}/output/chart.html")
+    webview.start()
+    os.remove("output/chart.html")
+
+
+def plot(data, title, spline=None, x_scale=1, xlab="", ylab="", cute=False):
+    _, _, chart = add_plot(
+        data, title, header=[xlab, ylab], spline=spline, x_scale=x_scale, cute=cute
+    )
+    if cute:
+        show_cute_chart(chart)
+    else:
+        plt.show()
 
 
 if __name__ == "__main__":
@@ -75,6 +113,7 @@ if __name__ == "__main__":
     parser.add_argument("--compare", default=None)
     parser.add_argument("--xscale", default=1.0, type=float)
     parser.add_argument("--spline", default=None, type=int)
+    parser.add_argument("--cute", default=False, action="store_true")
     args = parser.parse_args()
 
     x_scale = 1 / args.xscale
@@ -87,6 +126,7 @@ if __name__ == "__main__":
             x_scale=x_scale,
             xlab=args.xlab,
             ylab=args.ylab,
+            cute=args.cute,
         )
     else:
-        plot_diff(args.file, args.compare, args.title, args.spline, x_scale)
+        plot_diff(args.file, args.compare, args.title, args.spline, x_scale, args.cute)

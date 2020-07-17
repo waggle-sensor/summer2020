@@ -5,6 +5,7 @@ import utils
 from shutil import copyfile
 import argparse
 import string
+from tqdm import tqdm
 
 """
 Helper script to plot average precision as a function of
@@ -49,10 +50,14 @@ if __name__ == "__main__":
     parser.add_argument("--output", required=False, default="./output/")
     opt = parser.parse_args()
 
+    os.makedirs(opt.output, exist_ok=True)
+
     for test in ("", "_test"):
         output = open(f"{opt.output}/val_precision{test}_time.csv", "w+")
         output.write("epoch,all_precision\n")
-        for i in range(opt.start, opt.end, opt.delta):
+        for i in tqdm(
+            range(opt.start, opt.end, opt.delta), f"Benchmarking {test} results"
+        ):
             if not os.path.exists(f"{opt.output}/benchmark{test}_{i}.csv"):
                 benchmark.benchmark(
                     opt.prefix,
@@ -61,7 +66,8 @@ if __name__ == "__main__":
                     "config/chars.data",
                     "config/chars.names",
                     "data/images/objs/" if test == str() else "data/temp/",
-                    f"{opt.output}/benchmark{test}",
+                    out=f"{opt.output}/benchmark{test}",
+                    silent=True,
                 )
 
             results, _ = utils.load_data(

@@ -123,7 +123,7 @@ class ClassResults:
         out.close()
 
 
-def test(model, classes, img_size, valid_path, check_num, out_folder):
+def test(model, classes, img_size, valid_path, check_num, out_folder, silent=False):
     """Tests weights against the test data set."""
 
     class Options(object):
@@ -143,11 +143,12 @@ def test(model, classes, img_size, valid_path, check_num, out_folder):
         valid_path.replace(".txt", "-new.txt"),
         opt,
         classes,
+        silent=silent,
     )
 
 
 def benchmark(
-    check_prefix, check_num, config, data_config, classes, sample_dir, out_name=None
+    prefix, check_num, config, data_config, classes, sample_dir, out=None, silent=False
 ):
     options = parser.parse_model_config("config/yolov3.cfg")[0]
     data_opts = parser.parse_data_config("config/chars.data")
@@ -155,13 +156,13 @@ def benchmark(
     img_size = max(int(options["width"]), int(options["height"]))
 
     model = models.get_eval_model(
-        config, img_size, f"checkpoints/{check_prefix}_ckpt_{check_num}.pth"
+        config, img_size, f"checkpoints/{prefix}_ckpt_{check_num}.pth"
     )
 
     classes = yoloutils.load_classes(classes)
 
-    out_folder = "/".join(out_name.split("/")[:-1]) if out_name is not None else OUTPUT
-    test(model, classes, img_size, data_opts["valid"], check_num, out_folder)
+    out_folder = "/".join(out.split("/")[:-1]) if out is not None else OUTPUT
+    test(model, classes, img_size, data_opts["valid"], check_num, out_folder, silent)
 
     loader = DataLoader(
         datasets.ImageFolder(sample_dir, img_size=img_size),
@@ -174,14 +175,16 @@ def benchmark(
     confusion_mat = dict()
 
     header = "file,actual,detected,conf,hit".split(",")
-    if out_name is not None:
-        output = open(f"{out_name}_{check_num}.csv", "w+")
+    if out is not None:
+        output = open(f"{out}_{check_num}.csv", "w+")
     else:
         output = open(OUTPUT + f"benchmark_{check_num}.csv", "w+")
     writer = csv.DictWriter(output, fieldnames=header)
     writer.writeheader()
 
-    for (img_paths, input_imgs) in tqdm.tqdm(loader, "Inferencing on samples"):
+    for (img_paths, input_imgs) in tqdm.tqdm(
+        loader, "Inferencing on samples", disable=silent
+    ):
         props = dict()
         props["file"] = img_paths[0]
         props["actual"] = img_paths[0].split("-")[1][:1]

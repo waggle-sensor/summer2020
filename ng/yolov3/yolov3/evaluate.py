@@ -102,7 +102,9 @@ def save_image(detections, path, opt, classes, best_label_only=False):
     plt.close(fig)
 
 
-def evaluate(model, path, iou_thres, conf_thres, nms_thres, img_size, batch_size):
+def evaluate(
+    model, path, iou_thres, conf_thres, nms_thres, img_size, batch_size, silent=False
+):
     # Get dataloader
     dataset = ListDataset(path, img_size=img_size, augment=False, multiscale=False)
     dataloader = torch.utils.data.DataLoader(
@@ -118,7 +120,7 @@ def evaluate(model, path, iou_thres, conf_thres, nms_thres, img_size, batch_size
     labels = []
     sample_metrics = []  # List of tuples (TP, confs, pred)
     for _, (_, imgs, targets) in enumerate(
-        tqdm.tqdm(dataloader, desc="Detecting objects")
+        tqdm.tqdm(dataloader, desc="Detecting objects", disable=silent)
     ):
 
         # Extract labels
@@ -150,7 +152,7 @@ def evaluate(model, path, iou_thres, conf_thres, nms_thres, img_size, batch_size
     return precision, recall, AP, f1, ap_class
 
 
-def get_results(model, path, opt, class_names, logger=None, epoch=0):
+def get_results(model, path, opt, class_names, logger=None, epoch=0, silent=False):
     print("\n---- Evaluating Model ----")
 
     print("Compute mAP...")
@@ -163,6 +165,7 @@ def get_results(model, path, opt, class_names, logger=None, epoch=0):
         nms_thres=opt.nms_thres,
         img_size=opt.img_size,
         batch_size=8,
+        silent=silent,
     )
 
     evaluation_metrics = [

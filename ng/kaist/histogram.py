@@ -98,7 +98,7 @@ if __name__ == "__main__":
 
     results, mat = utils.load_data(sys.argv[1], by_actual=False)
     generate_hist(results, filename="hist_by_pred" + suffix)
-    results[-1].generate_prec_distrib(f"output/all_prec_{check_str}.csv", 0.01)
+    results[-1].generate_prec_distrib(f"{OUTPUT}/all_prec_{check_str}.csv", 0.01)
 
     results, _ = utils.load_data(sys.argv[1], by_actual=True)
     generate_hist(results, filename="hist_by_actual" + suffix)

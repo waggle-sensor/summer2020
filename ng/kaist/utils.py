@@ -35,10 +35,10 @@ def load_data(output, by_actual=True):
     return results, mat
 
 
-def save_stdout(filename, func, *func_args):
+def save_stdout(filename, func, *pos_args, **var_args):
     old_stdout = sys.stdout
     sys.stdout = open(filename, "w+")
-    func(*func_args)
+    func(*pos_args, **var_args)
     sys.stdout = old_stdout
 
 
