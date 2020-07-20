@@ -6,7 +6,8 @@ Hacky script created to view bounding box annotations for augmented images
 
 import sys
 import os
-sys.path.insert(0, '../kaist')
+
+sys.path.insert(0, "../kaist")
 
 import cleanup
 

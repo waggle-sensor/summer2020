@@ -167,7 +167,7 @@ def augment(train_list, compose, balance, imgs_per_class):
 
                 new_txt_path = aug_path.replace("images", "labels")[:-4] + ".txt"
                 os.makedirs(os.path.dirname(new_txt_path), exist_ok=True)
-                
+
                 with open(new_txt_path, "w+") as out:
                     for i, bbox_str in enumerate(new_bboxes):
                         out.write(f"{field_ids[i]} {bbox_str}\n")

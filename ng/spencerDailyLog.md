@@ -359,4 +359,5 @@
   * Previously, bounding boxes were assumed to be the entire augmented image
   * Relies on my custom [albumentations fork](https://github.com/spencerng/albumentations)
   * Added support for optical and elastic deformations
+* Should change number of misses to recall (TP / (TP + FN)) in analysis
 * Beginning further review on uncertainty estimation methods

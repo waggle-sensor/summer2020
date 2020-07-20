@@ -137,7 +137,6 @@ class Annotation:
         annot_path = img_path[:-4].replace("images", "labels") + annot_ext
         self.parse(annot_path, annot_parser, normalize)
 
-
     def parse(self, annot_path, annot_parser, normalize):
         self.labels = annot_parser(annot_path)
 
@@ -148,13 +147,12 @@ class Annotation:
         normalized_labels = list()
         img = cv2.imread(self.img_path)
         h, w, _ = img.shape
-        resize = lambda coord: (round(w * coord[0]), round(h * coord[1])) 
+        resize = lambda coord: (round(w * coord[0]), round(h * coord[1]))
         for label in self.labels:
             label["minXY"] = resize(label["minXY"])
             label["maxXY"] = resize(label["maxXY"])
             normalized_labels.append(label)
         self.labels = normalized_labels
-
 
     def make_darknet_label(self, class_list):
         out_path = self.img_path.replace("images", "labels")[:-4] + ".txt"
@@ -231,7 +229,11 @@ def clean(
         move_rename_images(annot_ext, data, annot_path_to_img)
 
     # Filter out augmented images
-    img_paths = [img for img in get_img_paths(data + "/images/labeled", img_exts) if "_" not in img]
+    img_paths = [
+        img
+        for img in get_img_paths(data + "/images/labeled", img_exts)
+        if "_" not in img
+    ]
 
     annots = parse_annots(img_paths, annot_ext, annot_parser)
 
