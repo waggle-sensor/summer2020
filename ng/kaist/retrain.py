@@ -5,34 +5,48 @@ import sys
 import os
 import subprocess as sp
 import random
+import argparse
 
 
 """
 This is a really hacky script right now, meant for testing.
-
-TODO generalize more
 """
 
 if __name__ == "__main__":
     random.seed("sage")
 
-    check_num = int(sys.argv[1])
-
     methods = {"normal": sample.normal_sample, "iqr": sample.iqr_sample}
-    # methods = {"median_thresh": sample.median_thresh_sample}
+    methods = {"median_thresh": sample.median_thresh_sample}
     data_file = "config/chars.data"
 
-    if not os.path.exists(f"output/benchmark_{check_num}.csv"):
-        benchmark.benchmark(
-            "yolov3",
-            check_num,
-            "config/yolov3.cfg",
-            data_file,
-            "config/chars.names",
-            "data/images/objs/",
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--epoch", type=int, help="benchmark epoch for retraining", default=None
+    )
+    parser.add_argument("--from_file", type=str, help="load from file", default=None)
+    opt = parser.parse_args()
+
+    if opt.epoch is None and opt.from_file is None:
+        print("Error: must specify a file or epoch to retrain from")
+        exit(0)
+
+    if opt.epoch is not None:
+        if not os.path.exists(f"output/benchmark_{opt.epoch}.csv"):
+            benchmark.benchmark(
+                "yolov3",
+                opt.epoch,
+                "config/yolov3.cfg",
+                data_file,
+                "config/chars.names",
+                "data/images/objs/",
+            )
+
+        results, _ = utils.load_data(
+            f"output/benchmark_{check_num}.csv", by_actual=False
         )
 
-    results, _ = utils.load_data(f"output/benchmark_{check_num}.csv", by_actual=False)
+    else:
+        results, _ = utils.load_data(opt.from_file, by_actual=False)
 
     for name, func in methods.items():
         sample.create_sample(data_file, results, False, name, func)
