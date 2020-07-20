@@ -336,3 +336,27 @@
 * Worked on presentation and compiling graphs/data
 * Attended student cohort session
 * Continued working on presentation and documenting code changes
+
+**Friday, July 17**
+
+* Compiled and analyzed results from revised median threshold retraining
+  * 2.2% increase at the peak, lot more object misses
+  * Later epochs have more object detections, which could be confounding the results
+  * High hit rate appears to be a major influencing factor
+* Revised benchmarking and visualization tools for greater modularity
+* Gave presentation on results of initial retraining methods and results
+* Read paper on uncertainty estimation (Geifman et. al)
+  * Describes estimation method of uncertainty ("negative confidence") based on confidence scores over time and a given classifier
+  * Early stopping algorithm finds a particular confidence function that leads to a best fit
+  * Simple approximation of the algorithm could be implemented in my model instead of current confidence
+  * Confidences tend to "overfit" as training goes on (shown in my results)
+
+## Week 6
+
+**Monday, July 20**
+
+* Finished bounding box transformation feature alongside augmentation
+  * Previously, bounding boxes were assumed to be the entire augmented image
+  * Relies on my custom [albumentations fork](https://github.com/spencerng/albumentations)
+  * Added support for optical and elastic deformations
+* Beginning further review on uncertainty estimation methods
