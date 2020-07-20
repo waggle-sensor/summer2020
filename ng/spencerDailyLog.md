@@ -361,3 +361,27 @@
   * Added support for optical and elastic deformations
 * Should change number of misses to recall (TP / (TP + FN)) in analysis
 * Beginning further review on uncertainty estimation methods
+  * Many manipulate confidences over time, as a cumulation of scores as training goes on
+  * Need to further look into this
+* Implemented the average early stop methodology based on existing benchmarking script
+  * Averaged confidence scores for a particular image from epoch 0 to 74, with an interval of 3
+  * Took the most confident class at the end, making precision a "binary" choice with a cutoff confidence of 0.5
+  * Cutoff may need to change? Average confidence score is now around 0.75
+* Has a much more normal distribution of confidences now
+  * General precision vs. confidence curve shows positive trend again
+  * Misses are more right-skewed
+* Re-ran sampling methods
+  * We now find the quartile and Normal PDF metrics on the set of confidences scores that are individually greater than 0.5
+    * Might frequently sample images with a maximum confidence below 0.5 otherwise
+  * Median determination remains the same, as median conf is always above 0.5
+  * Recall is 100% now, as we don't "snapshot" our progress
+  * p = 0.4 for Normal distribution, get fewer samples and higher hit rate that way
+    * Still enables us to sample values with confidence below 0.5
+* Overall hit rate increases
+  * 99.25% for median
+  * 97.77% for quartile
+  * 96.37% for normal
+* Now retraining with same parameters (25 epochs, batch size = 16, 10K images per class)
+  * Possible source of error/lack of control could be modified augmentation with more precise bounding boxes
+  * Elastic transforms sometimes yield incorrect bounding boxes
+  * Loss function appears to have high values

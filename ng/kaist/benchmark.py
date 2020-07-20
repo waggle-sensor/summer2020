@@ -2,9 +2,10 @@ import yolov3.evaluate as evaluate
 import yolov3.models as models
 import yolov3.utils.datasets as datasets
 import yolov3.utils.utils as yoloutils
-import yolov3.utils.parse_config as parser
+import yolov3.utils.parse_config as yoloparser
 import utils
 import statistics as stats
+import argparse
 
 import os
 import torch
@@ -175,8 +176,8 @@ def benchmark_avg(
     out=None,
     silent=True,
 ):
-    options = parser.parse_model_config("config/yolov3.cfg")[0]
-    data_opts = parser.parse_data_config("config/chars.data")
+    options = yoloparser.parse_model_config("config/yolov3.cfg")[0]
+    data_opts = yoloparser.parse_data_config("config/chars.data")
 
     img_size = max(int(options["width"]), int(options["height"]))
 
