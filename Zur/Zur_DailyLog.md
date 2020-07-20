@@ -163,6 +163,16 @@ Friday 7/17
 3. Learned about and coded my own non-maxima suppression algorithm
 4. Learned about and coded my own centroid tracking algorithm
 5. YouTube tutorials by Rocket Systems (https://www.youtube.com/playlist?list=PLWw98q-Xe7iH8UHARl8RGk8MRj1raY4Eh)
-	a. Person detection
-	b. Person tracking
+	a. Person detection in image
+	b. Person detection in video
 6. NAISE 5 slide deliverable
+
+Week 6 (7/20 - 7/24)
+
+Monday 7/20
+1. Deep Learning and Neural Networks with PyTorch Tutorial Part 5 (https://www.youtube.com/watch?v=9aYuQmMJvjA&list=PLQVvvaa0QuDdeMyHEYc0gxFpYwHY2Qfdh&index=5)
+2. YouTube tutorials by Rocket Systems: Person and Object ID tracking (https://www.youtube.com/playlist?list=PLWw98q-Xe7iH8UHARl8RGk8MRj1raY4Eh)
+3. Coded my own person tracking algorithm by combining tutorials from PyImageSearch.com and Rocket Systems YouTube series
+4. Analyzed social distancing detector (SDD) program by Rocket Systems
+5. NAISE Seminar
+6. Continued analyzing example SDD code found online
