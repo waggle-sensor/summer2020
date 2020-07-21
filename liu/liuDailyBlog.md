@@ -716,3 +716,37 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
 
 #### To Do List:
  * Analysis the data sharing demos using ROS and ROS2 and get a report about it
+
+### July 15
+#### Work Done
+ * Understand the pipeline of the data sharing and try to decrease the latency introduced by cv_bridge
+ * Discuss with Raj about the paper of comparison of several data sharing / streaming mechanisms in terms of throughput, latency, resource utilization, etc.
+
+#### To Do List:
+ * Analysis the data sharing demos in ROS and ROS2 and get a report about it
+ * Analysis the performance of data sharing / streaming mechanisms in terms of throughput, latency, resource utilization, etc. 
+
+### July 16
+#### Work Done
+ * Look into the source code of cv_bridge and try to decrease the latency
+ * Invesitigate several data sharing methods used in robotic sensor data sharing scenario
+
+#### To Do List:
+ * Analysis the performance of data sharing / streaming mechanisms in terms of throughput, latency, resource utilization, etc.
+
+### July 17
+#### Work Done
+ * Start to set up the data sharing using ffmpeg, RabbitMQ, etc.
+
+#### To Do List:
+ * Analysis the performance of data sharing / streaming mechanisms in terms of throughput, latency, resource utilization, etc.
+
+## Week 12 (June 20 to July 24)
+
+### July 20
+#### Work Done
+ * Set up ffmpeg for data sharing / streaming based on 
+ * Set up RabbitMQ for data sharing based on 
+
+#### To Do List:
+ * Analysis the performance of data sharing / streaming mechanisms in terms of throughput, latency, resource utilization, etc.
