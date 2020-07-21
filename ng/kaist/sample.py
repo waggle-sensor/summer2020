@@ -41,9 +41,6 @@ def prob_sample(result, desired, prob_func, *prob_func_args):
 
     chosen = chosen[:desired]
 
-    # hit_rate = sum([int(row["hit"] == "True") for row in chosen]) / desired
-    # print(f"Hit rate for {result.name}: {hit_rate}")
-
     return chosen
 
 
@@ -56,30 +53,26 @@ def median_thresh_sample(result):
     return prob_sample(result, in_range(result, median), const, median)
 
 
-def iqr_sample(result):
-    confidences = result.get_confidences()
+def iqr_sample(result, thresh=0.5):
+    confidences = [conf for conf in result.get_confidences() if conf >= thresh]
     q1 = np.quantile(confidences, 0.25, interpolation="midpoint")
-    q3 = np.quantile(confidences, 0.5, interpolation="midpoint")
+    q2 = np.quantile(confidences, 0.5, interpolation="midpoint")
 
-    print(f"q1: {q1}, q3: {q3}")
+    print(f"q1: {q1}, q2: {q2}")
 
-    return prob_sample(result, in_range(result, q1, q3), const, q1, q3)
+    return prob_sample(result, in_range(result, q1, q2), const, q1, q2)
 
 
-def normal_sample(result):
+def normal_sample(result, p=0.4, thresh=0.5):
     """Sample all within one standard deviation of mean."""
-    confidences = result.get_confidences()
+    confidences = [conf for conf in result.get_confidences() if conf >= thresh]
 
     avg = stats.mean(confidences)
     stdev = stats.stdev(confidences)
     print(f"avg: {avg}, stdev: {stdev}")
 
     return prob_sample(
-        result,
-        round(0.5 * in_range(result, avg - stdev, avg + stdev)),
-        norm,
-        avg,
-        stdev,
+        result, round(p * in_range(result, avg - stdev, avg + stdev)), norm, avg, stdev,
     )
 
 

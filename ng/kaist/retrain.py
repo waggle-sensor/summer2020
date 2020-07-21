@@ -5,34 +5,47 @@ import sys
 import os
 import subprocess as sp
 import random
+import argparse
 
 
 """
 This is a really hacky script right now, meant for testing.
-
-TODO generalize more
 """
 
 if __name__ == "__main__":
     random.seed("sage")
 
-    check_num = int(sys.argv[1])
-
-    methods = {"normal": sample.normal_sample, "iqr": sample.iqr_sample}
-    # methods = {"median_thresh": sample.median_thresh_sample}
+    methods = {"median_thresh": sample.median_thresh_sample, "normal": sample.normal_sample, "iqr": sample.iqr_sample}
     data_file = "config/chars.data"
 
-    if not os.path.exists(f"output/benchmark_{check_num}.csv"):
-        benchmark.benchmark(
-            "yolov3",
-            check_num,
-            "config/yolov3.cfg",
-            data_file,
-            "config/chars.names",
-            "data/images/objs/",
-        )
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--epoch",
+        type=int,
+        help="benchmark epoch for retraining",
+        default=None,
+        required=True,
+    )
+    parser.add_argument("--from_file", type=str, help="load from file", default=None)
+    opt = parser.parse_args()
 
-    results, _ = utils.load_data(f"output/benchmark_{check_num}.csv", by_actual=False)
+    if opt.from_file is not None:
+        results, _ = utils.load_data(opt.from_file, by_actual=False)
+
+    else:
+        if not os.path.exists(f"output/benchmark_{opt.epoch}.csv"):
+            benchmark.benchmark(
+                "yolov3",
+                opt.epoch,
+                "config/yolov3.cfg",
+                data_file,
+                "config/chars.names",
+                "data/images/objs/",
+            )
+
+        results, _ = utils.load_data(
+            f"output/benchmark_{opt.epoch}.csv", by_actual=False
+        )
 
     for name, func in methods.items():
         sample.create_sample(data_file, results, False, name, func)
@@ -44,12 +57,12 @@ if __name__ == "__main__":
         sp.run(aug_cmd, check=True)
 
         data_config = f"output/configs-retrain/{name}/chars.data"
-        bench_weights = f"checkpoints/yolov3_ckpt_{check_num}.pth"
+        bench_weights = f"checkpoints/yolov3_ckpt_{opt.epoch}.pth"
 
-        epoch_num = check_num + 26
+        epoch_num = opt.epoch + 26
         train_cmd = (
             f"python3 ../yolov3/train.py --epoch {epoch_num} --data_config {data_config} "
-            + f"--pretrained_weights {bench_weights} --img_size 416 --resume {check_num} "
+            + f"--pretrained_weights {bench_weights} --img_size 416 --resume {opt.epoch} "
             + f"--prefix {name} --clip 1.0 --batch_size 16"
         )
         train_cmd = train_cmd.split(" ")

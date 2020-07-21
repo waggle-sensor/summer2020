@@ -30,7 +30,7 @@ def get_augmentations():
             alpha=0.8,
             alpha_affine=10,
             sigma=40,
-            border_mode=cv2.BORDER_CONSTANT,
+            border_mode=cv2.BORDER_REPLICATE,
             always_apply=True,
         ),
     }
@@ -152,7 +152,10 @@ def augment(train_list, compose, balance, imgs_per_class):
                     bbox_params=bbox_params,
                 )
                 aug_img = result["image"]
-                new_bbox = result["bboxes"]
+                new_bboxes = [" ".join(map(str, bbox)) for bbox in result["bboxes"]]
+                if len(new_bboxes) != len(boxes):
+                    i -= 1
+                    continue
 
                 img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
@@ -164,8 +167,10 @@ def augment(train_list, compose, balance, imgs_per_class):
 
                 new_txt_path = aug_path.replace("images", "labels")[:-4] + ".txt"
                 os.makedirs(os.path.dirname(new_txt_path), exist_ok=True)
-                copyfile(txt_path, new_txt_path)
-                print(new_bbox, new_txt_path)
+
+                with open(new_txt_path, "w+") as out:
+                    for i, bbox_str in enumerate(new_bboxes):
+                        out.write(f"{field_ids[i]} {bbox_str}\n")
 
     with open(train_list[:-4] + "-aug.txt", "w+") as out:
         out.write("\n".join(imgs))

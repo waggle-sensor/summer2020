@@ -2,13 +2,14 @@ import yolov3.evaluate as evaluate
 import yolov3.models as models
 import yolov3.utils.datasets as datasets
 import yolov3.utils.utils as yoloutils
-import yolov3.utils.parse_config as parser
+import yolov3.utils.parse_config as yoloparser
 import utils
 import statistics as stats
+import argparse
 
 import os
 import torch
-import tqdm
+from tqdm import tqdm as tqdm
 from torch.utils.data import DataLoader
 
 import pandas as pd
@@ -23,7 +24,6 @@ the segmented letters from the KAIST dataset
 Contains helper methods to parse generated output data.
 """
 
-OUTPUT = "./output/"
 ORIG_DATA = "../yolov3/data/"
 
 
@@ -150,19 +150,39 @@ def test(model, classes, img_size, valid_path, check_num, out_folder, silent=Fal
 def benchmark(
     prefix, check_num, config, data_config, classes, sample_dir, out=None, silent=False
 ):
-    options = parser.parse_model_config("config/yolov3.cfg")[0]
-    data_opts = parser.parse_data_config("config/chars.data")
+    benchmark_avg(
+        prefix,
+        check_num,
+        check_num,
+        1,
+        config,
+        data_config,
+        classes,
+        sample_dir,
+        out,
+        silent,
+    )
+
+
+def benchmark_avg(
+    prefix,
+    start,
+    end,
+    delta,
+    config,
+    data_config,
+    classes,
+    sample_dir,
+    out=None,
+    silent=True,
+):
+    options = yoloparser.parse_model_config("config/yolov3.cfg")[0]
+    data_opts = yoloparser.parse_data_config("config/chars.data")
 
     img_size = max(int(options["width"]), int(options["height"]))
 
-    model = models.get_eval_model(
-        config, img_size, f"checkpoints/{prefix}_ckpt_{check_num}.pth"
-    )
-
     classes = yoloutils.load_classes(classes)
-
     out_folder = "/".join(out.split("/")[:-1]) if out is not None else OUTPUT
-    test(model, classes, img_size, data_opts["valid"], check_num, out_folder, silent)
 
     loader = DataLoader(
         datasets.ImageFolder(sample_dir, img_size=img_size),
@@ -171,53 +191,124 @@ def benchmark(
         num_workers=8,
     )
 
-    hits_misses = dict()
-    confusion_mat = dict()
+    results = pd.DataFrame(
+        columns=["file", "confs", "actual", "detected", "conf", "hit"]
+    )
+    results.set_index("file")
 
-    header = "file,actual,detected,conf,hit".split(",")
-    if out is not None:
-        output = open(f"{out}_{check_num}.csv", "w+")
-    else:
-        output = open(OUTPUT + f"benchmark_{check_num}.csv", "w+")
-    writer = csv.DictWriter(output, fieldnames=header)
-    writer.writeheader()
+    epochs_tested = int((end - start + 1) / delta)
+    epoch_iter = epochs_tested == 1
 
-    for (img_paths, input_imgs) in tqdm.tqdm(
-        loader, "Inferencing on samples", disable=silent
+    for check_num in tqdm(
+        range(start, end + 1, delta), "Benchmarking epochs", disable=epoch_iter
     ):
-        props = dict()
-        props["file"] = img_paths[0]
-        props["actual"] = img_paths[0].split("-")[1][:1]
 
-        detections = evaluate.detect(input_imgs, 0.5, model)
+        model = models.get_eval_model(
+            config, img_size, f"checkpoints/{prefix}_ckpt_{check_num}.pth"
+        )
 
-        # conf is the confidence that it's an object
-        # cls_conf is the confidence of the classification
-        most_conf = evaluate.get_most_conf(detections)
+        test(
+            model, classes, img_size, data_opts["valid"], check_num, out_folder, silent
+        )
 
-        if most_conf is not None:
-            (_, _, _, _, conf, cls_conf, cls_pred) = most_conf.numpy()[0]
+        for (img_paths, input_imgs) in tqdm(
+            loader, "Inferencing on samples", disable=silent
+        ):
+            path = img_paths[0]
+            if path not in results.file:
+                actual_class = path.split("-")[1][:1]
+                results.loc[path] = [path, dict(), actual_class, None, None, None]
 
-            props["detected"] = classes[int(cls_pred)]
-            props["conf"] = cls_conf if cls_conf is not None else 0.00
-            props["hit"] = props["actual"] == props["detected"]
+            detections = evaluate.detect(input_imgs, 0.5, model)
+
+            confs = results.loc[path]["confs"]
+
+            for detection in detections:
+                if detection is None:
+                    continue
+                (_, _, _, _, conf, cls_conf, cls_pred) = detection.numpy()[0]
+
+                if cls_pred not in confs.keys():
+                    confs[cls_pred] = [cls_conf]
+
+                else:
+                    confs[cls_pred].append(cls_conf)
+
+    for i, row in results.iterrows():
+        best_class = None
+        best_conf = float("-inf")
+
+        for class_name, confs in row["confs"].items():
+            avg_conf = sum(confs) / epochs_tested
+
+            if avg_conf > best_conf:
+                best_conf = avg_conf
+                best_class = class_name
+
+        if best_class is not None:
+            row["detected"] = classes[int(best_class)]
+            row["conf"] = best_conf
+            row["hit"] = row["actual"] == row["detected"]
         else:
-            props["detected"] = ""
-            props["conf"] = 0.0
-            props["hit"] = False
+            row["detected"] = ""
+            row["conf"] = 0.0
+            row["hit"] = False
 
-        writer.writerow(props)
+    prefix = out if out is not None else OUTPUT + "benchmark_"
+    suffix = f"{start}.csv" if epochs_tested == 1 else f"avg_{start}_{end}.csv"
+    output = open(prefix + suffix, "w+")
 
-    output.close()
+    results.to_csv(
+        output, columns=["file", "actual", "detected", "conf", "hit"], index=False
+    )
 
 
 if __name__ == "__main__":
-    check_num = int(sys.argv[2])
-    benchmark(
-        sys.argv[1],
-        check_num,
-        "config/yolov3.cfg",
-        "config/chars.data",
-        "config/chars.names",
-        "data/images/objs/",
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--epoch", required=True, type=int, help="(ending) benchmark epoch",
     )
+    parser.add_argument("--prefix", required=True, help="prefix of model to test")
+    parser.add_argument(
+        "--sample",
+        required=True,
+        default="./data/images/objs/",
+        help="folder of images to sample from, with ground truth in folder name",
+    )
+
+    parser.add_argument("--output", required=False, default="./output/")
+    parser.add_argument("--config", required=False, default="./config/yolov3.cfg")
+    parser.add_argument("--data_config", required=False, default="./config/chars.data")
+    parser.add_argument("--classes", required=False, default="./config/chars.names")
+    parser.add_argument("--average", action="store_true", default=False)
+    parser.add_argument(
+        "--start", required=False, type=int, help="starting benchmark epoch", default=0
+    )
+    parser.add_argument(
+        "--delta", type=int, help="interval to average", default=3, required=False
+    )
+
+    opt = parser.parse_args()
+
+    if opt.average:
+        benchmark_avg(
+            opt.prefix,
+            opt.start,
+            opt.epoch,
+            opt.delta,
+            opt.config,
+            opt.data_config,
+            opt.classes,
+            opt.sample,
+            out=opt.output,
+        )
+    else:
+        benchmark(
+            opt.prefix,
+            opt.epoch,
+            opt.config,
+            opt.data_config,
+            opt.classes,
+            opt.sample,
+            out=opt.output,
+        )

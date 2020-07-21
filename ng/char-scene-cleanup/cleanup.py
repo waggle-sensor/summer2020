@@ -126,19 +126,33 @@ def get_freq(annots):
     return freq
 
 
-def parse_annots(img_path, ext, annot_parser):
-    return [Annotation(path, ext, annot_parser) for path in img_path]
+def parse_annots(img_path, ext, annot_parser, normalize=False):
+    return [Annotation(path, ext, annot_parser, normalize) for path in img_path]
 
 
 class Annotation:
-    def __init__(self, img_path, annot_ext, annot_parser):
+    def __init__(self, img_path, annot_ext, annot_parser, normalize=False):
         self.img_path = img_path
 
-        annot_path = img_path[:-4] + annot_ext
-        self.parse(annot_path, annot_parser)
+        annot_path = img_path[:-4].replace("images", "labels") + annot_ext
+        self.parse(annot_path, annot_parser, normalize)
 
-    def parse(self, annot_path, annot_parser):
+    def parse(self, annot_path, annot_parser, normalize):
         self.labels = annot_parser(annot_path)
+
+        if normalize:
+            self.normalize_labels()
+
+    def normalize_labels(self):
+        normalized_labels = list()
+        img = cv2.imread(self.img_path)
+        h, w, _ = img.shape
+        resize = lambda coord: (round(w * coord[0]), round(h * coord[1]))
+        for label in self.labels:
+            label["minXY"] = resize(label["minXY"])
+            label["maxXY"] = resize(label["maxXY"])
+            normalized_labels.append(label)
+        self.labels = normalized_labels
 
     def make_darknet_label(self, class_list):
         out_path = self.img_path.replace("images", "labels")[:-4] + ".txt"
@@ -172,7 +186,7 @@ class Annotation:
         img = cv2.imread(self.img_path)
         print(self.img_path)
         for label in self.labels:
-            cv2.rectangle(img, label["minXY"], label["maxXY"], (0, 255, 0), 5)
+            cv2.rectangle(img, label["minXY"], label["maxXY"], (0, 255, 0), 3)
         if img is None:
             return
         disp_img = imutils.resize(img, width=1024)
@@ -201,7 +215,7 @@ class Annotation:
 def get_img_paths(data, img_exts):
     img_paths = list()
     for img_ext in img_exts:
-        img_paths += glob.glob(data + "images/labeled/*" + img_ext)
+        img_paths += glob.glob(data + "/**/*" + img_ext, recursive=True)
 
     return img_paths
 
@@ -215,7 +229,11 @@ def clean(
         move_rename_images(annot_ext, data, annot_path_to_img)
 
     # Filter out augmented images
-    img_paths = [img for img in get_img_paths(data, img_exts) if "_" not in img]
+    img_paths = [
+        img
+        for img in get_img_paths(data + "/images/labeled", img_exts)
+        if "_" not in img
+    ]
 
     annots = parse_annots(img_paths, annot_ext, annot_parser)
 

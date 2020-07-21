@@ -14,8 +14,6 @@ This script was primarily written to convert Tensorboard log data from the YOLOv
 scripts to a parsable format, but it can be adapted to other purposes
 """
 
-BATCHES_PER_EPOCH = 1  # 2269
-
 
 def add_plot(
     data, title, color="b", label="", header=None, spline=None, x_scale=1, cute=False
@@ -63,7 +61,7 @@ def add_plot(
     plt.title(title)
     plt.xlabel(header[0])
     plt.ylabel(header[1])
-    return x, y
+    return x, y, None
 
 
 def plot_diff(data, data2, title, spline=None, x_scale=1, cute=False):
