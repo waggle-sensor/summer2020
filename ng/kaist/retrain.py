@@ -15,7 +15,11 @@ This is a really hacky script right now, meant for testing.
 if __name__ == "__main__":
     random.seed("sage")
 
-    methods = {"median_thresh": sample.median_thresh_sample, "normal": sample.normal_sample, "iqr": sample.iqr_sample}
+    methods = {
+        "median_thresh": sample.median_thresh_sample,
+        "normal": sample.normal_sample,
+        "iqr": sample.iqr_sample,
+    }
     data_file = "config/chars.data"
 
     parser = argparse.ArgumentParser()

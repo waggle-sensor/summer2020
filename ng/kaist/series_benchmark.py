@@ -52,13 +52,13 @@ if __name__ == "__main__":
 
     os.makedirs(opt.output, exist_ok=True)
 
-    for test in ("", "_test"):
-        output = open(f"{opt.output}/val_precision{test}_time.csv", "w+")
+    for test in ("", "test_"):
+        output = open(f"{opt.output}/val_precision_{test}time.csv", "w+")
         output.write("epoch,all_precision\n")
         for i in tqdm(
             range(opt.start, opt.end, opt.delta), f"Benchmarking {test} results"
         ):
-            if not os.path.exists(f"{opt.output}/benchmark{test}_{i}.csv"):
+            if not os.path.exists(f"{opt.output}/benchmark_{test}{i}.csv"):
                 benchmark.benchmark(
                     opt.prefix,
                     i,
@@ -66,12 +66,12 @@ if __name__ == "__main__":
                     "config/chars.data",
                     "config/chars.names",
                     "data/images/objs/" if test == str() else "data/temp/",
-                    out=f"{opt.output}/benchmark{test}",
+                    out=f"{opt.output}/benchmark_{test}",
                     silent=True,
                 )
 
             results, _ = utils.load_data(
-                f"{opt.output}/benchmark{test}_{i}.csv", by_actual=True
+                f"{opt.output}/benchmark_{test}{i}.csv", by_actual=True
             )
             output.write(f"{i},{benchmark.mean_precision(results[:-1])}\n")
 

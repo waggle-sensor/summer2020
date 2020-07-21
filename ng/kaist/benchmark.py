@@ -199,9 +199,12 @@ def benchmark_avg(
     epochs_tested = int((end - start + 1) / delta)
     epoch_iter = epochs_tested == 1
 
+    orig_prefix = prefix
     for check_num in tqdm(
         range(start, end + 1, delta), "Benchmarking epochs", disable=epoch_iter
     ):
+
+        prefix = "yolov3" if check_num <= 74 else orig_prefix
 
         model = models.get_eval_model(
             config, img_size, f"checkpoints/{prefix}_ckpt_{check_num}.pth"
@@ -254,7 +257,7 @@ def benchmark_avg(
             row["conf"] = 0.0
             row["hit"] = False
 
-    prefix = out if out is not None else OUTPUT + "benchmark_"
+    prefix = out if out is not None else OUTPUT
     suffix = f"{start}.csv" if epochs_tested == 1 else f"avg_{start}_{end}.csv"
     output = open(prefix + suffix, "w+")
 
@@ -300,7 +303,7 @@ if __name__ == "__main__":
             opt.data_config,
             opt.classes,
             opt.sample,
-            out=opt.output,
+            out=opt.output + "/benchmark_",
         )
     else:
         benchmark(
@@ -310,5 +313,5 @@ if __name__ == "__main__":
             opt.data_config,
             opt.classes,
             opt.sample,
-            out=opt.output,
+            out=opt.output + "/benchmark_",
         )
