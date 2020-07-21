@@ -745,8 +745,8 @@ The RT kernel looks help tp narrow the variability of the end-to-end latency.
 
 ### July 20
 #### Work Done
- * Set up ffmpeg for data sharing / streaming based on 
- * Set up RabbitMQ for data sharing based on 
+ * Set up ffmpeg for data sharing / streaming based on https://programminghistorian.org/en/lessons/introduction-to-ffmpeg and https://ffmpeg.org/ffmpeg.html.
+ * Set up RabbitMQ for data sharing based on https://www.rabbitmq.com/tutorials/tutorial-three-python.html, https://www.rabbitmq.com/tutorials/tutorial-five-python.html, and https://www.rabbitmq.com/tutorials/tutorial-six-python.html.
 
 #### To Do List:
  * Analysis the performance of data sharing / streaming mechanisms in terms of throughput, latency, resource utilization, etc.
