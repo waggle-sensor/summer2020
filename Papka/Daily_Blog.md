@@ -17,3 +17,9 @@ Week 5 (7/6-7/10/2020)
 - I worked on the student and team pages for the Sage website.
 
 Week 6 (7/13-7/17/2020)
+- I put together the group picture and added more to the website. 
+- I also wrapped up my final deliverable. 
+
+Week 7 (7/20-7/24/2020)
+
+Week 8 (7/27-7/31/2020)
