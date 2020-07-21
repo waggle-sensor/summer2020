@@ -176,3 +176,12 @@ Monday 7/20
 4. Analyzed social distancing detector (SDD) program by Rocket Systems
 5. NAISE Seminar
 6. Continued analyzing example SDD code found online
+
+Tuesday 7/21
+1. AI/ML Scrum
+2. NAISE Check-in meeting
+3. Deep Learning and Neural Networks with PyTorch Tutorial Part 6 (https://www.youtube.com/watch?v=1gQR24B3ISE&list=PLQVvvaa0QuDdeMyHEYc0gxFpYwHY2Qfdh&index=6)
+4. PyImageSearch tutorial: LeNet CNN (https://www.pyimagesearch.com/2016/08/01/lenet-convolutional-neural-network-in-python/)
+5. Continued analyzing example SDD code found online
+    (https://github.com/Rahul24-06/Vision-based-Social-Distancing-Monitor)
+    (https://github.com/KingArnaiz/Social-Distance-Detector)
