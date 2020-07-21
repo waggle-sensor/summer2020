@@ -768,6 +768,7 @@ This is normally a bug in some application using the D-Bus library.
   D-Bus not built with -rdynamic so unable to print a backtrace
 Aborted (core dumped)
 ```
+Solved by ```sudo killall ibus-daemon``` (https://forum.odroid.com/viewtopic.php?t=30652).
 
 #### To Do List:
  * Analysis the performance of data sharing / streaming mechanisms in terms of throughput, latency, resource utilization, etc.
