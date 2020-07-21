@@ -8,8 +8,8 @@ import benchmark as bench
 
 OUTPUT = "output/"
 
-HIT_MIN = 0.6
-STACKED_MIN = 0.80
+HIT_MIN = 0.2
+STACKED_MIN = 0.5
 
 
 def get_conf_data(result_list):

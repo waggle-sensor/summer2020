@@ -382,6 +382,54 @@
   * 97.77% for quartile
   * 96.37% for normal
 * Now retraining with same parameters (25 epochs, batch size = 16, 10K images per class)
-  * Possible source of error/lack of control could be modified augmentation with more precise bounding boxes
+  * Possible source of error/confounding variable could be modified augmentation with more precise bounding boxes
   * Elastic transforms sometimes yield incorrect bounding boxes
   * Loss function appears to have high values
+
+**Tuesday, July 21**
+
+* Attended AI/ML scrum meeting
+* Analyzed results from the three retrained models (third iteration of these sampling techniques)
+
+Method | Hit Rate | Peak mAP (sample) | Epoch of Peak | Epoch 99 Recall
+------ | -------- | -------- | ------------ | -------
+median thresh | 99.25% | 0.907 | 92 | 99.9%
+quartile range | 97.77% | 0.902 | 88 | 98.7%
+normal pdf | 96.37% | 0.899 | 96 | 99.0%
+
+* Overall trends
+  * Recall improves or stays the same for all methods
+  * Peak mAP is a slight improvement over the baseline of 0.888
+  * Appears to be a correlation between peak mAP and hit rate
+  * Test set accuracy decreases again over time but tends to stablize as training progressed
+* Now running tests for 25 more epochs - to see if results converge or continue to improve
+* Attended seminar on using neural nets for modeling particle accelerators
+* Evaluated retrained models using the rolling confidence average method (starting at epoch 0, end at 99, delta of 3 epochs) as a second measure of improvment
+  * Precision can be measured here too, using a cutoff score of 0.5
+  * Benchmark confidences had an average of 96.5% precision, 87.3% accuracy by ground truth classes
+  * The mean precision across most confidence scores above 0.5 is now nearly 100% for all three methods
+
+Method | Avg. Accuracy | Avg. Precision
+------ | ------------- | -------------
+median thresh | 89.5% | 97.5%
+quartile range | 89.0% | 97.1%
+normal pdf | 88.3% | 96.7%
+
+* As somewhat expected, benchmarking with just the retrained epochs (75 to 99) leads to higher accuracy (due to fewer false negatives) but lower precision (due to more false positives)
+  * Normal distribution still created for the misses, left-skewed distribution for the hits
+
+* Reading papers about early stopping without a test set/ground truth
+  * Could be used for iterative retraining/sampling
+  * Should we create a test set from the KAIST data to show improvements? Slightly concerned about "overfitting" on the entire sample pool
+  * Could measure the size of the mini-batch gradients over time
+  * Stop when it is unlikely that it deviates significantly from the "true" error of the population
+    * Note that even the training set is considered a subset of the population
+  * Look at section 2.4
+* To do
+  * Implement gradient descent early stop based on paper
+  * Develop pipeline to continuously retrain on a sample
+    * Monitor for overfitting?
+  * Evaluate convergence or growth results for the 25 extra epochs of retraining (quartile range and median thresh) on lambda
+
+**Wednesday, July 22**
+
