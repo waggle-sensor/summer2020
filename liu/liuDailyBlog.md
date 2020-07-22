@@ -772,3 +772,19 @@ Solved by ```sudo killall ibus-daemon``` (https://forum.odroid.com/viewtopic.php
 
 #### To Do List:
  * Analysis the performance of data sharing / streaming mechanisms in terms of throughput, latency, resource utilization, etc.
+ 
+ ### July 21
+#### Work Done
+ * Build two docker images for arm64 based architecture: micro-arm64 and mega-arm64. micro-arm64 has Python3, PyWaggle, and ROS2 installed insided while mega-arm64 has NVIDIA libraries, python3, pytorch, TF, TFLite and OpenCV, Tensorboard, Pywaggle, ROS2, etc. installed. The doc for setting up can be found at: https://github.com/waggle-sensor/summer2020/blob/master/liu/doc/Micro-Mega-arm64-image-build.md.
+ * Flattern the docker image size based on https://stackoverflow.com/questions/27981124/docker-combine-docker-layers-into-image, https://pypi.org/project/docker-squash/, and http://jasonwilder.com/blog/2014/08/19/squashing-docker-images/. The size of micro-arm64 is 701MB while mega-arm64 is 8.09GB (uncompressed).
+
+#### To Do List:
+ * Create micro-x86 and mega-x86 docker images
+ * Analysis the performance of data sharing / streaming mechanisms in terms of throughput, latency, resource utilization, etc.
+
+### July 22
+#### Work Done
+ * Build two docker images for x86 based architecture: micro-x86 and mega-x86. micro-x86 has Python3, PyWaggle, and ROS2 installed insided while mega-x86 has NVIDIA libraries, python3, pytorch, TF, TFLite and OpenCV, Tensorboard, Pywaggle, ROS2, etc. installed. The doc for setting up can be found at: https://github.com/waggle-sensor/summer2020/blob/master/liu/doc/Micro-Mega-arm64-image-build.md.
+
+#### To Do List:
+ * Analysis the performance of data sharing / streaming mechanisms in terms of throughput, latency, resource utilization, etc.
