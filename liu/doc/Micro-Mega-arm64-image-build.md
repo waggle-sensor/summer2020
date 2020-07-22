@@ -59,9 +59,11 @@ sudo docker run -it nvcr.io/nvidia/l4t-base:r32.4.3 /bin/bash
 Install ROS2 based on https://github.com/waggle-sensor/summer2020/blob/master/liu/doc/Docker-ROS2-Setup.md and set up workspace based on https://index.ros.org/doc/ros2/Tutorials/Colcon-Tutorial/.
 
 Desktop Install (Recommended): ROS, RViz, demos, tutorials.
+
 ```sudo apt install ros-dashing-desktop```
 
 ROS-Base Install (Bare Bones): Communication libraries, message packages, command line tools. No GUI tools.
+
 ```sudo apt install ros-dashing-ros-base```
 
 Notes: if choose ros-dashing-desktop version, then almost 2GB of space will needed. For ros-dashing-ros-base, only 486MB of space is needed.
