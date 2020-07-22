@@ -60,6 +60,7 @@ Install ROS2 based on https://github.com/waggle-sensor/summer2020/blob/master/li
 
 Desktop Install (Recommended): ROS, RViz, demos, tutorials.
 ```sudo apt install ros-dashing-desktop```
+
 ROS-Base Install (Bare Bones): Communication libraries, message packages, command line tools. No GUI tools.
 ```sudo apt install ros-dashing-ros-base```
 
