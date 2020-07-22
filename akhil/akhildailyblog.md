@@ -276,3 +276,80 @@ I worked one and finished my cluster presentation. I continued working on the YA
 I demoed my progress that I made this sprint and gave my presentation to my cluster group.
 
 #### Errors/Problems
+
+### July 13, 2020
+#### Meeting/Out of work
+10am-10:30am -> Weekly Cohort Meeting
+11am - 1pm -> Scrum sprint planning
+#### Work done/Things Learned
+I noticed I am having some troubles setting up the YAML for the k8 deployment, so I did some more research into creating this file.
+Note for later: imagePullPolicy in Kubernetes
+Notes on YAML deployment:
+-
+
+#### Errors
+- none
+
+### July 14, 2020
+#### Meeting/Out of work
+9:30am - 10am Meeting in AI scrum
+11am - 11:30am -> Daily srum meeting
+2pm -> 3pm -> Meeting with Sean
+#### Work done/Things learned
+I cotinued working on the k8 deployment. I am having trouble with pulling the images and the scope of the deployment. I have meeting with Sean that will hopefully help.
+#### Errors
+- Image pull error
+
+#### July 15, 2020
+10:30am -> 11am Daily Scrum meeting
+11am -> 12:30pm weekly seminar
+#### Work done/Things learned
+I found a resource that can translate docker compose files to kubenetes deployment files. It's called ``` kompose  ```. I then went through the files created and troubleshooted the errors because there were a lot of them.
+
+#### Error
+- Volumes, restartPolicy, and network configuration in k8 deployment
+
+### July 16, 2020
+#### Meetings/Out of work
+- none
+#### Work done/Things learned
+I continued to debug the errors. I was able to correctly configure the virtual-waggle enviorment. However, there are still a lot of error and no containers are able to run.
+
+#### Errors
+- Getting containers to run
+
+### July 17, 2020
+#### Meetings/Out of work
+1:30-1:45 -> meeting with cohort leader
+#### Work done/Things learned
+I started working on the presentation I have to give on Monday. I also was able to figure out the volumes issue and get the rabbitmq container. I am having trouble configuring the network for the containers. I will try to see if going into the contianers of the deployment to see if that helps
+
+#### Errors
+- network config
+
+
+### July 20, 2020
+#### Meetings/Out of work
+10am - 11am -> cohort lightning talk
+11am - 12:30pm -> Scrum backlog refinement
+3pm - 4pm -> meeting with Sean and Jake
+#### Work done/Things learned
+I had meetings with Sean and Jake and we talked about how the k8 deployment is not scalable with the current state of virtual-waggle. Thus, I worked on figuring out what to do next. I then created a script in the Image building process that clones the edge-plugin repo for a user to use.
+#### Errors
+- none
+
+### July 21, 2020
+#### Meetings/Out of work
+10:30am - 11am -> meeting with Raj and Sean
+11am - 11:30am -> Daily scrum meeting
+#### Work done/Things learned
+I created a pull request for the new bash script I made. I also worked on building the Chameleon-Sage image for a virtual-machine. I also started researching github actions. I will be creating a github action for building the Chamaleon-Sage image.
+
+#### Errors
+- none
+
+### July 22, 2020
+#### Meetings/Out of work
+10:30am - 11am -> Daily scrum meeting
+11am -> 12pm -> profesional development workshop
+#### Work done/Things learned
