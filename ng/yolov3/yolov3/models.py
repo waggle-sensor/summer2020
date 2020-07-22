@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
+import backpack as bp
 
 from yolov3.utils.parse_config import *
 from yolov3.utils.utils import build_targets, to_cpu
@@ -18,7 +19,6 @@ def create_modules(module_defs):
     module_list = nn.ModuleList()
     for module_i, module_def in enumerate(module_defs):
         modules = nn.Sequential()
-
         if module_def["type"] == "convolutional":
             bn = int(module_def["batch_normalize"])
             filters = int(module_def["filters"])
@@ -80,6 +80,7 @@ def create_modules(module_defs):
             img_size = int(hyperparams["height"])
             # Define detection layer
             yolo_layer = YOLOLayer(anchors, num_classes, img_size)
+
             modules.add_module(f"yolo_{module_i}", yolo_layer)
         # Register module list and number of output filters
         module_list.append(modules)

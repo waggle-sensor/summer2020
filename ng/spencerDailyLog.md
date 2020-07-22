@@ -433,3 +433,13 @@ normal pdf | 88.3% | 96.7%
 
 **Wednesday, July 22**
 
+* Attended student seminar on deliverables and sample student presentations
+* Analyzed results for the additional 25 epochs
+  * Results seem to converge near the maximum, with some peak values slightly (not significant) above the first 25 epochs of retraining
+  * Slight increases in precision for all cases on the sample set
+  * Test set decreases over time
+* Implementing gradient descent early stop
+  * Need to compute variance of the individual batch gradients and the batch gradients themselves
+  * Looking at using the `backpack` library to do so
+  * Facing some errors in the module's shape with recursive extension through the model's layers
+  * May need to rewrite part of the backpack module myself

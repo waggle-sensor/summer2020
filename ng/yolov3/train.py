@@ -17,6 +17,7 @@ from yolov3.models import Darknet
 from yolov3.utils.logger import Logger
 from yolov3.utils.datasets import ListDataset
 
+import backpack as bp
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -93,6 +94,8 @@ if __name__ == "__main__":
     logger = Logger("logs")
 
     DEVICE_STR = "cuda" if torch.cuda.is_available() else "cpu"
+    if DEVICE_STR == "cuda":
+        torch.cuda.empty_cache()
     print(f"Using {DEVICE_STR} for training")
     device = torch.device(DEVICE_STR)
 
@@ -107,6 +110,7 @@ if __name__ == "__main__":
 
     # Initiate model
     model = Darknet(opt.model_def).to(device)
+    # model = bp.extend(Darknet(opt.model_def)).to(device)
     model.apply(utils.weights_init_normal)
 
     if opt.resume != -1 and opt.pretrained_weights is None:
@@ -162,7 +166,22 @@ if __name__ == "__main__":
             targets = Variable(targets.to(device), requires_grad=False)
 
             loss, outputs = model(imgs, targets)
-            loss.backward()
+            if DEVICE_STR == "cuda":
+                torch.cuda.empty_cache()
+
+            with bp.backpack(bp.extensions.BatchGrad()):
+                loss.backward(retain_graph=True)
+
+                for name, param in model.module_list[0].named_parameters():
+                    print(name, param)
+
+            with bp.backpack(bp.extensions.Variance()):
+                loss.backward()
+
+                for name, param in model.named_parameters():
+                    print(name)
+                    print(".grad.shape:             ", param.grad.shape)
+                    print(".variance.shape:         ", param.variance.shape)
 
             if batches_done % opt.gradient_accumulations:
                 # Accumulates gradient before each step
