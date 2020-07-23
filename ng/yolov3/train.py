@@ -98,7 +98,6 @@ def get_train_args():
         "--early_stop",
         default=False,
         action="store_true",
-        type=bool,
         help="use early stopping based on gradient variance (not test set)",
     )
 

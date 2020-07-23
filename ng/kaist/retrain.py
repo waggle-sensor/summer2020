@@ -20,7 +20,6 @@ def get_retrain_args():
     parser.add_argument("--from_file", type=str, help="load from file", default=None)
     parser.add_argument(
         "--early_stop",
-        type=bool,
         default=False,
         action="store_true",
         help="use early stop instead of a set number of epochs",
@@ -32,7 +31,7 @@ def get_retrain_args():
         help="iterations of sampling/retraining to undergo",
     )
     parser.add_argument(
-        "--retrain_length",
+        "--retrain_epochs",
         type=int,
         default=25,
         help="(max) number of epochs to retrain per sample iteration",
@@ -84,7 +83,8 @@ if __name__ == "__main__":
         prefix = opt.prefix
 
         for i in range(opt.sample_iterations):
-            sample.create_sample(data_file, results, False, name, func)
+            data_config = f"output/configs-retrain/{name}/chars.data"
+            sample.create_sample(data_config, results, False, name, func)
 
             train_list = f"output/configs-retrain/{name}/train.txt"
 
@@ -95,11 +95,10 @@ if __name__ == "__main__":
             aug_cmd = aug_cmd.split(" ")
             sp.run(aug_cmd, check=True)
 
-            data_config = f"output/configs-retrain/{name}/chars.data"
             bench_weights = f"checkpoints/{prefix}_ckpt_{opt.start_epoch}.pth"
 
             train_cmd = (
-                f"python3 ../yolov3/train.py --epochs {epoch_num} --data_config {opt.data_config} "
+                f"python3 ../yolov3/train.py --epochs {epoch_num} --data_config {data_config} "
                 + f"--pretrained_weights {bench_weights} --img_size 416 --resume {start_epoch} "
                 + f"--prefix {name} --clip 1.0 --batch_size 16 "
             )
