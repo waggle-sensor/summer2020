@@ -443,3 +443,21 @@ normal pdf | 88.3% | 96.7%
   * Looking at using the `backpack` library to do so
   * Facing some errors in the module's shape with recursive extension through the model's layers
   * May need to rewrite part of the backpack module myself
+
+**Thursday, July 23**
+
+* Attended ML scrum meeting
+* Discussed with Sean about implementing mini-batch variance in YOLOv3-Pytorch
+* Implemented early stop criteria via `backpack`
+  * Rewrote part of the library (forked on my [GitHub](https://github.com/spencerng/backpack)) to ignore `None` types (when evaluating) and scalars (for loss functions)
+  * Only convolutional layers are accounted for now
+  * Ran into issue with nan values due to variance of certain samples being 0
+    * Ignoring those layers when calculating the overall loss criteria
+* Ran test of loss criteria on retraining examples
+  * Difficult to determine if it works, as Lambda is under high load
+  * Values of around -9 when retraining on epoch 74, median threshold
+  * Expected behavior, as loss is high early on and my batch size is reduced (ran out of VRAM on batch size of 16)
+* Rewrote retraining pipeline to incorporate early stopping
+* Looking into how significantly YOLO's loss function affects its gradients
+  * Would inaccurate/uncertainty in ground truth affect loss and the mini-batch gradients to the point where we will never meet the criteria to stop?
+  * May need to make a custom loss function and/or weight samples somehow otherwise

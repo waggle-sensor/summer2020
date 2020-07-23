@@ -23,7 +23,12 @@ import backpack as bp
 
 def get_train_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--epochs", type=int, default=100, help="number of epochs")
+    parser.add_argument(
+        "--epochs",
+        type=int,
+        default=100,
+        help="max number of epochs (less if early stop used)",
+    )
     parser.add_argument(
         "--batch_size", type=int, default=64, help="size of each image batch"
     )
@@ -89,8 +94,56 @@ def get_train_args():
         type=float,
         help="cutoff value for gradient clipping",
     )
+    parser.add_argument(
+        "--early_stop",
+        default=False,
+        action="store_true",
+        type=bool,
+        help="use early stopping based on gradient variance (not test set)",
+    )
 
     return parser.parse_args()
+
+
+def smoothed_stop_criteria(model, old_criteria, batch_size, alpha=0.1):
+    """Get the stopping criteria after the current backwards pass.
+
+    Value is smoothed with an exponential moving average.
+    Criteria defined in Mahsereci et. al, 2017.
+
+    Note that subgroups are based on convolutional layers, and
+    layers containing samples with variances of 0 are ignored.
+    """
+    vals = list()
+
+    for name, param in model.named_parameters():
+        try:
+            grad = param.grad_batch
+            var = param.variance
+
+            dim = 1
+            for i in grad.shape:
+                dim *= i
+
+            scale_factor = batch_size / dim
+            layer_sum = torch.sum(torch.div(torch.square(grad), var))
+            subgroup_val = 1 - scale_factor * layer_sum
+
+            vals.append(subgroup_val)
+        except AttributeError:
+            # This occurs for non-convolutional layers
+            pass
+
+    non_nan_vals = [val for val in vals if not math.isnan(val)]
+    scale_factor = 1 / len(non_nan_vals)
+    stopping_criteria = scale_factor * sum(non_nan_vals)
+
+    if old_criteria is None:
+        smoothed_criteria = stopping_criteria
+    else:
+        smoothed_criteria = alpha * stopping_criteria + (1 - alpha) * old_criteria
+
+    return smoothed_criteria
 
 
 if __name__ == "__main__":
@@ -118,6 +171,9 @@ if __name__ == "__main__":
     model = bp.extend(Darknet(opt.model_def), debug=False).to(device)
     model.apply(utils.weights_init_normal)
 
+    for param in model.parameters():
+        param.requires_grad = True
+
     if opt.resume != -1 and opt.pretrained_weights is None:
         opt.pretrained_weights = f"checkpoints/{opt.prefix}_ckpt_{int(opt.resume)}.pth"
 
@@ -127,9 +183,6 @@ if __name__ == "__main__":
             model.load_state_dict(torch.load(opt.pretrained_weights))
         else:
             model.load_darknet_weights(opt.pretrained_weights)
-
-    for param in model.parameters():
-        param.requires_grad = True
 
     # Get dataloader
     dataset = ListDataset(train_path, augment=False, multiscale=opt.multiscale_training)
@@ -164,7 +217,7 @@ if __name__ == "__main__":
     # Modify this if needed; intended to reduce log size
     log_interval = int(len(dataloader) / 50)
 
-    old_criteria = 0
+    old_criteria = None
 
     for epoch in range(opt.resume + 1, opt.epochs):
         model.train()
@@ -180,45 +233,8 @@ if __name__ == "__main__":
             with bp.backpack(bp.extensions.Variance(), bp.extensions.BatchGrad()):
                 loss.backward()
 
-            vals = list()
-
-            for name, param in model.named_parameters():
-                try:
-                    grad = param.grad_batch
-                    var = param.variance
-
-                    dim = 1
-                    for i in grad.shape:
-                        dim *= i
-
-                    scale_factor = opt.batch_size / dim
-                    val = 1 - scale_factor * torch.sum(
-                        torch.div(torch.square(grad), var)
-                    )
-
-                    vals.append(val)
-                    # print(name, dim, val)
-
-                except AttributeError:
-                    pass
-                    # print(name)
-
-            scale_factor = 1 / len(vals)
-            stopping_criteria = scale_factor * sum(vals)
-
-            non_nan_vals = [val for val in vals if not math.isnan(val)]
-            scale_factor = 1 / len(non_nan_vals)
-            stopping_criteria2 = scale_factor * sum(non_nan_vals)
-
-            alpha = 0.1
-            if old_criteria == 0:
-                smoothed_criteria = stopping_criteria2
-            else:
-                smoothed_criteria = (
-                    alpha * stopping_criteria2 + (1 - alpha) * old_criteria
-                )
-
-            old_criteria = smoothed_criteria
+            stop_criteria = smoothed_stop_criteria(model, old_criteria, opt.batch_size)
+            old_criteria = stop_criteria
 
             if batches_done % opt.gradient_accumulations:
                 # Accumulates gradient before each step
@@ -259,14 +275,13 @@ if __name__ == "__main__":
                         if name != "grid_size":
                             tensorboard_log += [(f"{name}_{j+1}", metric)]
                 tensorboard_log += [("loss", loss.item())]
-                tensorboard_log += [("stopping", smoothed_criteria)]
+                tensorboard_log += [("stopping", stop_criteria)]
                 if batch_i % log_interval == 0:
                     logger.list_of_scalars_summary(tensorboard_log, batches_done)
 
             log_str += AsciiTable(metric_table).table
             log_str += f"\nTotal loss {loss.item()}"
-            log_str += f"\nStopping criteria {stopping_criteria}"
-            log_str += f"\nStopping criteria (non-nan) {smoothed_criteria}"
+            log_str += f"\nStopping criteria (non-nan) {stop_criteria}"
 
             # Determine approximate time left for epoch
             epoch_batches_left = len(dataloader) - (batch_i + 1)
@@ -287,6 +302,6 @@ if __name__ == "__main__":
 
         if epoch % opt.checkpoint_interval == 0:
             torch.save(model.state_dict(), f"checkpoints/{opt.prefix}_ckpt_{epoch}.pth")
-            if smoothed_criteria > 0:
-                print("Stopping early")
+            if opt.early_stop and stop_criteria > 0:
+                print(f"Stopping early, at epoch {epoch}")
                 exit(0)
