@@ -4,6 +4,7 @@ import os
 import time
 import datetime
 import argparse
+import math
 
 import torch
 from torch.autograd import Variable
@@ -94,8 +95,7 @@ if __name__ == "__main__":
     logger = Logger("logs")
 
     DEVICE_STR = "cuda" if torch.cuda.is_available() else "cpu"
-    if DEVICE_STR == "cuda":
-        torch.cuda.empty_cache()
+
     print(f"Using {DEVICE_STR} for training")
     device = torch.device(DEVICE_STR)
 
@@ -109,8 +109,7 @@ if __name__ == "__main__":
     class_names = utils.load_classes(data_config["names"])
 
     # Initiate model
-    model = Darknet(opt.model_def).to(device)
-    # model = bp.extend(Darknet(opt.model_def)).to(device)
+    model = bp.extend(Darknet(opt.model_def), debug=False).to(device)
     model.apply(utils.weights_init_normal)
 
     if opt.resume != -1 and opt.pretrained_weights is None:
@@ -122,6 +121,9 @@ if __name__ == "__main__":
             model.load_state_dict(torch.load(opt.pretrained_weights))
         else:
             model.load_darknet_weights(opt.pretrained_weights)
+
+    for param in model.parameters():
+        param.requires_grad = True
 
     # Get dataloader
     dataset = ListDataset(train_path, augment=False, multiscale=opt.multiscale_training)
@@ -156,32 +158,61 @@ if __name__ == "__main__":
     # Modify this if needed; intended to reduce log size
     log_interval = int(len(dataloader) / 50)
 
+    old_criteria = 0
+
     for epoch in range(opt.resume + 1, opt.epochs):
         model.train()
         start_time = time.time()
         for batch_i, (_, imgs, targets) in enumerate(dataloader):
             batches_done = len(dataloader) * epoch + batch_i
 
-            imgs = Variable(imgs.to(device))
-            targets = Variable(targets.to(device), requires_grad=False)
+            imgs = Variable(imgs.to(device), requires_grad=True)
+            targets = Variable(targets.to(device), requires_grad=True)
 
             loss, outputs = model(imgs, targets)
-            if DEVICE_STR == "cuda":
-                torch.cuda.empty_cache()
 
-            with bp.backpack(bp.extensions.BatchGrad()):
-                loss.backward(retain_graph=True)
-
-                for name, param in model.module_list[0].named_parameters():
-                    print(name, param)
-
-            with bp.backpack(bp.extensions.Variance()):
+            with bp.backpack(bp.extensions.Variance(), bp.extensions.BatchGrad()):
                 loss.backward()
 
-                for name, param in model.named_parameters():
-                    print(name)
-                    print(".grad.shape:             ", param.grad.shape)
-                    print(".variance.shape:         ", param.variance.shape)
+            vals = list()
+
+            for name, param in model.named_parameters():
+                try:
+                    grad = param.grad_batch
+                    var = param.variance
+
+                    dim = 1
+                    for i in grad.shape:
+                        dim *= i
+
+                    scale_factor = opt.batch_size / dim
+                    val = 1 - scale_factor * torch.sum(
+                        torch.div(torch.square(grad), var)
+                    )
+
+                    vals.append(val)
+                    # print(name, dim, val)
+
+                except AttributeError:
+                    pass
+                    # print(name)
+
+            scale_factor = 1 / len(vals)
+            stopping_criteria = scale_factor * sum(vals)
+
+            non_nan_vals = [val for val in vals if not math.isnan(val)]
+            scale_factor = 1 / len(non_nan_vals)
+            stopping_criteria2 = scale_factor * sum(non_nan_vals)
+
+            alpha = 0.5
+            if old_criteria == 0:
+                smoothed_criteria = stopping_criteria2
+            else:
+                smoothed_criteria = (
+                    alpha * stopping_criteria2 + (1 - alpha) * old_criteria
+                )
+
+            old_criteria = smoothed_criteria
 
             if batches_done % opt.gradient_accumulations:
                 # Accumulates gradient before each step
@@ -227,6 +258,8 @@ if __name__ == "__main__":
 
             log_str += AsciiTable(metric_table).table
             log_str += f"\nTotal loss {loss.item()}"
+            log_str += f"\nStopping criteria {stopping_criteria}"
+            log_str += f"\nStopping criteria (non-nan) {smoothed_criteria}"
 
             # Determine approximate time left for epoch
             epoch_batches_left = len(dataloader) - (batch_i + 1)
@@ -247,3 +280,6 @@ if __name__ == "__main__":
 
         if epoch % opt.checkpoint_interval == 0:
             torch.save(model.state_dict(), f"checkpoints/{opt.prefix}_ckpt_{epoch}.pth")
+            if smoothed_criteria > 0:
+                print("Stopping early")
+                exit(0)
