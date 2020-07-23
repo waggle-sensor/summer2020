@@ -353,3 +353,6 @@ I created a pull request for the new bash script I made. I also worked on buildi
 10:30am - 11am -> Daily scrum meeting
 11am -> 12pm -> profesional development workshop
 #### Work done/Things learned
+I worked on learning and practicing runs and builds on github actions. There isn't much documentation on github actions and its setup for begininers, so it took some time for me to learn how to create, build, and test an action. I created a new branch for testing the image building process. Each test will take a long time since there are 3 sites and each image takes about 5-10 mins to build. Now I will start on finding a way to upload the image to all three sites.
+#### Errors/issues
+- creating GITHUB_SECRETS and environment for the rc file
