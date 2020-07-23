@@ -185,3 +185,12 @@ Tuesday 7/21
 5. Continued analyzing example SDD code found online
     (https://github.com/Rahul24-06/Vision-based-Social-Distancing-Monitor)
     (https://github.com/KingArnaiz/Social-Distance-Detector)
+
+Wednesday 7/22
+1. Weekly Student Seminar
+2. PyImageSearch Tutorial: CNN Object Detection Part 1/4 (https://www.pyimagesearch.com/2020/06/22/turning-any-cnn-image-classifier-into-an-object-detector-with-keras-tensorflow-and-opencv/)
+3. PyImageSearch Tutorial: CNN Object Detection Part 2/4 (https://www.pyimagesearch.com/2020/06/29/opencv-selective-search-for-object-detection)
+4. Seminar on Argonne COVID research
+5. CELS Hang
+6. Started analyzing examples of social distancing code that includes bird's eye view transformation (towardsdatascience.com)
+7. Reviewed PyImageSearch tutorial on 4-point transformation
