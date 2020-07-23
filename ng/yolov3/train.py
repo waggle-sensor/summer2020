@@ -20,7 +20,8 @@ from yolov3.utils.datasets import ListDataset
 
 import backpack as bp
 
-if __name__ == "__main__":
+
+def get_train_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--epochs", type=int, default=100, help="number of epochs")
     parser.add_argument(
@@ -89,7 +90,12 @@ if __name__ == "__main__":
         help="cutoff value for gradient clipping",
     )
 
-    opt = parser.parse_args()
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+
+    opt = get_train_args()
     print(opt)
 
     logger = Logger("logs")
@@ -204,7 +210,7 @@ if __name__ == "__main__":
             scale_factor = 1 / len(non_nan_vals)
             stopping_criteria2 = scale_factor * sum(non_nan_vals)
 
-            alpha = 0.5
+            alpha = 0.1
             if old_criteria == 0:
                 smoothed_criteria = stopping_criteria2
             else:
@@ -253,6 +259,7 @@ if __name__ == "__main__":
                         if name != "grid_size":
                             tensorboard_log += [(f"{name}_{j+1}", metric)]
                 tensorboard_log += [("loss", loss.item())]
+                tensorboard_log += [("stopping", smoothed_criteria)]
                 if batch_i % log_interval == 0:
                     logger.list_of_scalars_summary(tensorboard_log, batches_done)
 
