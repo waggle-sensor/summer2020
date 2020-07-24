@@ -20,8 +20,8 @@ def non_max_suppression(boxList, overlapThresh):
     y2s = boxList[:, 3]
 
     # compute list of box areas and sort by bottom-right y-coordinate
-    area = (x2 - x1 + 1) * (y2 - y1 + 1)
-    indexes = np.argsort(y2)
+    area = (x2s - x1s + 1) * (y2s - y1s + 1)
+    indexes = np.argsort(y2s)
 
     while len(indexes) > 0:
         # append last index from indexes list to result list
@@ -29,10 +29,10 @@ def non_max_suppression(boxList, overlapThresh):
         i = indexes[last]
         result.append(i)
 
-        x1 = np.maximum(x1s[i], x1[indexes[:last]])
-        y1 = np.maximum(y1s[i], y1[indexes[:last]])
-        x2 = np.minimum(x2s[i], x2[indexes[:last]])
-        y2 = np.minimum(y2s[i], y2[indexes[:last]])
+        x1 = np.maximum(x1s[i], x1s[indexes[:last]])
+        y1 = np.maximum(y1s[i], y1s[indexes[:last]])
+        x2 = np.minimum(x2s[i], x2s[indexes[:last]])
+        y2 = np.minimum(y2s[i], y2s[indexes[:last]])
 
         w = np.maximum(0, x2 - x1 + 1)
         h = np.maximum(0, y2 - y1 + 1)

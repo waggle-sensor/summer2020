@@ -6,5 +6,8 @@
     </content>
     <orderEntry type="jdk" jdkName="Python 3.6 (cv)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="SocialDistancingAI" />
+    <orderEntry type="module" module-name="covid-social-distancing-detection" />
+    <orderEntry type="module" module-name="Social-Distancing-AI" />
   </component>
 </module>

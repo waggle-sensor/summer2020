@@ -194,3 +194,12 @@ Wednesday 7/22
 5. CELS Hang
 6. Started analyzing examples of social distancing code that includes bird's eye view transformation (towardsdatascience.com)
 7. Reviewed PyImageSearch tutorial on 4-point transformation
+
+Thursday 7/23
+1. AI/ML Scrum
+2. Argonne Lecture
+3. Continuing to analyze examples of social distancing code that includes bird's eye view transformation
+4. Clean up 4 point transformation algorithm, include function that takes mouse clicks as inputs
+5. Small scale test of perspective transformation with new 4 point algorithm 
+6. Prep for AI/ML Demo Presentation
+
