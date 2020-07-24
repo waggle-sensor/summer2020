@@ -110,9 +110,10 @@ FPS            |  Delay for the image stream
 :-------------------------:|:-------------------------:
 ![](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/ros2-fps.jpeg)  |  ![](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/ros2-latency.jpeg)
 
+### Results 
+
 |  	| FPS 	| Delay (s) 	|
 |:-:	|:-:	|:-:	|
 | FFmpeg 	| 30 	| 8.75 	|
-| ROS2 	| 15 	| 0.54 	|
+| ROS2 	| 16.0 	| 0.54 	|
 | RabbitMQ 	| - 	| - 	|
-
