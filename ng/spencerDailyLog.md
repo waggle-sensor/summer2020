@@ -461,3 +461,26 @@ normal pdf | 88.3% | 96.7%
 * Looking into how significantly YOLO's loss function affects its gradients
   * Would inaccurate/uncertainty in ground truth affect loss and the mini-batch gradients to the point where we will never meet the criteria to stop?
   * May need to make a custom loss function and/or weight samples somehow otherwise
+
+**Friday, July 24**
+
+* Checked on progress from overnight training
+  * Stop criteria still hovers around -9.0, at epoch 90
+  * This is approaching the peak of the precision in the previous retraining
+  * Continuing problem: how do we detect the peak of training precision wrt ground truth?
+  * At the same time, we aren't 100% certain of the ground truth
+* Looked at parallelized retraining to take advantage of lambda's multiple GPUs
+* Possible solutions
+  * Custom loss function weighing loss on more confident images (using modified confidence function) more heavily
+    * Evidence shows that precision and confidence is positively correlated
+    * Simple (normalized) proportion of YOLOv3's loss
+    * This should improve overall precision as well
+  * Re-evaluate stop criteria
+    * Simple threshold shift
+    * See if there's a (slight) trend as retraining goes on
+    * Use smaller alpha level for exponential smoothing to reduce noise and better see trends
+  * Create a validation set from the samples, disjoint from the training set
+    * Use a certain proportion of the most confident (top 10%?) samples
+* Attended student physics seminar on research at the South Pole
+* Saw AI/ML presentations
+* Reading papers on how effects of uncertainty in training set/ground truth can be minimized while training

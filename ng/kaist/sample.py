@@ -86,10 +86,14 @@ def norm(conf, mean, std):
     return scipy.stats.norm(mean, std).pdf(conf)
 
 
-def create_labels(retrain_list):
+def create_labels(retrain_list, use_actual=False):
     classes = open("config/chars.names").read().split("\n")[:-1]
     for result in retrain_list:
-        idx = classes.index(result["detected"])
+        idx = (
+            classes.index(result["actual"])
+            if use_actual
+            else classes.index(result["detected"])
+        )
 
         label_path = result["file"].replace("images", "labels")[:-4] + ".txt"
         os.makedirs(os.path.dirname(label_path), exist_ok=True)
@@ -149,7 +153,7 @@ def create_sample(data_config, results, undersample, name, sample_func, *func_ar
     avg_hit_rate = stats.mean(hit_rate(samples) for samples in retrain_by_class)
     print(f"Avg. hit rate: {avg_hit_rate}")
 
-    create_labels(retrain)
+    create_labels(retrain, use_actual=True)
     create_config(retrain, name, data_config)
 
     return retrain
@@ -189,5 +193,5 @@ if __name__ == "__main__":
     }
 
     for k, v in methods.items():
-        sample = create_sample("config/chars.data", results, False, k, v)
+        sample = create_sample("config/chars.data", results, False, k, v, thresh=0.0)
         sample_histogram(sample, k)
