@@ -102,4 +102,8 @@ Subscribe to image frames:
 ros2 run image_tools showimage
 ```
 
+FPS            |  Delay for the image stream
+:-------------------------:|:-------------------------:
+![](../image/ffmpeg-fps)  |  ![](../image/ffmpeg-latency.jpeg)
+![](../image/ros2-fps)  |  ![](../image/ros2-latency.jpeg)
 
