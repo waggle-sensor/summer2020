@@ -3,7 +3,7 @@ import numpy as np
 import imutils
 import datetime
 from OZ_CentroidTracker import CentroidTracker
-from OZ_nms import non_max_suppression
+from OZ_NMS import non_max_suppression
 
 protopath = "MobileNetSSD_deploy.prototxt"
 modelpath = "MobileNetSSD_deploy.caffemodel"
@@ -14,7 +14,7 @@ CLASSES = ["background", "aeroplane", "bicycle", "bird", "boat",
            "dog", "horse", "motorbike", "person", "pottedplant", "sheep",
            "sofa", "train", "tvmonitor"]
 
-tracker = CentroidTracker()
+tracker = CentroidTracker(maxDisappeared=25)
 
 cap = cv2.VideoCapture('video/test_video2.mp4')
 
@@ -48,6 +48,8 @@ while True:
 
             cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 2)
 
+    bboxes = np.array(boxes).astype(int)
+    boxes = non_max_suppression(bboxes, 0.3)
     objects = tracker.update(boxes)
 
     for (objectID, centroid) in objects.items():
@@ -67,7 +69,7 @@ while True:
 
     cv2.putText(frame, fps_text, (5, 30), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 255), 1)
 
-    cv2.imshow("Application", frame)
+    cv2.imshow("Result", frame)
     key = cv2.waitKey(1)
     if key == ord('q'):
         break
