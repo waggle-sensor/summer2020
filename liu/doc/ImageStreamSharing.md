@@ -104,6 +104,6 @@ ros2 run image_tools showimage
 
 FPS            |  Delay for the image stream
 :-------------------------:|:-------------------------:
-![](../image/ffmpeg-fps)  |  ![](../image/ffmpeg-latency.jpeg)
-![](../image/ros2-fps)  |  ![](../image/ros2-latency.jpeg)
+![](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/ffmpeg-fps)  |  ![](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/ffmpeg-latency.jpeg)
+![](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/ros2-fps)  |  ![](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/ros2-latency.jpeg)
 
