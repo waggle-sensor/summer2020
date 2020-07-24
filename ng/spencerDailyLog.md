@@ -482,5 +482,13 @@ normal pdf | 88.3% | 96.7%
   * Create a validation set from the samples, disjoint from the training set
     * Use a certain proportion of the most confident (top 10%?) samples
 * Attended student physics seminar on research at the South Pole
-* Saw AI/ML presentations
 * Reading papers on how effects of uncertainty in training set/ground truth can be minimized while training
+* Saw AI/ML presentations
+* Discussed with Sean and Nicola about moving forward and clarified overall project goals
+  * Autoencoding may be a way to separate hard samples
+  * Unsure about early stopping
+  * Bandwidth problems are both literal and with annotating data for the ground truth
+  * Generalizing to an environment may be a beneficial aspect
+* Documented the revised pipeline in preparation for refactoring code and testing more sampling methods next week
+  * Idea is to create more modular functionality, in preparation for deployment and testing on other models
+* Running experiment on lambda to determine effectiveness of gradient early stop criteria without validation when ground truth is known

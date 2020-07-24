@@ -79,7 +79,7 @@ if __name__ == "__main__":
 
     for name, func in methods.items():
         start_epoch = opt.start_epoch
-        epoch_num = start_epoch + opt.retrain_length + 1
+        epoch_num = start_epoch + opt.retrain_epochs + 1
         prefix = opt.prefix
 
         for i in range(opt.sample_iterations):
