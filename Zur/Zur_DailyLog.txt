@@ -203,3 +203,9 @@ Thursday 7/23
 5. Small scale test of perspective transformation with new 4 point algorithm 
 6. Prep for AI/ML Demo Presentation
 
+Friday 7/24
+
+1. Small scale image transformation experiment with Lego
+2. Testing Lego images with my image transformation algorithm
+3. Preparing AI/ML Demo Presentation
+4. AI/ML Demo Presentation
