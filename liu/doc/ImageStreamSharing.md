@@ -90,6 +90,10 @@ Access the video stream:
 ffplay -i http:localhost:8090/test1.mpg
 ```
 
+FPS            |  Delay for the image stream
+:-------------------------:|:-------------------------:
+![](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/ffmpeg-fps.jpeg)  |  ![](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/ffmpeg-latency.jpeg)
+
 ### ROS2
 
 Publish image frames:
@@ -104,6 +108,11 @@ ros2 run image_tools showimage
 
 FPS            |  Delay for the image stream
 :-------------------------:|:-------------------------:
-![](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/ffmpeg-fps.jpeg)  |  ![](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/ffmpeg-latency.jpeg)
 ![](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/ros2-fps.jpeg)  |  ![](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/ros2-latency.jpeg)
+
+|  	| FPS 	| Delay (s) 	|
+|:-:	|:-:	|:-:	|
+| FFmpeg 	| 30 	| 8.75 	|
+| ROS2 	| 15 	| 0.54 	|
+| RabbitMQ 	| - 	| - 	|
 
