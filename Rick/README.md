@@ -4,7 +4,7 @@
 
 ## AMS Poster
 ### https://annual.ametsoc.org/index.cfm/2021/program-events/conferences-and-symposia/20th-conference-on-artificial-intelligence-for-environmental-science/
-### Abstract due August 20th 
+### Abstract due August 20th (limit 1000 words)
 ### Meeting, taking place from 10-14 January 2021 in New Orleans.
 * The Standard Poster Display is a 4' x 8' (1.2m x 2.4m) double-sided Velcro covered panel. These panels have a horizontal/landscape orientation. This varies per conference. Please check the conference specific poster information.
 * You can mount your poster with AMS supplied pushpins or Velcro.
