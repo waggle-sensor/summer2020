@@ -492,3 +492,12 @@ normal pdf | 88.3% | 96.7%
 * Documented the revised pipeline in preparation for refactoring code and testing more sampling methods next week
   * Idea is to create more modular functionality, in preparation for deployment and testing on other models
 * Running experiment on lambda to determine effectiveness of gradient early stop criteria without validation when ground truth is known
+
+## Week 7
+
+**Monday, July 27**
+
+* Begin refactoring code for entire training, sampling, and retraining pipeline
+* Attended virtual tour of the ALCF
+* Generalized iterative stratification sampling algorithm to include a user-defined number of subsets
+* Working on incoporating augmentation into the pipeline
