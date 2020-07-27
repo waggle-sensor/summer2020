@@ -29,7 +29,7 @@ def resize(image, size):
     return image
 
 
-def get_label_path(self, img):
+def get_label_path(img):
     return img[:-4].replace("images", "labels") + ".txt"
 
 
@@ -42,13 +42,14 @@ class ImageFolder:
             self.imgs = self.get_images()
         else:
             self.imgs = src
+
         self.labels = self.get_labels()
         self.img_dict = self.make_img_dict()
 
     def get_images(self):
         extensions = (".jpg", ".png", ".gif", ".bmp")
         raw_imgs = sorted(glob.glob(f"{self.path}/**/*.*", recursive=True))
-        raw_imgs = [file for file in raw_imgs if file[:-4].lower() in extensions]
+        raw_imgs = [file for file in raw_imgs if file[-4:].lower() in extensions]
         labeled_imgs = list()
 
         for img in raw_imgs:
@@ -62,9 +63,12 @@ class ImageFolder:
         return [get_label_path(img) for img in self.imgs]
 
     def make_img_dict(self):
-        return {
-            img: self.get_classes(self.labels[i]) for i, img in enumerate(self.imgs)
-        }
+        img_dict = dict()
+        for i, img in enumerate(self.imgs):
+            classes = self.get_classes(self.labels[i])
+            if len(classes) != 0:
+                img_dict[img] = classes
+        return img_dict
 
     def get_classes(self, label_path):
         """Get a list of classes from a Darknet label."""

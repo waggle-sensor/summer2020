@@ -61,8 +61,8 @@ def iterative_stratification(images, proportions):
 
             for c in images[img]:
                 desired[idx][c] -= 1
-            images.pop(img)
 
+            images.pop(img)
         remaining.pop(least_freq_label)
 
     return subsets

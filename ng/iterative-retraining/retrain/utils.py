@@ -6,9 +6,12 @@ def parse_retrain_config(path):
         key, value = [val.strip() for val in line.split("=")]
 
         try:
-            options[key] = float(value)
+            options[key] = int(value)
         except ValueError:
-            options[key] = value
+            try:
+                options[key] = float(value)
+            except ValueError:
+                options[key] = value
     return options
 
 

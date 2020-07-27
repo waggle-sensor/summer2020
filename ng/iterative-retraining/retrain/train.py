@@ -15,6 +15,7 @@ from retrain.models import Darknet
 import retrain.utils as utils
 from retrain.dataloader import ListDataset, ImageFolder
 from retrain.logger import Logger
+import retrain.statutils as statutils
 
 
 def train(folder, opt, model_def, load_weights=None):
@@ -28,10 +29,10 @@ def train(folder, opt, model_def, load_weights=None):
     print(f"Using {device_str} for training")
     device = torch.device(device_str)
 
-    model = Darknet(model_def).to(device)
+    model = Darknet(model_def, opt["img_size"]).to(device)
 
     # Initiate model
-    model.apply(utils.weights_init_normal)
+    model.apply(statutils.weights_init_normal)
 
     if load_weights is not None:
         model.load_state_dict(torch.load(load_weights))
@@ -47,17 +48,12 @@ def train(folder, opt, model_def, load_weights=None):
 
     # Get dataloader
     dataset = ListDataset(
-        train.imgs,
-        img_size=model_def["img_size"],
-        compose=bool(opt["aug_compose"]),
-        multiscale=bool(opt["multiscale"]),
+        train.imgs, img_size=opt["img_size"], multiscale=bool(opt["multiscale"]),
     )
-
-    dataset.augment()
 
     dataloader = torch.utils.data.DataLoader(
         dataset,
-        batch_size=model_def["batch"],
+        batch_size=opt["batch_size"],
         shuffle=True,
         num_workers=opt["n_cpu"],
         pin_memory=True,
@@ -105,7 +101,7 @@ def train(folder, opt, model_def, load_weights=None):
 
             if batches_done % opt.gradient_accumulations:
                 # Accumulates gradient before each step
-                torch.nn.utils.clip_grad_norm_(model.parameters(), opt.clip)
+                torch.nn.utils.clip_grad_norm_(model.parameters(), opt["clip"])
                 optimizer.step()
                 optimizer.zero_grad()
 

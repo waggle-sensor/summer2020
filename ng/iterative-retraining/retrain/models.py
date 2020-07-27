@@ -2,8 +2,10 @@ from __future__ import division, absolute_import
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import numpy as np
 
+import retrain.utils as utils
 from retrain.statutils import build_targets, to_cpu
 
 
@@ -260,9 +262,9 @@ class YOLOLayer(nn.Module):
 class Darknet(nn.Module):
     """YOLOv3 object detection model"""
 
-    def __init__(self, config_path, img_size=416):
+    def __init__(self, model_def, img_size=416):
         super(Darknet, self).__init__()
-        self.module_defs = parse_model_config(config_path)
+        self.module_defs = model_def
         self.hyperparams, self.module_list = create_modules(self.module_defs)
         self.yolo_layers = [
             layer[0] for layer in self.module_list if hasattr(layer[0], "metrics")
