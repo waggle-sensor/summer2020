@@ -2,11 +2,29 @@
 
 <br>
 
+## AMS Poster
+### https://annual.ametsoc.org/index.cfm/2021/program-events/conferences-and-symposia/20th-conference-on-artificial-intelligence-for-environmental-science/
+### Abstract due August 20th (limit 1000 words)
+### Meeting, taking place from 10-14 January 2021 in New Orleans.
+* The Standard Poster Display is a 4' x 8' (1.2m x 2.4m) double-sided Velcro covered panel. These panels have a horizontal/landscape orientation. This varies per conference. Please check the conference specific poster information.
+* You can mount your poster with AMS supplied pushpins or Velcro.
+* Place the title at the top center of the poster.
+* Use 72 point letters.
+* Avoid hand drawn materials.
+* Keep it simple.
+* Do not post the pages of your paper.
+* Make sure it has a logical flow.
+* Use color, graphics, charts, and photos.
+* Key points should be in large type.
+* Do not try to tell the entire story on the panel.
+* Save some key points for the one-on-one discussion.
+* Avoid the following color combinations: Green&Red; Green&Brown; Blue&Purple; Green&Blue; Light Green&Yellow; Blue&Grey; Green&Grey; Green&Black
+
 ## To do list :)
-01. [ ] Update pipeline to run test on each month
-02. [ ] Run on lambda
-03. [ ] Make test code for waggle node xavier 
-04. [ ] Finish paper
+01. [ ] Update paper (Afternoon)
+02. [ ] Work on getting tensorflow/cuda working on node (waiting on team)
+03. [ ] Troubleshoot/run one month test for E2 and E3 (appears to be working, running now for E2 feb-may)
+04. [ ] Build parser for rain data (Afternoon) 
 
 <br>
 
