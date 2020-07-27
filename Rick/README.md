@@ -3,10 +3,10 @@
 <br>
 
 ## To do list :)
-01. [ ] Update pipeline to run test on each month
-02. [ ] Run on lambda
-03. [ ] Make test code for waggle node xavier 
-04. [ ] Finish paper
+01. [ ] Update paper
+02. [ ] Work on getting tensorflow/cuda working on node 
+03. [ ] Troubleshoot/run one month test for E2 and E3 
+04. [ ] Build parser for rain data 
 
 <br>
 
