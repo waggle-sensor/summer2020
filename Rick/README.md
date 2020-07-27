@@ -2,6 +2,21 @@
 
 <br>
 
+## AMS Poster
+* The Standard Poster Display is a 4' x 8' (1.2m x 2.4m) double-sided Velcro covered panel. These panels have a horizontal/landscape orientation. This varies per conference. Please check the conference specific poster information.
+* You can mount your poster with AMS supplied pushpins or Velcro.
+* Place the title at the top center of the poster.
+* Use 72 point letters.
+* Avoid hand drawn materials.
+* Keep it simple.
+* Do not post the pages of your paper.
+* Make sure it has a logical flow.
+* Use color, graphics, charts, and photos.
+* Key points should be in large type.
+* Do not try to tell the entire story on the panel.
+* Save some key points for the one-on-one discussion.
+* Avoid the following color combinations: Green&Red; Green&Brown; Blue&Purple; Green&Blue; Light Green&Yellow; Blue&Grey; Green&Grey; Green&Black
+
 ## To do list :)
 01. [ ] Update paper
 02. [ ] Work on getting tensorflow/cuda working on node 
