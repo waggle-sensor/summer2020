@@ -51,7 +51,9 @@ FPS            |  Delay for the image stream
 :-------------------------:|:-------------------------:
 ![](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/ros2-fps.jpeg)  |  ![](https://github.com/waggle-sensor/summer2020/blob/master/liu/image/ros2-latency.jpeg)
 
-### Results 
+### Results
+
+#### FPS and Delay
 
 |  	| FPS 	| Delay (s) 	|
 |:-:	|:-:	|:-:	|
