@@ -88,9 +88,15 @@ def train(folder, opt, model_def, load_weights=None):
     log_freq = opt["logs_per_epoch"] if "logs_per_epoch" in opt.keys() else 50
     log_interval = int(len(dataloader) / log_freq)
 
+    successive_stops = 0
+    prev_strip_loss = float("inf")
+
     end_epoch = opt["start_epoch"] + opt["max_epochs"]
 
+    last_epoch = opt["start_epoch"]
+
     for epoch in range(opt["start_epoch"], end_epoch):
+        last_epoch = epoch
         model.train()
         start_time = time.time()
 
@@ -162,17 +168,38 @@ def train(folder, opt, model_def, load_weights=None):
 
             model.seen += imgs.size(0)
 
-        if epoch % opt["evaluation_interval"] == 0:
-            opt["iou_thres"] = 0.5
-            opt["conf_thres"] = 0.5
-            opt["nms_thres"] = 0.5
-            evaluate.get_results(model, test.imgs, opt, class_names, logger, epoch)
-
         if epoch % opt["checkpoint_interval"] == 0:
             torch.save(
                 model.state_dict(),
                 f"{opt['checkpoints']}/{opt['prefix']}_ckpt_{epoch}.pth",
             )
-            # if opt.early_stop and stop_criteria > 0:
-            #     print(f"Stopping early, at epoch {epoch}")
-            #     exit(0)
+
+        # Use UP criteria for early stop
+        if bool(opt["early_stop"]) and epoch % opt["strip_len"] == 0:
+            print("Evaluating validation set for early stop")
+
+            valid_results = evaluate.get_results(
+                model, valid.imgs, opt, class_names, logger, epoch
+            )
+
+            if valid_results["loss"] > prev_strip_loss:
+                successive_stops += 1
+            else:
+                successive_stops = 0
+            print(f"Previous loss: {prev_strip_loss}")
+            print(f"Current loss: {valid_results['loss']}")
+
+            prev_strip_loss = valid_results["loss"]
+
+            if successive_stops == opt["successions"]:
+                break
+
+        if epoch % opt["evaluation_interval"] == 0:
+            opt["iou_thres"] = 0.5
+            opt["conf_thres"] = 0.5
+            opt["nms_thres"] = 0.5
+
+            print("Evaluating test set...")
+            evaluate.get_results(model, test.imgs, opt, class_names, logger, epoch)
+
+    return last_epoch

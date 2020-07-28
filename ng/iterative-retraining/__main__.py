@@ -27,7 +27,10 @@ if __name__ == "__main__":
         config["start_epoch"] = 1
         config["prefix"] = "init"
 
-        train(config["initial_set"], config, model_config)
+        end_epoch = train(config["initial_set"], config, model_config)
+        print(f"Initial training ended on epoch {end_epoch}")
+
+        opt.reload_baseline = (f"{opt['checkpoints']}/init_ckpt_{end_epoch}.pth",)
 
     # Sample
 

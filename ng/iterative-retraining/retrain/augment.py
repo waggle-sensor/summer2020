@@ -136,7 +136,7 @@ def augment_img(aug, suffix, img_path, count=1, min_visibility=0.50):
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
-        cv2.imwrite(aug_path, aug_img)       
+        cv2.imwrite(aug_path, aug_img)
 
         with open(new_txt_path, "w+") as out:
             for i, bbox_str in enumerate(new_bboxes):

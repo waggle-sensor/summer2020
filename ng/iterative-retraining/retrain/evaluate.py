@@ -139,7 +139,7 @@ def evaluate(
         imgs = Variable(imgs.type(Tensor), requires_grad=False)
 
         with torch.no_grad():
-            outputs = model(imgs)
+            loss, outputs = model(imgs, targets)
             outputs = utils.non_max_suppression(
                 outputs, conf_thres=conf_thres, nms_thres=nms_thres
             )
@@ -156,7 +156,7 @@ def evaluate(
         true_positives, pred_scores, pred_labels, labels
     )
 
-    return precision, recall, AP, f1, ap_class
+    return precision, recall, AP, f1, ap_class, loss.item()
 
 
 def get_results(model, img_list, opt, class_names, logger=None, epoch=0, silent=False):
@@ -164,7 +164,7 @@ def get_results(model, img_list, opt, class_names, logger=None, epoch=0, silent=
 
     print("Compute mAP...")
 
-    precision, recall, AP, f1, ap_class = evaluate(
+    precision, recall, AP, f1, ap_class, loss = evaluate(
         model,
         img_list=img_list,
         iou_thres=opt["iou_thres"],
@@ -180,6 +180,7 @@ def get_results(model, img_list, opt, class_names, logger=None, epoch=0, silent=
         ("val_recall", recall.mean()),
         ("val_mAP", AP.mean()),
         ("val_f1", f1.mean()),
+        ("val_loss", loss),
     ]
 
     if logger is not None:
@@ -191,3 +192,5 @@ def get_results(model, img_list, opt, class_names, logger=None, epoch=0, silent=
         ap_table += [[c, class_names[c], "%.5f" % AP[i]]]
     print(AsciiTable(ap_table).table)
     print(f"---- mAP {AP.mean()}")
+
+    return dict(evaluation_metrics)
