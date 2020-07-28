@@ -21,10 +21,10 @@
 * Avoid the following color combinations: Green&Red; Green&Brown; Blue&Purple; Green&Blue; Light Green&Yellow; Blue&Grey; Green&Grey; Green&Black
 
 ## To do list :)
-01. [ ] Update paper (Afternoon)
-02. [ ] Work on getting tensorflow/cuda working on node (waiting on team)
-03. [ ] Troubleshoot/run one month test for E2 and E3 (appears to be working, running now for E2 feb-may)
-04. [ ] Build parser for rain data (Afternoon) 
+01. [ ] Update paper (morning)
+02. [ ] Work on getting tensorflow/cuda working on node (afternoon)
+03. [ ] Get data from lambda for E2 and E3 (morning)
+04. [ ] Build parser for video rain data (Afternoon) 
 
 <br>
 
