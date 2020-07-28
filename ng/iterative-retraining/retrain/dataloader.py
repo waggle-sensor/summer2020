@@ -9,6 +9,8 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset
 import torchvision.transforms as transforms
 import retrain.sampling as sampling
+from retrain.augment import Augmenter
+from retrain.utils import get_label_path
 
 
 def pad_to_square(img, pad_value):
@@ -27,10 +29,6 @@ def pad_to_square(img, pad_value):
 def resize(image, size):
     image = F.interpolate(image.unsqueeze(0), size=size, mode="nearest").squeeze(0)
     return image
-
-
-def get_label_path(img):
-    return img[:-4].replace("images", "labels") + ".txt"
 
 
 class ImageFolder:
@@ -98,14 +96,22 @@ class ImageFolder:
         img_dict = self.make_img_dict()
         proportions = [prop_train, prop_valid, prop_test]
         img_lists = sampling.iterative_stratification(img_dict, proportions)
-        return [
+        splits = [
             ImageFolder(img_list, self.num_classes, from_path=False)
             for img_list in img_lists
         ]
 
+        return splits
+
+    def save_img_list(self, output):
+        """Save list of images (for splits) as a text file."""
+        with open(output, "w+") as out:
+            out.write("\n".join(self.imgs))
+
     def augment(self, imgs_per_class, compose=True):
-        pass
-        # TODO: write this
+        aug = Augmenter(self)
+        aug.augment(imgs_per_class, compose)
+        self.img_dict = self.make_img_dict()
 
 
 class ListDataset(Dataset):

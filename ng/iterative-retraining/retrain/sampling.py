@@ -16,6 +16,8 @@ def multi_argmax(arr):
 def iterative_stratification(images, proportions):
     remaining = dict()
 
+    # Build the list of images per label that have not
+    # been allocated to a subset yet
     for img, class_list in images.items():
         for c in class_list:
             if c not in remaining.keys():
@@ -25,11 +27,15 @@ def iterative_stratification(images, proportions):
     desired = [dict() for _ in proportions]
     subsets = [list() for _ in proportions]
 
+    # Compute the desired number of examples for each label,
+    # for each subset
     for c, imgs in remaining.items():
         for i, weight in enumerate(proportions):
             desired[i][c] = round(len(imgs) * weight)
 
     while len(images.keys()) > 0:
+        # Allocate the least frequent label (with at least
+        # 1 example remaining) first
         remaining = sort_list_dict(remaining)
         least_freq_label = list(remaining.keys())[0]
 
@@ -37,11 +43,13 @@ def iterative_stratification(images, proportions):
         random.shuffle(label_imgs)
 
         for img in label_imgs:
+            # Allocate image to subset that needs the most of that label
             get_label_count = lambda x: x[least_freq_label]
             label_counts = [get_label_count(lab) for lab in desired]
             subset_indexes = multi_argmax(label_counts)
 
             if len(subset_indexes) > 1:
+                # Break ties by subset that needs the most overall examples
                 get_all_label_count = lambda i: sum(desired[i].values())
                 all_label_counts = [sum(desired[i].values()) for i in subset_indexes]
 
@@ -49,8 +57,10 @@ def iterative_stratification(images, proportions):
                     subset_indexes[x] for x in multi_argmax(all_label_counts)
                 ]
                 if len(subset_indexes) > 1:
+                    # Break further ties randomly
                     random.shuffle(subset_indexes)
 
+            # Add image to the chosen subset and remove the image
             idx = subset_indexes[0]
             subset = subsets[idx]
             subset.append(img)
@@ -59,6 +69,7 @@ def iterative_stratification(images, proportions):
                 if img in img_set:
                     img_set.remove(img)
 
+            # Decrease the desired number, based on all labels in that example
             for c in images[img]:
                 desired[idx][c] -= 1
 

@@ -1,3 +1,7 @@
+def get_label_path(img):
+    return img[:-4].replace("images", "labels") + ".txt"
+
+
 def parse_retrain_config(path):
     lines = [line for line in get_config_lines(path) if "=" in line]
 

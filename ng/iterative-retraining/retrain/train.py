@@ -45,6 +45,11 @@ def train(folder, opt, model_def, load_weights=None):
         opt["train_init"], opt["valid_init"], test_prop
     )
     (train, valid, test) = img_splits
+    for i, name in enumerate(("train", "valid", "test")):
+        filename = f"{opt['output']}/{opt['prefix']}_{name}.txt"
+        img_splits[i].save_img_list(filename)
+
+    train.augment(opt["images_per_class"])
 
     # Get dataloader
     dataset = ListDataset(
@@ -99,7 +104,7 @@ def train(folder, opt, model_def, load_weights=None):
 
             loss.backward()
 
-            if batches_done % opt.gradient_accumulations:
+            if batches_done % opt["gradient_accumulations"]:
                 # Accumulates gradient before each step
                 torch.nn.utils.clip_grad_norm_(model.parameters(), opt["clip"])
                 optimizer.step()
