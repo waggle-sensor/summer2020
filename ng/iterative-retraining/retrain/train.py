@@ -20,7 +20,6 @@ import retrain.statutils as statutils
 
 def train(folder, opt, model_def, load_weights=None):
 
-    logger = Logger(opt["log"], opt["prefix"])
     os.makedirs(opt["checkpoints"], exist_ok=True)
     os.makedirs(opt["output"], exist_ok=True)
 
@@ -85,6 +84,7 @@ def train(folder, opt, model_def, load_weights=None):
     ]
 
     # Limit logging rate of batch metrics
+    logger = Logger(opt["log"], opt["prefix"])
     log_freq = opt["logs_per_epoch"] if "logs_per_epoch" in opt.keys() else 50
     log_interval = int(len(dataloader) / log_freq)
 
@@ -149,13 +149,12 @@ def train(folder, opt, model_def, load_weights=None):
                         if name != "grid_size":
                             tensorboard_log += [(f"{name}_{j+1}", metric)]
                 tensorboard_log += [("loss", loss.item())]
-                # tensorboard_log += [("stopping", stop_criteria)]
+
                 if batch_i % log_interval == 0:
                     logger.list_of_scalars_summary(tensorboard_log, batches_done)
 
             log_str += AsciiTable(metric_table).table
             log_str += f"\nTotal loss {loss.item()}"
-            # log_str += f"\nStopping criteria (non-nan) {stop_criteria}"
 
             # Determine approximate time left for epoch
             epoch_batches_left = len(dataloader) - (batch_i + 1)
@@ -195,10 +194,6 @@ def train(folder, opt, model_def, load_weights=None):
                 break
 
         if epoch % opt["evaluation_interval"] == 0:
-            opt["iou_thres"] = 0.5
-            opt["conf_thres"] = 0.5
-            opt["nms_thres"] = 0.5
-
             print("Evaluating test set...")
             evaluate.get_results(model, test.imgs, opt, class_names, logger, epoch)
 

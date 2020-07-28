@@ -1,3 +1,6 @@
+import sys
+
+
 def get_label_path(img):
     return img[:-4].replace("images", "labels") + ".txt"
 
@@ -49,3 +52,10 @@ def load_classes(path):
     fp = open(path, "r")
     names = fp.read().split("\n")[:-1]
     return names
+
+
+def save_stdout(filename, func, *pos_args, **var_args):
+    old_stdout = sys.stdout
+    sys.stdout = open(filename, "w+")
+    func(*pos_args, **var_args)
+    sys.stdout = old_stdout

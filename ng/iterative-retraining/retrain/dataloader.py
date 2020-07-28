@@ -46,7 +46,7 @@ class ImageFolder:
 
     def get_images(self):
         extensions = (".jpg", ".png", ".gif", ".bmp")
-        raw_imgs = sorted(glob.glob(f"{self.path}/**/*.*", recursive=True))
+        raw_imgs = sorted(glob.glob(f"{self.path}/images/**/*.*", recursive=True))
         raw_imgs = [file for file in raw_imgs if file[-4:].lower() in extensions]
         labeled_imgs = list()
 
@@ -112,6 +112,17 @@ class ImageFolder:
         aug = Augmenter(self)
         aug.augment(imgs_per_class, compose)
         self.img_dict = self.make_img_dict()
+
+    def split_batch(self, batch_size):
+        random.shuffle(self.imgs)
+        splits = list()
+        for i in range(0, len(self.imgs), batch_size):
+            upper_bound = max(len(self.imgs), i + batch_size)
+            splits.append(self.imgs[i:upper_bound])
+        return [
+            ImageFolder(img_list, self.num_classes, from_path=False)
+            for img_list in splits
+        ]
 
 
 class ListDataset(Dataset):

@@ -1,7 +1,9 @@
 import argparse
 import random
+import numpy as np
 import retrain.utils as utils
 from retrain.train import train
+from retrain.dataloader import ImageFolder
 
 
 def train_initial(config):
@@ -12,6 +14,11 @@ def train_initial(config):
 
     end_epoch = train(config["initial_set"], config, model_config)
     return end_epoch
+
+
+def get_num_classes(config):
+    class_names = utils.load_classes(config["class_list"])
+    return len(class_names)
 
 
 if __name__ == "__main__":
@@ -36,13 +43,19 @@ if __name__ == "__main__":
         end_epoch = train_initial(config)
         print(f"Initial training ended on epoch {end_epoch}")
         opt.reload_baseline = f"{config['checkpoints']}/init_ckpt_{end_epoch}.pth"
+    else:
+        end_epoch = int(opt.reload_baseline.split("_")[-1][:-4])
 
     # Sample
+    all_samples = ImageFolder(config["sample_set"], get_num_classes(config))
+    batched_samples = all_samples.split_batch(config["sampling_batch"])
 
-    config["conf_check_num"]
-
-    # Retrain for each sample
     # config["train_split"] = config["train_sample"]
     # config["valid_split"] = config["valid_sample"]
     # config["start_epoch"] =
     # train(config["initial_set"], config, model_config)
+
+    for sample in batched_samples:
+        pass
+
+        # Retrain for each sample
