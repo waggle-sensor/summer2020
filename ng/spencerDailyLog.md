@@ -501,3 +501,12 @@ normal pdf | 88.3% | 96.7%
 * Attended virtual tour of the ALCF
 * Generalized iterative stratification sampling algorithm to include a user-defined number of subsets
 * Working on incoporating augmentation into the pipeline
+
+**Tuesday, July 28**
+
+* Attended scrum meeting, learned about Dockerizing code
+  * Better to simulate the pipeline, rather than using virtual Waggle
+* Continue refactoring code
+  * Wrote functions to resample while retaining a proportion of the old training data
+  * Need to fix to account for the same train/valid/test splits
+* Need to test retraining functionality and clean up old code

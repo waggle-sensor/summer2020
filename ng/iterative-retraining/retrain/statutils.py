@@ -2,10 +2,7 @@ from __future__ import division
 import torch
 import torch.nn as nn
 import numpy as np
-
-
-def to_cpu(tensor):
-    return tensor.detach().cpu()
+import retrain.utils as utils
 
 
 def weights_init_normal(m):
@@ -133,7 +130,9 @@ def get_batch_statistics(outputs, targets, iou_threshold):
                 if pred_label not in target_labels:
                     continue
 
-                iou, box_index = bbox_iou(pred_box.unsqueeze(0), target_boxes).max(0)
+                iou, box_index = utils.bbox_iou(
+                    pred_box.unsqueeze(0), target_boxes
+                ).max(0)
                 if iou >= iou_threshold and box_index not in detected_boxes:
                     true_positives[pred_i] = 1
                     detected_boxes += [box_index]
@@ -150,7 +149,7 @@ def non_max_suppression(prediction, conf_thres=0.5, nms_thres=0.4):
     """
 
     # From (center x, center y, width, height) to (x1, y1, x2, y2)
-    prediction[..., :4] = xywh2xyxy(prediction[..., :4])
+    prediction[..., :4] = utils.xywh2xyxy(prediction[..., :4])
     output = [None for _ in range(len(prediction))]
     for image_i, image_pred in enumerate(prediction):
         # Filter out confidence scores below threshold
@@ -170,7 +169,8 @@ def non_max_suppression(prediction, conf_thres=0.5, nms_thres=0.4):
         keep_boxes = []
         while detections.size(0):
             large_overlap = (
-                bbox_iou(detections[0, :4].unsqueeze(0), detections[:, :4]) > nms_thres
+                utils.bbox_iou(detections[0, :4].unsqueeze(0), detections[:, :4])
+                > nms_thres
             )
             label_match = detections[0, -1] == detections[:, -1]
             # Indices of boxes with lower confidence scores, large IOUs and matching labels

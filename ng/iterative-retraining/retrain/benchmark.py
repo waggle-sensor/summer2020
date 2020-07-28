@@ -1,20 +1,19 @@
 import retrain.evaluate as evaluate
 import retrain.models as models
-import yolov3.utils.datasets as datasets
-import yolov3.utils.utils as yoloutils
-import yolov3.utils.parse_config as yoloparser
+import retrain.utils as utils
 import statistics as stats
-import argparse
 
 import os
-import torch
+import grub
 from tqdm import tqdm as tqdm
 from torch.utils.data import DataLoader
 
 import pandas as pd
+import numpy as np
 import csv
 import itertools
-import sys
+
+from sklearn.metrics import confusion_matrix
 
 
 def load_data(output, by_actual=True):
@@ -185,56 +184,36 @@ def benchmark(
     )
 
 
-def benchmark_avg(
-    prefix, start, end, total_check, classes, out,
-):
-    options = yoloparser.parse_model_config("config/yolov3.cfg")[0]
-    data_opts = yoloparser.parse_data_config("config/chars.data")
+def benchmark_avg(img_folder, prefix, start, end, total, config, model_def):
 
-    img_size = max(int(options["width"]), int(options["height"]))
-
-    classes = yoloutils.load_classes(classes)
-    out_folder = "/".join(out.split("/")[:-1]) if out is not None else OUTPUT
-
-    loader = DataLoader(
-        datasets.ImageFolder(sample_dir, img_size=img_size),
-        batch_size=1,
-        shuffle=False,
-        num_workers=8,
-    )
+    loader = DataLoader(img_folder.imgs, batch_size=1, shuffle=False, num_workers=8,)
 
     results = pd.DataFrame(
         columns=["file", "confs", "actual", "detected", "conf", "hit"]
     )
     results.set_index("file")
 
-    epochs_tested = int((end - start + 1) / delta)
-    epoch_iter = epochs_tested == 1
+    classes = utils.load_classes(config["class_list"])
 
-    orig_prefix = prefix
-    for check_num in tqdm(
-        range(start, end + 1, delta), "Benchmarking epochs", disable=epoch_iter
-    ):
+    checkpoints_i = np.linspace(start, end, total, dtype=np.dtype(np.int16))
+    checkpoints = list()
 
-        prefix = "yolov3" if check_num <= 74 else orig_prefix
+    for n in tqdm(checkpoints_i, "Benchmarking epochs"):
+        ckpt = f"{config['checkpoints']}/initial_ckpt_{n}.pth"
+        if not os.path.exists():
+            ckpt = grub.grub(f"{config['checkpoints']}/{prefix}*_ckpt_{n}.pth")[0]
 
-        model = models.get_eval_model(
-            config, img_size, f"checkpoints/{prefix}_ckpt_{check_num}.pth"
-        )
+        model = models.get_eval_model(model_def, config["img_size"], ckpt)
 
-        test(
-            model, classes, img_size, data_opts["valid"], check_num, out_folder, silent
-        )
-
-        for (img_paths, input_imgs) in tqdm(
-            loader, "Inferencing on samples", disable=silent
-        ):
+        for (img_paths, input_imgs) in loader:
             path = img_paths[0]
             if path not in results.file:
-                actual_class = path.split("-")[1][:1]
+                actual_class = classes[
+                    img_folder.get_classes(utils.get_label_path(path))[0]
+                ]
                 results.loc[path] = [path, dict(), actual_class, None, None, None]
 
-            detections = evaluate.detect(input_imgs, 0.5, model)
+            detections = evaluate.detect(img_folder.imgs, 0.5, model)
 
             confs = results.loc[path]["confs"]
 
@@ -254,7 +233,7 @@ def benchmark_avg(
         best_conf = float("-inf")
 
         for class_name, confs in row["confs"].items():
-            avg_conf = sum(confs) / epochs_tested
+            avg_conf = sum(confs) / len(checkpoints_i)
 
             if avg_conf > best_conf:
                 best_conf = avg_conf
@@ -269,10 +248,15 @@ def benchmark_avg(
             row["conf"] = 0.0
             row["hit"] = False
 
-    prefix = out if out is not None else OUTPUT
-    suffix = f"{start}.csv" if epochs_tested == 1 else f"avg_{start}_{end}.csv"
-    output = open(prefix + suffix, "w+")
+    filename = (
+        f"{start}.csv" if total == 1 else f"{prefix}_benchmark_avg_{start}_{end}.csv"
+    )
+    out_path = f"{config['outputs']}/{filename}"
+    output = open(out_path, "w+")
 
     results.to_csv(
         output, columns=["file", "actual", "detected", "conf", "hit"], index=False
     )
+    output.close()
+
+    return out_path

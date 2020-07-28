@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
-from retrain.statutils import build_targets, to_cpu
+from retrain.utils import build_targets, to_cpu
 
 
 def create_modules(module_defs):
@@ -405,14 +405,8 @@ def get_eval_model(model_def, img_size, weights_path):
 
     # Set up model
     model = Darknet(model_def, img_size=img_size).to(device)
-
-    if weights_path.endswith(".weights"):
-        # Load darknet weights
-        model.load_darknet_weights(weights_path)
-    else:
-        # Load checkpoint weights
-        model.load_state_dict(torch.load(weights_path, map_location=device))
+    model.load_state_dict(torch.load(weights_path, map_location=device))
 
     model.eval()  # Set in evaluation mode
 
-    return model
+    return model.to(torch.device("cuda"))

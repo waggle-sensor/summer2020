@@ -80,6 +80,9 @@ class ImageFolder:
         self.imgs += img_folder.imgs
         self.labels += img_folder.labels
 
+    def append_list(self, img_list):
+        self.append(ImageFolder(img_list, self.num_classes, from_path=False))
+
     def to_dataset(self, **args):
         return ListDataset(self.imgs, **args)
 
@@ -123,6 +126,15 @@ class ImageFolder:
             ImageFolder(img_list, self.num_classes, from_path=False)
             for img_list in splits
         ]
+
+    def group_by_class(self):
+        class_dict = dict()
+        for img, class_list in self.make_img_dict():
+            for c in class_list:
+                if c not in class_dict.keys():
+                    class_dict[c] = set()
+                class_dict[c].add(img)
+        return class_dict
 
 
 class ListDataset(Dataset):
