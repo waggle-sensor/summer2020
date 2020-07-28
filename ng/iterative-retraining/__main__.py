@@ -12,7 +12,8 @@ def train_initial(config):
     config["start_epoch"] = 1
     config["prefix"] = "init"
 
-    end_epoch = train(config["initial_set"], config, model_config)
+    img_folder = ImageFolder(config["initial_set"], get_num_classes(config))
+    end_epoch = train(img_folder, config, model_config)
     return end_epoch
 
 

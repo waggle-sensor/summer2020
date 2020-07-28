@@ -186,16 +186,7 @@ def benchmark(
 
 
 def benchmark_avg(
-    prefix,
-    start,
-    end,
-    delta,
-    config,
-    data_config,
-    classes,
-    sample_dir,
-    out=None,
-    silent=True,
+    prefix, start, end, total_check, classes, out,
 ):
     options = yoloparser.parse_model_config("config/yolov3.cfg")[0]
     data_opts = yoloparser.parse_data_config("config/chars.data")
@@ -285,54 +276,3 @@ def benchmark_avg(
     results.to_csv(
         output, columns=["file", "actual", "detected", "conf", "hit"], index=False
     )
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--epoch", required=True, type=int, help="(ending) benchmark epoch",
-    )
-    parser.add_argument("--prefix", required=True, help="prefix of model to test")
-    parser.add_argument(
-        "--sample",
-        required=True,
-        default="./data/images/objs/",
-        help="folder of images to sample from, with ground truth in folder name",
-    )
-
-    parser.add_argument("--output", required=False, default="./output/")
-    parser.add_argument("--config", required=False, default="./config/yolov3.cfg")
-    parser.add_argument("--data_config", required=False, default="./config/chars.data")
-    parser.add_argument("--classes", required=False, default="./config/chars.names")
-    parser.add_argument("--average", action="store_true", default=False)
-    parser.add_argument(
-        "--start", required=False, type=int, help="starting benchmark epoch", default=0
-    )
-    parser.add_argument(
-        "--delta", type=int, help="interval to average", default=3, required=False
-    )
-
-    opt = parser.parse_args()
-
-    if opt.average:
-        benchmark_avg(
-            opt.prefix,
-            opt.start,
-            opt.epoch,
-            opt.delta,
-            opt.config,
-            opt.data_config,
-            opt.classes,
-            opt.sample,
-            out=opt.output + "/benchmark_",
-        )
-    else:
-        benchmark(
-            opt.prefix,
-            opt.epoch,
-            opt.config,
-            opt.data_config,
-            opt.classes,
-            opt.sample,
-            out=opt.output + "/benchmark_",
-        )

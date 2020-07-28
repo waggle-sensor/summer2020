@@ -90,7 +90,6 @@ class Augmenter:
         aug = multi_aug(get_augmentations(), major_aug)
 
         pbar = tqdm(desc="Augmenting training images", total=sum(incr_factors.values()))
-        completed = 0
 
         for img, count in incr_factors.items():
             augment_img(aug, "compose", img, count=count)

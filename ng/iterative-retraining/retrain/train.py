@@ -13,12 +13,12 @@ import retrain.evaluate as evaluate
 from retrain.models import Darknet
 
 import retrain.utils as utils
-from retrain.dataloader import ListDataset, ImageFolder
+from retrain.dataloader import ListDataset
 from retrain.logger import Logger
 import retrain.statutils as statutils
 
 
-def train(folder, opt, model_def, load_weights=None):
+def train(img_folder, opt, model_def, load_weights=None):
 
     os.makedirs(opt["checkpoints"], exist_ok=True)
     os.makedirs(opt["output"], exist_ok=True)
@@ -37,7 +37,6 @@ def train(folder, opt, model_def, load_weights=None):
         model.load_state_dict(torch.load(load_weights))
 
     class_names = utils.load_classes(opt["class_list"])
-    img_folder = ImageFolder(folder, len(class_names))
 
     test_prop = 1 - opt["train_init"] - opt["valid_init"]
     img_splits = img_folder.split_img_set(

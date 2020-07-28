@@ -13,6 +13,7 @@ from matplotlib.ticker import NullLocator
 
 from terminaltables import AsciiTable
 
+import retrain.statutils as statutils
 import retrain.utils as utils
 from retrain.dataloader import ListDataset
 
@@ -24,7 +25,7 @@ def detect(input_imgs, conf_thres, model, nms_thres=0.5):
 
     with torch.no_grad():
         detections = model(input_imgs)
-        detections = utils.non_max_suppression(detections, conf_thres, nms_thres)
+        detections = statutils.non_max_suppression(detections, conf_thres, nms_thres)
 
     return detections
 
@@ -140,11 +141,11 @@ def evaluate(
 
         with torch.no_grad():
             loss, outputs = model(imgs, targets)
-            outputs = utils.non_max_suppression(
+            outputs = statutils.non_max_suppression(
                 outputs, conf_thres=conf_thres, nms_thres=nms_thres
             )
 
-        sample_metrics += utils.get_batch_statistics(
+        sample_metrics += statutils.get_batch_statistics(
             outputs, targets, iou_threshold=iou_thres
         )
 
@@ -152,7 +153,7 @@ def evaluate(
     true_positives, pred_scores, pred_labels = [
         np.concatenate(x, 0) for x in list(zip(*sample_metrics))
     ]
-    precision, recall, AP, f1, ap_class = utils.ap_per_class(
+    precision, recall, AP, f1, ap_class = statutils.ap_per_class(
         true_positives, pred_scores, pred_labels, labels
     )
 
