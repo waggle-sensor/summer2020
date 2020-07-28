@@ -44,13 +44,11 @@ def iterative_stratification(images, proportions):
 
         for img in label_imgs:
             # Allocate image to subset that needs the most of that label
-            get_label_count = lambda x: x[least_freq_label]
-            label_counts = [get_label_count(lab) for lab in desired]
+            label_counts = [lab[least_freq_label] for lab in desired]
             subset_indexes = multi_argmax(label_counts)
 
             if len(subset_indexes) > 1:
                 # Break ties by subset that needs the most overall examples
-                get_all_label_count = lambda i: sum(desired[i].values())
                 all_label_counts = [sum(desired[i].values()) for i in subset_indexes]
 
                 subset_indexes = [

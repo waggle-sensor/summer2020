@@ -2,7 +2,7 @@ from __future__ import division
 
 import random
 from PIL import Image
-import tqdm
+from tqdm import tqdm
 import torch
 from torch.autograd import Variable
 import numpy as np
@@ -127,7 +127,7 @@ def evaluate(
     labels = []
     sample_metrics = []  # List of tuples (TP, confs, pred)
     for _, (_, imgs, targets) in enumerate(
-        tqdm.tqdm(dataloader, desc="Detecting objects", disable=silent)
+        tqdm(dataloader, desc="Detecting objects", disable=silent)
     ):
 
         # Extract labels
@@ -167,10 +167,10 @@ def get_results(model, img_list, opt, class_names, logger=None, epoch=0, silent=
     precision, recall, AP, f1, ap_class = evaluate(
         model,
         img_list=img_list,
-        iou_thres=opt.iou_thres,
-        conf_thres=opt.conf_thres,
-        nms_thres=opt.nms_thres,
-        img_size=opt.img_size,
+        iou_thres=opt["iou_thres"],
+        conf_thres=opt["conf_thres"],
+        nms_thres=opt["nms_thres"],
+        img_size=opt["img_size"],
         batch_size=8,
         silent=silent,
     )

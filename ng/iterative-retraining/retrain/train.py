@@ -20,7 +20,7 @@ import retrain.statutils as statutils
 
 def train(folder, opt, model_def, load_weights=None):
 
-    logger = Logger(opt["log"])
+    logger = Logger(opt["log"], opt["prefix"])
     os.makedirs(opt["checkpoints"], exist_ok=True)
     os.makedirs(opt["output"], exist_ok=True)
 
@@ -116,7 +116,7 @@ def train(folder, opt, model_def, load_weights=None):
 
             log_str = "\n---- [Epoch %d/%d, Batch %d/%d] ----\n" % (
                 epoch,
-                opt.epochs,
+                opt["max_epochs"],
                 batch_i,
                 len(dataloader),
             )
@@ -162,13 +162,13 @@ def train(folder, opt, model_def, load_weights=None):
 
             model.seen += imgs.size(0)
 
-        if epoch % opt.evaluation_interval == 0:
-            opt.iou_thres = 0.5
-            opt.conf_thres = 0.5
-            opt.nms_thres = 0.5
-            evaluate.get_results(model, valid.imgs, opt, class_names, logger, epoch)
+        if epoch % opt["evaluation_interval"] == 0:
+            opt["iou_thres"] = 0.5
+            opt["conf_thres"] = 0.5
+            opt["nms_thres"] = 0.5
+            evaluate.get_results(model, test.imgs, opt, class_names, logger, epoch)
 
-        if epoch % opt.checkpoint_interval == 0:
+        if epoch % opt["checkpoint_interval"] == 0:
             torch.save(
                 model.state_dict(),
                 f"{opt['checkpoints']}/{opt['prefix']}_ckpt_{epoch}.pth",

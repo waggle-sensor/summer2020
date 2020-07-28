@@ -2,14 +2,8 @@
 import albumentations as alb
 import albumentations.augmentations.transforms as trans
 import cv2
-import matplotlib.pyplot as plt
-import numpy as np
-import sys
-import random
-from shutil import copyfile
 from tqdm import tqdm
 import os
-import argparse
 from collections import Counter
 from retrain.utils import get_label_path
 
@@ -122,6 +116,14 @@ def augment_img(aug, suffix, img_path, count=1, min_visibility=0.50):
     bbox_params = {"format": "yolo", "min_visibility": min_visibility}
 
     for i in range(count):
+        aug_path = f"{base_name.replace('images', 'aug-images')}_{suffix}-{i}.png"
+        new_txt_path = get_label_path(aug_path)
+        os.makedirs(os.path.dirname(new_txt_path), exist_ok=True)
+        os.makedirs(os.path.dirname(aug_path), exist_ok=True)
+
+        if os.path.exists(aug_path) and os.path.exists(new_txt_path):
+            continue
+
         result = aug(
             image=img, bboxes=boxes, category_id=field_ids, bbox_params=bbox_params,
         )
@@ -134,12 +136,7 @@ def augment_img(aug, suffix, img_path, count=1, min_visibility=0.50):
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
-        aug_path = f"{base_name.replace('images', 'aug-images')}_{suffix}-{i}.png"
-        os.makedirs(os.path.dirname(aug_path), exist_ok=True)
-        cv2.imwrite(aug_path, aug_img)
-
-        new_txt_path = get_label_path(aug_path)
-        os.makedirs(os.path.dirname(new_txt_path), exist_ok=True)
+        cv2.imwrite(aug_path, aug_img)       
 
         with open(new_txt_path, "w+") as out:
             for i, bbox_str in enumerate(new_bboxes):
