@@ -13,6 +13,7 @@ class CentroidTracker:
         #   2. keep track of number of consecutive frames an object has been marked "disappeared"
         self.objects = OrderedDict()
         self.disappeared = OrderedDict()
+        self.bbox = OrderedDict()
 
         # store the number of frames an object can be marked "disappeared"
         # before it is deregistered
@@ -22,15 +23,17 @@ class CentroidTracker:
         self.maxDistance = maxDistance
 
     # registering a new object using next available ID to store its centroid
-    def register(self, centroid):
+    def register(self, centroid, bbox):
         self.nextObjectID += 1
         self.objects[self.nextObjectID] = centroid
         self.disappeared[self.nextObjectID] = 0
+        self.bbox[self.nextObjectID] = bbox
 
     # deregistering an object by deleting object ID from both dictionaries
     def deregister(self, objectID):
         del self.objects[objectID]
         del self.disappeared[objectID]
+        del self.bbox[objectID]
 
     # update state every frame
     def update(self, boxes):
@@ -42,19 +45,21 @@ class CentroidTracker:
                 if self.disappeared[objectID] > self.maxDisappeared:
                     self.deregister(objectID)
 
-            return self.objects
+            return self.bbox
 
         # calculate centroid of each bounding box and organize in a numpy array
         inputCentroids = np.zeros((len(boxes), 2), dtype="int")
+        inputRects = []
         for(i, (x1, y1, x2, y2)) in enumerate(boxes):
             cX = int((x1 + x2) / 2.0)
             cY = int((y1 + y2) / 2.0)
             inputCentroids[i] = (cX, cY)
+            inputRects.append(boxes[i])
 
         # if currently not tracking any objects, register the centroids
         if len(self.objects) == 0:
             for i in range(0, len(inputCentroids)):
-                self.register(inputCentroids[i])
+                self.register(inputCentroids[i], inputRects[i])
 
         # otherwise, objects are being tracked so need to update centroids
         else:
@@ -84,6 +89,7 @@ class CentroidTracker:
                 # update centroid and disappeared counter
                 objectID = objectIDs[row]
                 self.objects[objectID] = inputCentroids[col]
+                self.bbox[objectID] = inputRects[col]
                 self.disappeared[objectID] = 0
 
                 usedRows.add(row)
@@ -104,6 +110,6 @@ class CentroidTracker:
             # in the event that there are more input centroids than object centroids
             else:
                 for col in unusedCols:
-                    self.register(inputCentroids[col])
+                    self.register(inputCentroids[col], inputRects[col])
 
-        return self.objects
+        return self.bbox

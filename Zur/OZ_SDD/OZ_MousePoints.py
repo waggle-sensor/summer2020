@@ -25,7 +25,7 @@ image = cv2.putText(image, text1, (0, 30), font, 0.5, black, 1)
 def get_points(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
         if len(pts) == 0:
-            cv2.putText(image, text2, (0, 50), font, 0.5,  black, 1)
+            cv2.putText(image, text2, (0, 50), font, 0.5, black, 1)
         if len(pts) == 1:
             cv2.putText(image, text3, (0, 70), font, 0.5, black, 1)
         if len(pts) == 2:
