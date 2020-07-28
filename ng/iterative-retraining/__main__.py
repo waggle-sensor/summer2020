@@ -3,6 +3,17 @@ import random
 import retrain.utils as utils
 from retrain.train import train
 
+
+def train_initial(config):
+    config["train_split"] = config["train_init"]
+    config["valid_split"] = config["valid_init"]
+    config["start_epoch"] = 1
+    config["prefix"] = "init"
+
+    end_epoch = train(config["initial_set"], config, model_config)
+    return end_epoch
+
+
 if __name__ == "__main__":
     random.seed("sage")
 
@@ -22,17 +33,13 @@ if __name__ == "__main__":
 
     # Run initial training
     if opt.reload_baseline is None:
-        config["train_split"] = config["train_init"]
-        config["valid_split"] = config["valid_init"]
-        config["start_epoch"] = 1
-        config["prefix"] = "init"
-
-        end_epoch = train(config["initial_set"], config, model_config)
+        end_epoch = train_initial(config)
         print(f"Initial training ended on epoch {end_epoch}")
-
-        opt.reload_baseline = (f"{opt['checkpoints']}/init_ckpt_{end_epoch}.pth",)
+        opt.reload_baseline = f"{config['checkpoints']}/init_ckpt_{end_epoch}.pth"
 
     # Sample
+
+    config["conf_check_num"]
 
     # Retrain for each sample
     # config["train_split"] = config["train_sample"]

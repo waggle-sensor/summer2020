@@ -175,7 +175,7 @@ def train(folder, opt, model_def, load_weights=None):
             )
 
         # Use UP criteria for early stop
-        if bool(opt["early_stop"]) and epoch % opt["strip_len"] == 0:
+        if bool(opt["early_stop"]) and (epoch == 1 or epoch % opt["strip_len"] == 0):
             print("Evaluating validation set for early stop")
 
             valid_results = evaluate.get_results(

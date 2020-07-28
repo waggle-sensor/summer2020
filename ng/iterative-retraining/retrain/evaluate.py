@@ -113,7 +113,7 @@ def evaluate(
     silent=False,
 ):
     # Get dataloader
-    dataset = ListDataset(img_list, img_size=img_size, augment=False, multiscale=False)
+    dataset = ListDataset(img_list, img_size=img_size, multiscale=False)
     dataloader = torch.utils.data.DataLoader(
         dataset,
         batch_size=batch_size,
