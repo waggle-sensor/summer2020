@@ -788,3 +788,34 @@ Solved by ```sudo killall ibus-daemon``` (https://forum.odroid.com/viewtopic.php
 
 #### To Do List:
  * Analysis the performance of data sharing / streaming mechanisms in terms of throughput, latency, resource utilization, etc.
+
+### July 23
+#### Work Done
+ * Finish and flatten the four docker images and uploaded onto the docker hub, which can be found at: https://hub.docker.com/u/liangkailiu. 
+
+#### To Do List:
+ * Analysis the performance of data sharing / streaming mechanisms in terms of throughput, latency, resource utilization, etc.
+
+### July 24
+#### Work Done
+ * Finish the image stream shraing using ROS2 and ffmpeg. Get results of FPS and latency.
+ * The notes for setting up and results for latency can be found at: https://github.com/waggle-sensor/summer2020/blob/master/liu/doc/ImageStreamSharing.md.
+
+#### To Do List:
+ * Analysis the performance of data sharing / streaming mechanisms in terms of throughput, latency, resource utilization, etc.
+
+## Week 12 (June 27 to July 30)
+
+### July 27
+#### Work Done
+ * Work on the image stream sharing with RabbitMQ, try to build an docker image with Rabbitmq and OpenCV inside
+
+#### To Do List:
+ * Analysis report of data sharing / streaming mechanisms in terms of throughput, latency, resource utilization, etc.
+
+### July 28
+#### Work Done
+ * Work on the experiments and analysis report of the data sharing
+
+#### To Do List:
+ * Analysis report of data sharing / streaming mechanisms in terms of throughput, latency, resource utilization, etc.
