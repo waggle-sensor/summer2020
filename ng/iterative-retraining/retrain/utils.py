@@ -1,4 +1,13 @@
 import sys
+import os
+import glob
+
+
+def find_checkpoint(config, prefix, num):
+    ckpt = f"{config['checkpoints']}/init_ckpt_{num}.pth"
+    if not os.path.exists(ckpt):
+        ckpt = glob.glob(f"{config['checkpoints']}/{prefix}*_ckpt_{num}.pth")[0]
+    return ckpt
 
 
 def get_label_path(img):
@@ -36,7 +45,6 @@ def parse_model_config(path):
             key, value = line.split("=")
             value = value.strip()
             module_defs[-1][key.rstrip()] = value.strip()
-
     return module_defs
 
 

@@ -18,7 +18,7 @@ from yolov3.logger import Logger
 import yolov3.utils as yoloutils
 
 
-def train(img_folder, opt, model_def, load_weights=None):
+def train(img_folder, opt, load_weights=None):
     """Trains a given image set, with an early stop.
     
     Precondition: img_folder has been split into train, test, and validation sets.
@@ -31,6 +31,7 @@ def train(img_folder, opt, model_def, load_weights=None):
     yoloutils.clear_vram()
 
     device = yoloutils.get_device()
+    model_def = utils.parse_model_config(opt["model_config"])
     model = Darknet(model_def, opt["img_size"]).to(device)
 
     # Initiate model
@@ -42,11 +43,7 @@ def train(img_folder, opt, model_def, load_weights=None):
     class_names = utils.load_classes(opt["class_list"])
 
     # Get dataloader
-    dataset = ListDataset(
-        img_folder.train.imgs,
-        img_size=opt["img_size"],
-        multiscale=bool(opt["multiscale"]),
-    )
+    dataset = img_folder.train.to_dataset(multiscale=bool(opt["multiscale"]),)
 
     dataloader = torch.utils.data.DataLoader(
         dataset,
@@ -78,7 +75,9 @@ def train(img_folder, opt, model_def, load_weights=None):
 
     # Limit logging rate of batch metrics
     logger = Logger(opt["log"], img_folder.prefix)
-    log_freq = opt["logs_per_epoch"] if "logs_per_epoch" in opt.keys() else 50
+    log_freq = min(
+        len(dataloader), opt["logs_per_epoch"] if "logs_per_epoch" in opt.keys() else 50
+    )
     log_interval = int(len(dataloader) / log_freq)
 
     successive_stops = 0
@@ -167,11 +166,13 @@ def train(img_folder, opt, model_def, load_weights=None):
             )
 
         # Use UP criteria for early stop
-        if bool(opt["early_stop"]) and (epoch == 1 or epoch % opt["strip_len"] == 0):
+        if bool(opt["early_stop"]) and (
+            epoch == opt["start_epoch"] + 1 or epoch % opt["strip_len"] == 0
+        ):
             print("\n---Evaluating validation set for early stop---")
 
             valid_results = evaluate.get_results(
-                model, img_folder.valid.imgs, opt, class_names, logger, epoch
+                model, img_folder.valid, opt, class_names, logger, epoch
             )
 
             if valid_results["val_loss"] > prev_strip_loss:
@@ -189,7 +190,7 @@ def train(img_folder, opt, model_def, load_weights=None):
         if epoch % opt["evaluation_interval"] == 0:
             print("\n---Evaluating test set...---")
             evaluate.get_results(
-                model, img_folder.test.imgs, opt, class_names, logger, epoch
+                model, img_folder.test, opt, class_names, logger, epoch
             )
 
     yoloutils.clear_vram()

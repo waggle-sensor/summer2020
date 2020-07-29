@@ -185,7 +185,7 @@ def benchmark(
     )
 
 
-def benchmark_avg(img_folder, prefix, start, end, total, config, model_def):
+def benchmark_avg(img_folder, prefix, start, end, total, config):
     loader = DataLoader(
         img_folder, batch_size=1, shuffle=False, num_workers=config["n_cpu"],
     )
@@ -206,6 +206,7 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, model_def):
         if not os.path.exists(ckpt):
             ckpt = glob.glob(f"{config['checkpoints']}/{prefix}*_ckpt_{n}.pth")[0]
 
+        model_def = utils.parse_model_config(config["model_config"])
         model = models.get_eval_model(model_def, config["img_size"], ckpt)
 
         for (img_paths, input_imgs) in loader:

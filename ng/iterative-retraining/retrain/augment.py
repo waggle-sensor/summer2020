@@ -62,7 +62,9 @@ class Augmenter:
         imgs_by_label_count = {
             k: v
             for k, v in sorted(
-                self.img_folder.img_dict.items(), key=lambda x: len(x[1]), reverse=True
+                self.img_folder.make_img_dict().items(),
+                key=lambda x: len(x[1]),
+                reverse=True,
             )
         }
         # This algorithm could be optimized by sorting by the labels
