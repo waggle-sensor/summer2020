@@ -21,5 +21,7 @@ Week 6 (7/13-7/17/2020)
 - I also wrapped up my final deliverable. 
 
 Week 7 (7/20-7/24/2020)
+- I launched the student and staff pages for the Sage Continuum webpage.
+- began to work on the news page 
 
 Week 8 (7/27-7/31/2020)

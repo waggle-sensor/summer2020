@@ -194,3 +194,30 @@ Wednesday 7/22
 5. CELS Hang
 6. Started analyzing examples of social distancing code that includes bird's eye view transformation (towardsdatascience.com)
 7. Reviewed PyImageSearch tutorial on 4-point transformation
+
+Thursday 7/23
+1. AI/ML Scrum
+2. Argonne Lecture
+3. Continuing to analyze examples of social distancing code that includes bird's eye view transformation
+4. Clean up 4 point transformation algorithm, include function that takes mouse clicks as inputs
+5. Small scale test of perspective transformation with new 4 point algorithm 
+6. Prep for AI/ML Demo Presentation
+
+Friday 7/24
+1. Small scale image transformation experiment with Lego
+2. Testing Lego images with my image transformation algorithm
+3. Preparing AI/ML Demo Presentation
+4. AI/ML Demo Presentation
+
+Week 7 (7/27 - 7/31)
+
+Monday 7/27
+1. Coded and tested part 1 of 3 of my social distancing detector: human detecting / tracking; uses YOLO every N frames to detect people and Centroid Tracking algorithm to track movements every other frame
+2. Edited centroid tracking algorithm to return bounding boxes instead of centroid point coordinates
+3. Planned out this week's schedule, plan is to finish a draft of my social distancing detector by the end of the week.
+
+Tuesday 7/28
+1. AI/ML Scrum
+2. Further analysis of the SDD code example I will be using as a guide/template
+3. Started OZ_main.py, where the majority of my code will be.
+4. Integrated aspects from the mouse_points code I wrote Friday and started to integrate parts of the detecting/tracking algorithm I wrote yesterday. 

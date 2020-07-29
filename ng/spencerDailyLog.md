@@ -443,3 +443,70 @@ normal pdf | 88.3% | 96.7%
   * Looking at using the `backpack` library to do so
   * Facing some errors in the module's shape with recursive extension through the model's layers
   * May need to rewrite part of the backpack module myself
+
+**Thursday, July 23**
+
+* Attended ML scrum meeting
+* Discussed with Sean about implementing mini-batch variance in YOLOv3-Pytorch
+* Implemented early stop criteria via `backpack`
+  * Rewrote part of the library (forked on my [GitHub](https://github.com/spencerng/backpack)) to ignore `None` types (when evaluating) and scalars (for loss functions)
+  * Only convolutional layers are accounted for now
+  * Ran into issue with nan values due to variance of certain samples being 0
+    * Ignoring those layers when calculating the overall loss criteria
+* Ran test of loss criteria on retraining examples
+  * Difficult to determine if it works, as Lambda is under high load
+  * Values of around -9 when retraining on epoch 74, median threshold
+  * Expected behavior, as loss is high early on and my batch size is reduced (ran out of VRAM on batch size of 16)
+* Rewrote retraining pipeline to incorporate early stopping
+* Looking into how significantly YOLO's loss function affects its gradients
+  * Would inaccurate/uncertainty in ground truth affect loss and the mini-batch gradients to the point where we will never meet the criteria to stop?
+  * May need to make a custom loss function and/or weight samples somehow otherwise
+
+**Friday, July 24**
+
+* Checked on progress from overnight training
+  * Stop criteria still hovers around -9.0, at epoch 90
+  * This is approaching the peak of the precision in the previous retraining
+  * Continuing problem: how do we detect the peak of training precision wrt ground truth?
+  * At the same time, we aren't 100% certain of the ground truth
+* Looked at parallelized retraining to take advantage of lambda's multiple GPUs
+* Possible solutions
+  * Custom loss function weighing loss on more confident images (using modified confidence function) more heavily
+    * Evidence shows that precision and confidence is positively correlated
+    * Simple (normalized) proportion of YOLOv3's loss
+    * This should improve overall precision as well
+  * Re-evaluate stop criteria
+    * Simple threshold shift
+    * See if there's a (slight) trend as retraining goes on
+    * Use smaller alpha level for exponential smoothing to reduce noise and better see trends
+  * Create a validation set from the samples, disjoint from the training set
+    * Use a certain proportion of the most confident (top 10%?) samples
+* Attended student physics seminar on research at the South Pole
+* Reading papers on how effects of uncertainty in training set/ground truth can be minimized while training
+* Saw AI/ML presentations
+* Discussed with Sean and Nicola about moving forward and clarified overall project goals
+  * Autoencoding may be a way to separate hard samples
+  * Unsure about early stopping
+  * Bandwidth problems are both literal and with annotating data for the ground truth
+  * Generalizing to an environment may be a beneficial aspect
+* Documented the revised pipeline in preparation for refactoring code and testing more sampling methods next week
+  * Idea is to create more modular functionality, in preparation for deployment and testing on other models
+* Running experiment on lambda to determine effectiveness of gradient early stop criteria without validation when ground truth is known
+
+## Week 7
+
+**Monday, July 27**
+
+* Begin refactoring code for entire training, sampling, and retraining pipeline
+* Attended virtual tour of the ALCF
+* Generalized iterative stratification sampling algorithm to include a user-defined number of subsets
+* Working on incoporating augmentation into the pipeline
+
+**Tuesday, July 28**
+
+* Attended scrum meeting, learned about Dockerizing code
+  * Better to simulate the pipeline, rather than using virtual Waggle
+* Continue refactoring code
+  * Wrote functions to resample while retaining a proportion of the old training data
+  * Need to fix to account for the same train/valid/test splits
+* Need to test retraining functionality and clean up old code

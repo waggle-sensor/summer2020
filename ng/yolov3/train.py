@@ -4,6 +4,7 @@ import os
 import time
 import datetime
 import argparse
+import math
 
 import torch
 from torch.autograd import Variable
@@ -19,9 +20,15 @@ from yolov3.utils.datasets import ListDataset
 
 import backpack as bp
 
-if __name__ == "__main__":
+
+def get_train_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--epochs", type=int, default=100, help="number of epochs")
+    parser.add_argument(
+        "--epochs",
+        type=int,
+        default=100,
+        help="max number of epochs (less if early stop used)",
+    )
     parser.add_argument(
         "--batch_size", type=int, default=64, help="size of each image batch"
     )
@@ -87,15 +94,66 @@ if __name__ == "__main__":
         type=float,
         help="cutoff value for gradient clipping",
     )
+    parser.add_argument(
+        "--early_stop",
+        default=False,
+        action="store_true",
+        help="use early stopping based on gradient variance (not test set)",
+    )
 
-    opt = parser.parse_args()
+    return parser.parse_args()
+
+
+def smoothed_stop_criteria(model, old_criteria, batch_size, alpha=0.1):
+    """Get the stopping criteria after the current backwards pass.
+
+    Value is smoothed with an exponential moving average.
+    Criteria defined in Mahsereci et. al, 2017.
+
+    Note that subgroups are based on convolutional layers, and
+    layers containing samples with variances of 0 are ignored.
+    """
+    vals = list()
+
+    for name, param in model.named_parameters():
+        try:
+            grad = param.grad_batch
+            var = param.variance
+
+            dim = 1
+            for i in grad.shape:
+                dim *= i
+
+            scale_factor = batch_size / dim
+            layer_sum = torch.sum(torch.div(torch.square(grad), var))
+            subgroup_val = 1 - scale_factor * layer_sum
+
+            vals.append(subgroup_val)
+        except AttributeError:
+            # This occurs for non-convolutional layers
+            pass
+
+    non_nan_vals = [val for val in vals if not math.isnan(val)]
+    scale_factor = 1 / len(non_nan_vals)
+    stopping_criteria = scale_factor * sum(non_nan_vals)
+
+    if old_criteria is None:
+        smoothed_criteria = stopping_criteria
+    else:
+        smoothed_criteria = alpha * stopping_criteria + (1 - alpha) * old_criteria
+
+    return smoothed_criteria
+
+
+if __name__ == "__main__":
+
+    opt = get_train_args()
     print(opt)
 
     logger = Logger("logs")
 
     DEVICE_STR = "cuda" if torch.cuda.is_available() else "cpu"
-    if DEVICE_STR == "cuda":
-        torch.cuda.empty_cache()
+
     print(f"Using {DEVICE_STR} for training")
     device = torch.device(DEVICE_STR)
 
@@ -109,9 +167,11 @@ if __name__ == "__main__":
     class_names = utils.load_classes(data_config["names"])
 
     # Initiate model
-    model = Darknet(opt.model_def).to(device)
-    # model = bp.extend(Darknet(opt.model_def)).to(device)
+    model = bp.extend(Darknet(opt.model_def), debug=False).to(device)
     model.apply(utils.weights_init_normal)
+
+    for param in model.parameters():
+        param.requires_grad = True
 
     if opt.resume != -1 and opt.pretrained_weights is None:
         opt.pretrained_weights = f"checkpoints/{opt.prefix}_ckpt_{int(opt.resume)}.pth"
@@ -156,32 +216,24 @@ if __name__ == "__main__":
     # Modify this if needed; intended to reduce log size
     log_interval = int(len(dataloader) / 50)
 
+    old_criteria = None
+
     for epoch in range(opt.resume + 1, opt.epochs):
         model.train()
         start_time = time.time()
         for batch_i, (_, imgs, targets) in enumerate(dataloader):
             batches_done = len(dataloader) * epoch + batch_i
 
-            imgs = Variable(imgs.to(device))
-            targets = Variable(targets.to(device), requires_grad=False)
+            imgs = Variable(imgs.to(device), requires_grad=True)
+            targets = Variable(targets.to(device), requires_grad=True)
 
             loss, outputs = model(imgs, targets)
-            if DEVICE_STR == "cuda":
-                torch.cuda.empty_cache()
 
-            with bp.backpack(bp.extensions.BatchGrad()):
-                loss.backward(retain_graph=True)
-
-                for name, param in model.module_list[0].named_parameters():
-                    print(name, param)
-
-            with bp.backpack(bp.extensions.Variance()):
+            with bp.backpack(bp.extensions.Variance(), bp.extensions.BatchGrad()):
                 loss.backward()
 
-                for name, param in model.named_parameters():
-                    print(name)
-                    print(".grad.shape:             ", param.grad.shape)
-                    print(".variance.shape:         ", param.variance.shape)
+            stop_criteria = smoothed_stop_criteria(model, old_criteria, opt.batch_size)
+            old_criteria = stop_criteria
 
             if batches_done % opt.gradient_accumulations:
                 # Accumulates gradient before each step
@@ -222,11 +274,13 @@ if __name__ == "__main__":
                         if name != "grid_size":
                             tensorboard_log += [(f"{name}_{j+1}", metric)]
                 tensorboard_log += [("loss", loss.item())]
+                tensorboard_log += [("stopping", stop_criteria)]
                 if batch_i % log_interval == 0:
                     logger.list_of_scalars_summary(tensorboard_log, batches_done)
 
             log_str += AsciiTable(metric_table).table
             log_str += f"\nTotal loss {loss.item()}"
+            log_str += f"\nStopping criteria (non-nan) {stop_criteria}"
 
             # Determine approximate time left for epoch
             epoch_batches_left = len(dataloader) - (batch_i + 1)
@@ -247,3 +301,6 @@ if __name__ == "__main__":
 
         if epoch % opt.checkpoint_interval == 0:
             torch.save(model.state_dict(), f"checkpoints/{opt.prefix}_ckpt_{epoch}.pth")
+            if opt.early_stop and stop_criteria > 0:
+                print(f"Stopping early, at epoch {epoch}")
+                exit(0)
