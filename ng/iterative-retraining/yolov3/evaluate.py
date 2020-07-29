@@ -13,8 +13,7 @@ from matplotlib.ticker import NullLocator
 
 from terminaltables import AsciiTable
 
-import retrain.statutils as statutils
-import retrain.utils as utils
+import yolov3.utils as utils
 from retrain.dataloader import ListDataset
 
 
@@ -25,7 +24,7 @@ def detect(input_imgs, conf_thres, model, nms_thres=0.5):
 
     with torch.no_grad():
         detections = model(input_imgs)
-        detections = statutils.non_max_suppression(detections, conf_thres, nms_thres)
+        detections = utils.non_max_suppression(detections, conf_thres, nms_thres)
 
     return detections
 
@@ -124,28 +123,33 @@ def evaluate(
     )
 
     Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
+    device = utils.get_device()
 
     labels = []
     sample_metrics = []  # List of tuples (TP, confs, pred)
-    for _, (_, imgs, targets) in enumerate(
-        tqdm(dataloader, desc="Detecting objects", disable=silent)
+
+    total_loss = 0.0
+    for (_, imgs, targets) in tqdm(
+        dataloader, desc="Detecting objects", disable=silent
     ):
 
         # Extract labels
         labels += targets[:, 1].tolist()
+
+        imgs = Variable(imgs.to(device).type(Tensor), requires_grad=False)
+
+        loss, outputs = model(imgs, Variable(targets.to(device)))
+        total_loss += loss.item()
+
         # Rescale target
         targets[:, 2:] = utils.xywh2xyxy(targets[:, 2:])
         targets[:, 2:] *= img_size
 
-        imgs = Variable(imgs.type(Tensor), requires_grad=False)
+        outputs = utils.non_max_suppression(
+            outputs, conf_thres=conf_thres, nms_thres=nms_thres
+        )
 
-        with torch.no_grad():
-            loss, outputs = model(imgs, targets)
-            outputs = statutils.non_max_suppression(
-                outputs, conf_thres=conf_thres, nms_thres=nms_thres
-            )
-
-        sample_metrics += statutils.get_batch_statistics(
+        sample_metrics += utils.get_batch_statistics(
             outputs, targets, iou_threshold=iou_thres
         )
 
@@ -153,15 +157,14 @@ def evaluate(
     true_positives, pred_scores, pred_labels = [
         np.concatenate(x, 0) for x in list(zip(*sample_metrics))
     ]
-    precision, recall, AP, f1, ap_class = statutils.ap_per_class(
+    precision, recall, AP, f1, ap_class = utils.ap_per_class(
         true_positives, pred_scores, pred_labels, labels
     )
 
-    return precision, recall, AP, f1, ap_class, loss.item()
+    return precision, recall, AP, f1, ap_class, total_loss
 
 
 def get_results(model, img_list, opt, class_names, logger=None, epoch=0, silent=False):
-    print("\n---- Evaluating Model ----")
 
     print("Compute mAP...")
 

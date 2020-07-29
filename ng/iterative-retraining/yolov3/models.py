@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
-from retrain.utils import build_targets, to_cpu
+from yolov3.utils import build_targets, to_cpu
 
 
 def create_modules(module_defs):

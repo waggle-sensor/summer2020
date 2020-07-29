@@ -1,12 +1,13 @@
-import retrain.evaluate as evaluate
-import retrain.models as models
+import yolov3.evaluate as evaluate
+import yolov3.models as models
 import retrain.utils as utils
 import statistics as stats
 
 import os
-import grub
-from tqdm import tqdm as tqdm
+import glob
+from tqdm import tqdm
 from torch.utils.data import DataLoader
+from retrain.dataloader import ListDataset
 
 import pandas as pd
 import numpy as np
@@ -39,10 +40,10 @@ def load_data(output, by_actual=True):
                 samples[key_val].append(row)
             all_data.append(row)
     samples = {k: samples[k] for k in sorted(samples)}
-    results = [benchmark.ClassResults(k, v) for k, v in samples.items()]
+    results = [ClassResults(k, v) for k, v in samples.items()]
     mat = confusion_matrix(actual, pred, labels=list(samples.keys()) + [""])
 
-    results.append(benchmark.ClassResults("All", all_data))
+    results.append(ClassResults("All", all_data))
 
     return results, mat
 
@@ -108,8 +109,8 @@ class ClassResults:
     def get_all(self):
         return list(itertools.chain.from_iterable(self.hits_misses()))
 
-    def get_confidences(self):
-        return [result["conf"] for result in self.get_all()]
+    def get_confidences(self, thresh=0.0):
+        return [result["conf"] for result in self.get_all() if result["conf"] >= thresh]
 
     def generate_prec_distrib(self, output, delta=0.05):
         """Generate a spreadsheet of confidence range vs. rolling precision."""
@@ -185,8 +186,9 @@ def benchmark(
 
 
 def benchmark_avg(img_folder, prefix, start, end, total, config, model_def):
-
-    loader = DataLoader(img_folder.imgs, batch_size=1, shuffle=False, num_workers=8,)
+    loader = DataLoader(
+        img_folder, batch_size=1, shuffle=False, num_workers=config["n_cpu"],
+    )
 
     results = pd.DataFrame(
         columns=["file", "confs", "actual", "detected", "conf", "hit"]
@@ -195,13 +197,14 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, model_def):
 
     classes = utils.load_classes(config["class_list"])
 
-    checkpoints_i = np.linspace(start, end, total, dtype=np.dtype(np.int16))
+    checkpoints_i = set(np.linspace(start, end, total, dtype=np.dtype(np.int16)))
+    print("Benchmarking on epochs", checkpoints_i)
     checkpoints = list()
 
     for n in tqdm(checkpoints_i, "Benchmarking epochs"):
-        ckpt = f"{config['checkpoints']}/initial_ckpt_{n}.pth"
-        if not os.path.exists():
-            ckpt = grub.grub(f"{config['checkpoints']}/{prefix}*_ckpt_{n}.pth")[0]
+        ckpt = f"{config['checkpoints']}/init_ckpt_{n}.pth"
+        if not os.path.exists(ckpt):
+            ckpt = glob.glob(f"{config['checkpoints']}/{prefix}*_ckpt_{n}.pth")[0]
 
         model = models.get_eval_model(model_def, config["img_size"], ckpt)
 
@@ -213,7 +216,7 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, model_def):
                 ]
                 results.loc[path] = [path, dict(), actual_class, None, None, None]
 
-            detections = evaluate.detect(img_folder.imgs, 0.5, model)
+            detections = evaluate.detect(input_imgs, 0.5, model)
 
             confs = results.loc[path]["confs"]
 
@@ -251,7 +254,7 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, model_def):
     filename = (
         f"{start}.csv" if total == 1 else f"{prefix}_benchmark_avg_{start}_{end}.csv"
     )
-    out_path = f"{config['outputs']}/{filename}"
+    out_path = f"{config['output']}/{filename}"
     output = open(out_path, "w+")
 
     results.to_csv(

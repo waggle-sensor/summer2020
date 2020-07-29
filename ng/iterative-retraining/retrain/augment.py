@@ -93,12 +93,12 @@ class Augmenter:
 
         for img, count in incr_factors.items():
             augment_img(aug, "compose", img, count=count)
-            new_imgs = [
+            new_imgs = {
                 f"{img[:-4].replace('images', 'aug-images')}_compose-{i}.png"
                 for i in range(count)
-            ]
-            self.img_folder.imgs += new_imgs
-            self.img_folder.labels += [get_label_path(img) for img in new_imgs]
+            }
+            self.img_folder.imgs.update(new_imgs)
+            self.img_folder.labels.update({get_label_path(img) for img in new_imgs})
             pbar.update(count)
 
         pbar.close()

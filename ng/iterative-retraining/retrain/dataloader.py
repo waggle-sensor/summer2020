@@ -31,8 +31,8 @@ def resize(image, size):
     return image
 
 
-class ImageFolder:
-    def __init__(self, src, num_classes, from_path=True):
+class ImageFolder(Dataset):
+    def __init__(self, src, num_classes, img_size=416, prefix=str(), from_path=True):
         self.num_classes = num_classes
 
         if from_path:
@@ -43,27 +43,43 @@ class ImageFolder:
 
         self.labels = self.get_labels()
         self.img_dict = self.make_img_dict()
+        self.prefix = prefix
+        self.img_size = img_size
+
+    def __getitem__(self, index):
+        img_path = list(self.imgs)[index % len(self.imgs)]
+        # Extract image as PyTorch tensor
+        img = transforms.ToTensor()(Image.open(img_path))
+        # Pad to square resolution
+        img, _ = pad_to_square(img, 0)
+        # Resize
+        img = resize(img, self.img_size)
+
+        return img_path, img
+
+    def __len__(self):
+        return len(self.imgs)
 
     def get_images(self):
         extensions = (".jpg", ".png", ".gif", ".bmp")
         raw_imgs = sorted(glob.glob(f"{self.path}/images/**/*.*", recursive=True))
-        raw_imgs = [file for file in raw_imgs if file[-4:].lower() in extensions]
-        labeled_imgs = list()
+        raw_imgs = {file for file in raw_imgs if file[-4:].lower() in extensions}
+        labeled_imgs = set()
 
         for img in raw_imgs:
             label_path = get_label_path(img)
             if os.path.exists(label_path):
-                labeled_imgs.append(img)
+                labeled_imgs.add(img)
 
         return labeled_imgs
 
     def get_labels(self):
-        return [get_label_path(img) for img in self.imgs]
+        return {get_label_path(img) for img in self.imgs}
 
     def make_img_dict(self):
         img_dict = dict()
-        for i, img in enumerate(self.imgs):
-            classes = self.get_classes(self.labels[i])
+        for img in self.imgs:
+            classes = self.get_classes(get_label_path(img))
             if len(classes) != 0:
                 img_dict[img] = classes
         return img_dict
@@ -75,36 +91,34 @@ class ImageFolder:
             classes = [int(lab.split(" ")[0]) for lab in labels if lab != ""]
             return [c for c in classes if c in range(self.num_classes)]
 
-    def append(self, img_folder):
+    def __iadd__(self, img_folder):
         self.num_classes = max(self.num_classes, img_folder)
-        self.imgs += img_folder.imgs
-        self.labels += img_folder.labels
 
-    def append_list(self, img_list):
-        self.append(ImageFolder(img_list, self.num_classes, from_path=False))
+        for attr in ("imgs", "labels", "train", "test", "valid"):
+            self_attr = getattr(self, attr, None)
+            other_attr = get_attr(img_folder, attr, None)
+            if other_attr is not None:
+                if self_attr is not None:
+                    self_attr += other_attr
+                else:
+                    setattr(self, attr, other_attr)
+
+    # def append(self, img_folder, prop_new=1.0):
+    #     """Append a certain proportion of an image folder to the current one."""
+    #     for name in ("train", "valid", "test"):
+    #         folder = getattr(img_folder, name)
+    #         new_imgs = getattr(folder, "imgs")[:prop_new * len(new_imgs)]
+    #         getattr(self, name) += ImageFolder(new_imgs, img_folder.num_classes, from_path=False)
 
     def to_dataset(self, **args):
         return ListDataset(self.imgs, **args)
 
-    def split_img_set(self, prop_train, prop_valid, prop_test):
-        """Split labeled images in an image folder into train, validation, and test sets.
-
-        Assumes labels are consistent with the provided class list and labels are in
-        YOLOv3 (Darknet) format.
-
-        This is a modified implementation of iterative stratification based on
-        Sechidis et. al 2011, as images may contain multiple labels/classes.
-        """
-
-        img_dict = self.make_img_dict()
-        proportions = [prop_train, prop_valid, prop_test]
-        img_lists = sampling.iterative_stratification(img_dict, proportions)
-        splits = [
-            ImageFolder(img_list, self.num_classes, from_path=False)
-            for img_list in img_lists
-        ]
-
-        return splits
+    def save_splits(self, folder):
+        for i, name in enumerate(("train", "valid", "test")):
+            img_set = getattr(self, name, None)
+            if img_set is not None:
+                filename = f"{folder}/{self.prefix}_{name}.txt"
+                img_set.save_img_list(filename)
 
     def save_img_list(self, output):
         """Save list of images (for splits) as a text file."""
@@ -116,15 +130,56 @@ class ImageFolder:
         aug.augment(imgs_per_class, compose)
         self.img_dict = self.make_img_dict()
 
+    def split_img_set(self, prop_train, prop_valid, prop_test):
+        """Split labeled images in an image folder into train, validation, and test sets.
+
+        Assumes labels are consistent with the provided class list and labels are in
+        YOLOv3 (Darknet) format.
+
+        This relies on a modified implementation of iterative stratification from
+        Sechidis et. al 2011, as images may contain multiple labels/classes.
+        """
+        sets = ("train", "valid", "test")
+
+        img_dict = self.make_img_dict()
+        proportions = [prop_train, prop_valid, prop_test]
+        img_lists = sampling.iterative_stratification(img_dict, proportions)
+        splits = [
+            ImageFolder(
+                img_list,
+                self.num_classes,
+                prefix=f"{self.prefix}_{sets[i]}",
+                from_path=False,
+            )
+            for i, img_list in enumerate(img_lists)
+        ]
+
+        self.train, self.valid, self.test = splits
+        return splits
+
     def split_batch(self, batch_size):
-        random.shuffle(self.imgs)
-        splits = list()
-        for i in range(0, len(self.imgs), batch_size):
-            upper_bound = max(len(self.imgs), i + batch_size)
-            splits.append(self.imgs[i:upper_bound])
+        """Split an ImageFolder into multiple batches of a finite size.
+
+        This function is meant to be used for simulations at the inferencing/sampling stage.
+        It does not support stratified splitting at the train, validation, and
+        test set levels.
+        """
+        full_batches = int(len(self) / batch_size)
+        imgs_remaining = len(self) - full_batches * batch_size
+        if full_batches == 0:
+            raise ValueError("Batch size exceeds folder size")
+
+        weights = [batch_size] * full_batches
+        weights.append(imgs_remaining)
+        normal_weights = [weight / sum(weights) for weight in weights]
+
+        splits = sampling.iterative_stratification(self.make_img_dict(), normal_weights)
+
         return [
-            ImageFolder(img_list, self.num_classes, from_path=False)
-            for img_list in splits
+            ImageFolder(
+                img_list, self.num_classes, prefix=f"{self.prefix}{i}", from_path=False,
+            )
+            for i, img_list in enumerate(splits)
         ]
 
     def group_by_class(self):

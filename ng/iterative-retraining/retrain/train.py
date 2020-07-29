@@ -9,49 +9,43 @@ from torch.autograd import Variable
 
 from terminaltables import AsciiTable
 
-import retrain.evaluate as evaluate
-from retrain.models import Darknet
+import yolov3.evaluate as evaluate
+from yolov3.models import Darknet
 
 import retrain.utils as utils
 from retrain.dataloader import ListDataset
-from retrain.logger import Logger
-import retrain.statutils as statutils
+from yolov3.logger import Logger
+import yolov3.utils as yoloutils
 
 
 def train(img_folder, opt, model_def, load_weights=None):
-
+    """Trains a given image set, with an early stop.
+    
+    Precondition: img_folder has been split into train, test, and validation sets.
+    """
     os.makedirs(opt["checkpoints"], exist_ok=True)
     os.makedirs(opt["output"], exist_ok=True)
 
     device_str = "cuda" if torch.cuda.is_available() else "cpu"
-
     print(f"Using {device_str} for training")
-    device = torch.device(device_str)
+    yoloutils.clear_vram()
 
+    device = yoloutils.get_device()
     model = Darknet(model_def, opt["img_size"]).to(device)
 
     # Initiate model
-    model.apply(statutils.weights_init_normal)
+    model.apply(yoloutils.weights_init_normal)
 
     if load_weights is not None:
         model.load_state_dict(torch.load(load_weights))
 
     class_names = utils.load_classes(opt["class_list"])
 
-    test_prop = 1 - opt["train_init"] - opt["valid_init"]
-    img_splits = img_folder.split_img_set(
-        opt["train_init"], opt["valid_init"], test_prop
-    )
-    (train, valid, test) = img_splits
-    for i, name in enumerate(("train", "valid", "test")):
-        filename = f"{opt['output']}/{opt['prefix']}_{name}.txt"
-        img_splits[i].save_img_list(filename)
-
-    train.augment(opt["images_per_class"])
-
     # Get dataloader
     dataset = ListDataset(
-        train.imgs, img_size=opt["img_size"], multiscale=bool(opt["multiscale"]),
+        img_folder.train.imgs,
+        img_size=opt["img_size"],
+        multiscale=bool(opt["multiscale"]),
     )
 
     dataloader = torch.utils.data.DataLoader(
@@ -83,7 +77,7 @@ def train(img_folder, opt, model_def, load_weights=None):
     ]
 
     # Limit logging rate of batch metrics
-    logger = Logger(opt["log"], opt["prefix"])
+    logger = Logger(opt["log"], img_folder.prefix)
     log_freq = opt["logs_per_epoch"] if "logs_per_epoch" in opt.keys() else 50
     log_interval = int(len(dataloader) / log_freq)
 
@@ -169,31 +163,34 @@ def train(img_folder, opt, model_def, load_weights=None):
         if epoch % opt["checkpoint_interval"] == 0:
             torch.save(
                 model.state_dict(),
-                f"{opt['checkpoints']}/{opt['prefix']}_ckpt_{epoch}.pth",
+                f"{opt['checkpoints']}/{img_folder.prefix}_ckpt_{epoch}.pth",
             )
 
         # Use UP criteria for early stop
         if bool(opt["early_stop"]) and (epoch == 1 or epoch % opt["strip_len"] == 0):
-            print("Evaluating validation set for early stop")
+            print("\n---Evaluating validation set for early stop---")
 
             valid_results = evaluate.get_results(
-                model, valid.imgs, opt, class_names, logger, epoch
+                model, img_folder.valid.imgs, opt, class_names, logger, epoch
             )
 
-            if valid_results["loss"] > prev_strip_loss:
+            if valid_results["val_loss"] > prev_strip_loss:
                 successive_stops += 1
             else:
                 successive_stops = 0
             print(f"Previous loss: {prev_strip_loss}")
-            print(f"Current loss: {valid_results['loss']}")
+            print(f"Current loss: {valid_results['val_loss']}")
 
-            prev_strip_loss = valid_results["loss"]
+            prev_strip_loss = valid_results["val_loss"]
 
             if successive_stops == opt["successions"]:
                 break
 
         if epoch % opt["evaluation_interval"] == 0:
-            print("Evaluating test set...")
-            evaluate.get_results(model, test.imgs, opt, class_names, logger, epoch)
+            print("\n---Evaluating test set...---")
+            evaluate.get_results(
+                model, img_folder.test.imgs, opt, class_names, logger, epoch
+            )
 
+    yoloutils.clear_vram()
     return last_epoch

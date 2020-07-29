@@ -2,8 +2,7 @@ import random
 import numpy as np
 import statistics as stats
 import os
-import utils
-import yolov3.utils.parse_config as parser
+import retrain.utils as utils
 import scipy.stats
 import matplotlib.pyplot as plt
 
@@ -113,8 +112,8 @@ def prob_sample(result, desired, prob_func, *prob_func_args):
     return chosen
 
 
-def median_thresh_sample(result):
-    confidences = result.get_confidences()
+def median_thresh_sample(result, thresh=0.5):
+    confidences = result.get_confidences(thresh)
 
     median = stats.median(confidences)
     print(f"median: {median}")
@@ -123,7 +122,7 @@ def median_thresh_sample(result):
 
 
 def iqr_sample(result, thresh=0.5):
-    confidences = [conf for conf in result.get_confidences() if conf >= thresh]
+    confidences = result.get_confidences(thresh)
     q1 = np.quantile(confidences, 0.25, interpolation="midpoint")
     q2 = np.quantile(confidences, 0.5, interpolation="midpoint")
 
@@ -134,7 +133,7 @@ def iqr_sample(result, thresh=0.5):
 
 def normal_sample(result, p=0.4, thresh=0.5):
     """Sample all within one standard deviation of mean."""
-    confidences = [conf for conf in result.get_confidences() if conf >= thresh]
+    confidences = result.get_confidences(thresh)
 
     avg = stats.mean(confidences)
     stdev = stats.stdev(confidences)
@@ -176,43 +175,29 @@ def in_range(result, min_val, max_val=1.0):
     return len([res for res in result.get_all() if max_val >= res["conf"] >= min_val])
 
 
-def create_config(samples, sample_name, data_config):
-    data_opts = parser.parse_data_config(data_config)
-
-    new_valid = data_opts["valid"].replace(".txt", "-new.txt")
-    if not os.path.exists(new_valid):
-        utils.rewrite_test_list(data_opts["valid"], ORIG_DATA)
-
-    config_path = OUTPUT + f"configs-retrain/{sample_name}/"
-    os.makedirs(config_path, exist_ok=True)
-
-    with open(config_path + "train.txt", "w+") as out:
-        files = [result["file"] for result in samples]
-        out.write("\n".join(files) + "\n")
-
-    data_opts["train"] = config_path + "train-aug.txt"
-    data_opts["valid"] = new_valid
-    with open(config_path + data_config.split("/")[-1], "w+") as new_data_config:
-        for k, v in data_opts.items():
-            new_data_config.write(f"{k} = {v}\n")
-
-
-def create_sample(results, name, max_samp, sample_func, *func_args):
+def create_sample(results, name, max_samp, sample_func, **func_args):
+    # The first part of this function simulates decisions made at the edge
     retrain_by_class = list()
-
     print(f"===== {name} ======")
     for result in results:
         if result.name == "All":
             continue
-        retrain_by_class.append(sample_func(result, *func_args))
+        retrain_by_class.append(sample_func(result, **func_args))
 
     retrain = list()
-    for sample_list in retrain_by_class:
-        if undersample:
-            retrain += sample_list[:max_samp]
-        else:
-            retrain += sample_list
 
+    # Evaluate the numbers that may be under the quota first
+    # to distribute samples among all (inferred) classes
+    retrain_by_class = sorted(retrain_by_class, key=lambda x: len(x))
+    for i, sample_list in enumerate(retrain_by_class):
+        random.shuffle(sample_list)
+        images_left = max_samp - len(retrain)
+        images_per_class = round(images_left / (len(retrain_by_class) - i + 1))
+
+        retrain += sample_list[: min(len(sample_list), images_left)]
+
+    # At this point, images are "received" in the cloud
+    # This process simulates manually labeling/verifying all inferences
     create_labels(retrain, use_actual=True)
 
     return retrain

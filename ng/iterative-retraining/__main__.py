@@ -7,15 +7,18 @@ import retrain.benchmark as bench
 import retrain.sampling as sample
 
 
-def train_initial(config):
-    config["train_split"] = config["train_init"]
-    config["valid_split"] = config["valid_init"]
+def train_initial(init_folder, config):
     config["start_epoch"] = 1
-    config["prefix"] = "init"
 
-    img_folder = ImageFolder(config["initial_set"], get_num_classes(config))
-    end_epoch = train(img_folder, config, model_config)
-    return img_folder, end_epoch
+    test_prop = 1 - config["train_init"] - config["valid_init"]
+    init_folder.split_img_set(config["train_init"], config["valid_init"], test_prop)
+
+    init_folder.train.augment(config["images_per_class"])
+    init_folder.save_splits(config["output"])
+
+    end_epoch = train(init_folder, config, model_config)
+    #return 1
+    return end_epoch
 
 
 def get_num_classes(config):
@@ -41,18 +44,20 @@ if __name__ == "__main__":
     model_config = utils.parse_model_config(config["model_config"])
     num_classes = get_num_classes(config)
 
+    init_images = ImageFolder(config["initial_set"], num_classes, prefix="init")
+
     # Run initial training
     if opt.reload_baseline is None:
-        initial_folder, init_end_epoch = train_initial(config)
-        seen_images = initial_folder
+        init_end_epoch = train_initial(init_images, config)
         print(f"Initial training ended on epoch {init_end_epoch}")
         opt.reload_baseline = f"{config['checkpoints']}/init_ckpt_{init_end_epoch}.pth"
     else:
-        seen_images = ImageFolder(config["initial_set"], num_classes)
         init_end_epoch = int(opt.reload_baseline.split("_")[-1][:-4])
 
     # Sample
     all_samples = ImageFolder(config["sample_set"], num_classes)
+
+    # Simulate a video feed at the edge
     batched_samples = all_samples.split_batch(config["sampling_batch"])
 
     config["train_split"] = config["train_sample"]
@@ -64,11 +69,14 @@ if __name__ == "__main__":
         "normal": sample.normal_sample,
     }
 
-    for name, func in sample_methods:
+    seen_images = init_images
+
+    for name, func in sample_methods.items():
         last_epoch = init_end_epoch
-        for i, sample in enumerate(batched_samples):
+        for i, sample_folder in enumerate(batched_samples):
+            # Benchmark data at the edge
             bench_file = bench.benchmark_avg(
-                sample,
+                sample_folder,
                 name,
                 1,
                 last_epoch,
@@ -77,25 +85,35 @@ if __name__ == "__main__":
                 model_config,
             )
 
+            # Create samples from the benchmark
             results, _ = bench.load_data(bench_file, by_actual=False)
-
             retrain_list = sample.create_sample(
-                sample, results, config["bandwidth"], name, func, thresh=0.0
+                results, name, config["bandwidth"], func, thresh=0.0
             )
 
-            retrain_obj = ImageFolder(retrain_list, num_classes, from_path=False)
-            num_sample_imgs = round(config["images_per_class"] * config["retrain_new"])
-            num_old_imgs = config["images_per_class"] - num_sample_imgs
+            # Receive raw sampled data in the cloud, with ground truth annotations
+            retrain_obj = ImageFolder(
+                retrain_list, num_classes, prefix=f"name{i}", from_path=False
+            )
 
-            retrain_obj.augment(num_sample_imgs)
+            test_prop = 1 - config["train_sample"] - config["valid_sample"]
+            retrain_obj.split_img_set(
+                config["train_sample"], config["valid_sample"], test_prop
+            )
 
-            old_examples = list()
-            for _, imgs in seen_images.class_dict().items():
-                old_examples += imgs[:num_old_imgs]
+            seen_images += retrain_obj
 
-            seen_images.append(retrain_obj)
-            retrain_obj.append_list(old_examples)
+            for name in ("train", "valid", "test"):
+                # Calculate proportion of old examples needed
+                number_desired = (1 / config["retrain_new"] - 1) * len(
+                    getattr(retrain_obj, name)
+                )
+                retrain_obj += getattr(seen_images, name).split_batch(
+                    round(number_desired)
+                )[0]
 
-            config["prefix"] = name + str(i)
+            retrain_obj.train.augment(config["images_per_class"])
+            retrain_obj.save_splits(config["output"])
+
             config["start_epoch"] = last_epoch + 1
             last_epoch = train(retrain_obj, config, model_config)
