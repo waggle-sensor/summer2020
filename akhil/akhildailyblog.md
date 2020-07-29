@@ -1,4 +1,4 @@
-Sage-Chameleonpresentationpresentation# Daily Notes - Akhil Kodumuri
+beginnersvariantChameleon-SageSage-Chameleonpresentationpresentation# Daily Notes - Akhil Kodumuri
 
 ## Week 1
 
@@ -257,7 +257,7 @@ spec has 3 subfields:
 
 #### Errors/Problems
 
-### July 9, 2020
+### Thursday July 9, 2020
 #### Meetings/Out of work
 11am-11:30am -> Daily Scrum meeting
 
@@ -266,7 +266,7 @@ I worked one and finished my cluster presentation. I continued working on the YA
 
 #### Errors/Problems
 
-### July 10, 2020
+### Friday July 10, 2020
 #### Meetings/Out of work
 10am - 11am -> Cluster presentaions
 11am - 11:30am -> Daily Scrum Meeting
@@ -277,7 +277,7 @@ I demoed my progress that I made this sprint and gave my presentation to my clus
 
 #### Errors/Problems
 
-### July 13, 2020
+### Monday July 13, 2020
 #### Meeting/Out of work
 10am-10:30am -> Weekly Cohort Meeting
 11am - 1pm -> Scrum sprint planning
@@ -290,7 +290,7 @@ Notes on YAML deployment:
 #### Errors
 - none
 
-### July 14, 2020
+### Tuesday July 14, 2020
 #### Meeting/Out of work
 9:30am - 10am Meeting in AI scrum
 11am - 11:30am -> Daily srum meeting
@@ -300,7 +300,7 @@ I cotinued working on the k8 deployment. I am having trouble with pulling the im
 #### Errors
 - Image pull error
 
-#### July 15, 2020
+#### Wednesday July 15, 2020
 10:30am -> 11am Daily Scrum meeting
 11am -> 12:30pm weekly seminar
 #### Work done/Things learned
@@ -309,7 +309,7 @@ I found a resource that can translate docker compose files to kubenetes deployme
 #### Error
 - Volumes, restartPolicy, and network configuration in k8 deployment
 
-### July 16, 2020
+### Thursday July 16, 2020
 #### Meetings/Out of work
 - none
 #### Work done/Things learned
@@ -318,7 +318,7 @@ I continued to debug the errors. I was able to correctly configure the virtual-w
 #### Errors
 - Getting containers to run
 
-### July 17, 2020
+### Friday July 17, 2020
 #### Meetings/Out of work
 1:30-1:45 -> meeting with cohort leader
 #### Work done/Things learned
@@ -328,7 +328,7 @@ I started working on the presentation I have to give on Monday. I also was able 
 - network config
 
 
-### July 20, 2020
+### Monday July 20, 2020
 #### Meetings/Out of work
 10am - 11am -> cohort lightning talk
 11am - 12:30pm -> Scrum backlog refinement
@@ -338,7 +338,7 @@ I had meetings with Sean and Jake and we talked about how the k8 deployment is n
 #### Errors
 - none
 
-### July 21, 2020
+### Tuesday July 21, 2020
 #### Meetings/Out of work
 10:30am - 11am -> meeting with Raj and Sean
 11am - 11:30am -> Daily scrum meeting
@@ -348,11 +348,63 @@ I created a pull request for the new bash script I made. I also worked on buildi
 #### Errors
 - none
 
-### July 22, 2020
+### Wednesday July 22, 2020
 #### Meetings/Out of work
 10:30am - 11am -> Daily scrum meeting
-11am -> 12pm -> profesional development workshop
+11am -> 12pm - profesional development workshop
 #### Work done/Things learned
 I worked on learning and practicing runs and builds on github actions. There isn't much documentation on github actions and its setup for begininers, so it took some time for me to learn how to create, build, and test an action. I created a new branch for testing the image building process. Each test will take a long time since there are 3 sites and each image takes about 5-10 mins to build. Now I will start on finding a way to upload the image to all three sites.
 #### Errors/issues
 - creating GITHUB_SECRETS and environment for the rc file
+
+### Thurday July 23, 2020
+#### Meetings/Out of work
+11am - 11:30am -> Daily Scrum meeting
+
+#### Work done/Things learned
+I continued researching on an effective way to upload images and building them in github actions. I also need to do research on creating environments in github actions. This is a specfic enviorment must be configured to show valid credentials. I also figured out a way to create a secret on Github. I will encript my Openstack/Chameleon username and password.
+#### Errors/issues
+- Creating an environment for upload
+- uploading image to Chameleon
+
+### Friday July 24, 2020
+#### Meetings/Out of work
+11am - 11:30am -> Daily Scrum meeting
+3pm - 4:30pm -> Sage demo
+
+#### Work done/Things learned
+I continued working on uploading images to Chameleon. I also prepared what I will demo at the scrum meeting. I am goint to demo how to create a VM at the KVM@TACC Chameleon site.
+
+#### Errors/Issues
+none
+
+### Monday July 27, 2020
+#### Meetings/Out of work
+10am - 11am -> Weekly cohort meeting
+11am - 1pm -> scrum planning
+
+#### Work done/Things learned
+I worked with Jake to figure out my stories for next sprint. I will work on cleaning up the Github action I created ti upload images to each Chameleon site. I will also find a way to create Chameleon-Sage images with cuda and arm64 hardware specifications. I will also work on adding the ECR to the Chameleon-Sage image and backdating old versions of the Chameleon-Sage image in the Openstack cloud
+
+#### Errors/Issues
+none
+
+### Tuesday July 28, 2020
+#### Meetings/Out of work
+11am - 11:30am -> Daily scrum meeting
+
+#### Work done/Things learned
+I worked on restructuring the Github action to the appropriate name changes and researched on how to back date images on Chameleon. I added code to create-image.py to rename the images.
+
+#### Errors/Issues
+none
+
+### Wednesday July 29, 2020
+#### Meetings/Out of work
+10:30am - 11:00am -> Daily scrum meeting
+11am - 12pm -> Weekly speaker series
+#### Work done/Things learned
+I finished changing the naming conventions to the Chamaleon-Sage images. I also created two new variants that users can create for Sage images. One vairant is for CUDA specifications and the choice of using arm64. I also worked on publishing these images to Chameleon's catalog. I also continued working on creating a backdating script.
+
+#### Errors/Issues
+- how to create a professional image writeup
