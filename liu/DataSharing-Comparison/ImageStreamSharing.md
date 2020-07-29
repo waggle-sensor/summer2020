@@ -55,6 +55,7 @@ FPS            |  Delay for the image stream
 
 #### FPS and Delay
 
+One subscriber case:
 |  	| FPS 	| Delay (s) 	|
 |:-:	|:-:	|:-:	|
 | FFmpeg 	| 30 	| 8.75 	|
