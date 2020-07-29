@@ -59,4 +59,4 @@ FPS            |  Delay for the image stream
 |:-:	|:-:	|:-:	|
 | FFmpeg 	| 30 	| 8.75 	|
 | ROS2 	| 16.0 	| 0.54 	|
-| RabbitMQ 	| - 	| - 	|
+| RabbitMQ 	| 16.0	| 0.103	|
