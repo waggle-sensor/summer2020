@@ -130,8 +130,9 @@ if __name__ == "__main__":
                 orig_set += extra_images
 
             seen_images += retrain_obj
-            retrain_obj.save_splits(config["output"])
+            
             retrain_obj.train.augment(config["images_per_class"])
+            retrain_obj.save_splits(config["output"])
 
             config["start_epoch"] = last_epoch + 1
             checkpoint = utils.find_checkpoint(config, name, last_epoch)

@@ -92,78 +92,84 @@ def train(img_folder, opt, load_weights=None):
         model.train()
         start_time = time.time()
 
-        for batch_i, (_, imgs, targets) in enumerate(dataloader):
-            batches_done = len(dataloader) * epoch + batch_i
+        ckpt_path = f"{opt['checkpoints']}/{img_folder.prefix}_ckpt_{epoch}.pth"
 
-            imgs = Variable(imgs.to(device))
-            targets = Variable(targets.to(device))
+        if not os.path.exists(ckpt_path):
+            for batch_i, (_, imgs, targets) in enumerate(dataloader):
+                batches_done = len(dataloader) * epoch + batch_i
 
-            loss, outputs = model(imgs, targets)
+                imgs = Variable(imgs.to(device))
+                targets = Variable(targets.to(device))
 
-            loss.backward()
+                loss, outputs = model(imgs, targets)
 
-            if batches_done % opt["gradient_accumulations"]:
-                # Accumulates gradient before each step
-                torch.nn.utils.clip_grad_norm_(model.parameters(), opt["clip"])
-                optimizer.step()
-                optimizer.zero_grad()
+                loss.backward()
 
-            # ----------------
-            #   Log progress
-            # ----------------
+                if batches_done % opt["gradient_accumulations"]:
+                    # Accumulates gradient before each step
+                    torch.nn.utils.clip_grad_norm_(model.parameters(), opt["clip"])
+                    optimizer.step()
+                    optimizer.zero_grad()
 
-            log_str = "\n---- [Epoch %d/%d, Batch %d/%d] ----\n" % (
-                epoch,
-                opt["max_epochs"],
-                batch_i,
-                len(dataloader),
-            )
+                # ----------------
+                #   Log progress
+                # ----------------
 
-            metric_table = [
-                ["Metrics", *[f"YOLO Layer {i}" for i in range(len(model.yolo_layers))]]
-            ]
+                log_str = "\n---- [Epoch %d/%d, Batch %d/%d] ----\n" % (
+                    epoch,
+                    opt["max_epochs"],
+                    batch_i,
+                    len(dataloader),
+                )
 
-            # Log metrics at each YOLO layer
-            for i, metric in enumerate(metrics):
-                formats = {m: "%.6f" for m in metrics}
-                formats["grid_size"] = "%2d"
-                formats["cls_acc"] = "%.2f%%"
-                row_metrics = [
-                    formats[metric] % yolo.metrics.get(metric, 0)
-                    for yolo in model.yolo_layers
+                metric_table = [
+                    ["Metrics", *[f"YOLO Layer {i}" for i in range(len(model.yolo_layers))]]
                 ]
-                metric_table += [[metric, *row_metrics]]
 
-                # Tensorboard logging
-                tensorboard_log = []
-                for j, yolo in enumerate(model.yolo_layers):
-                    for name, metric in yolo.metrics.items():
-                        if name != "grid_size":
-                            tensorboard_log += [(f"{name}_{j+1}", metric)]
-                tensorboard_log += [("loss", loss.item())]
+                # Log metrics at each YOLO layer
+                for i, metric in enumerate(metrics):
+                    formats = {m: "%.6f" for m in metrics}
+                    formats["grid_size"] = "%2d"
+                    formats["cls_acc"] = "%.2f%%"
+                    row_metrics = [
+                        formats[metric] % yolo.metrics.get(metric, 0)
+                        for yolo in model.yolo_layers
+                    ]
+                    metric_table += [[metric, *row_metrics]]
 
-                if batch_i % log_interval == 0:
-                    logger.list_of_scalars_summary(tensorboard_log, batches_done)
+                    # Tensorboard logging
+                    tensorboard_log = []
+                    for j, yolo in enumerate(model.yolo_layers):
+                        for name, metric in yolo.metrics.items():
+                            if name != "grid_size":
+                                tensorboard_log += [(f"{name}_{j+1}", metric)]
+                    tensorboard_log += [("loss", loss.item())]
 
-            log_str += AsciiTable(metric_table).table
-            log_str += f"\nTotal loss {loss.item()}"
+                    if batch_i % log_interval == 0:
+                        logger.list_of_scalars_summary(tensorboard_log, batches_done)
 
-            # Determine approximate time left for epoch
-            epoch_batches_left = len(dataloader) - (batch_i + 1)
-            time_left = datetime.timedelta(
-                seconds=epoch_batches_left * (time.time() - start_time) / (batch_i + 1)
-            )
-            log_str += f"\n---- ETA {time_left}"
+                log_str += AsciiTable(metric_table).table
+                log_str += f"\nTotal loss {loss.item()}"
 
-            print(log_str)
+                # Determine approximate time left for epoch
+                epoch_batches_left = len(dataloader) - (batch_i + 1)
+                time_left = datetime.timedelta(
+                    seconds=epoch_batches_left * (time.time() - start_time) / (batch_i + 1)
+                )
+                log_str += f"\n---- ETA {time_left}"
 
-            model.seen += imgs.size(0)
+                print(log_str)
 
-        if epoch % opt["checkpoint_interval"] == 0:
-            torch.save(
-                model.state_dict(),
-                f"{opt['checkpoints']}/{img_folder.prefix}_ckpt_{epoch}.pth",
-            )
+                model.seen += imgs.size(0)
+
+            if epoch % opt["checkpoint_interval"] == 0:
+                torch.save(
+                    model.state_dict(),
+                    f"{opt['checkpoints']}/{img_folder.prefix}_ckpt_{epoch}.pth",
+                )
+
+        else:
+            model.load_state_dict(torch.load(ckpt_path))
 
         # Use UP criteria for early stop
         if bool(opt["early_stop"]) and (
@@ -185,6 +191,7 @@ def train(img_folder, opt, load_weights=None):
             prev_strip_loss = valid_results["val_loss"]
 
             if successive_stops == opt["successions"]:
+                print(f"Early stop at epoch {epoch}")
                 break
 
         if epoch % opt["evaluation_interval"] == 0:
