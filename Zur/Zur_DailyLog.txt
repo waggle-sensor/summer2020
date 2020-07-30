@@ -228,3 +228,11 @@ Wednesday 7/29
 3. CELS Student Hang
 4. Analyzing second example of SDD code with Bird's Eye View for alternative ideas for display and image transformation
 5. Discovered bug: bounding boxes aren't being drawn around entire person; problem because need to calculate the coordinate at each person's feet = center of bottom of bounding box, will fix first thing tomorrow
+
+Thursday 7/30
+1. AI/ML Scrum
+2. Fixed bounding box problem (now bounding boxes surround entire person)
+3. Replaced Centroid Tracking algorithm with dlib trackers, faster and easier to use
+4. Attended Learning Off the Lawn presentations
+5. Started phase 3 of the social distance detector: coordinate mapping and distance calculation
+6. Transformed bounding box points and wrote helper functions to calculate distances between each pair of points and compare to min safe distance threshold

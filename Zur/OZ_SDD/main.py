@@ -1,28 +1,28 @@
+# Usage
+# python main.py --input videos/test_video2.mp4 --output output/output_01.avi --yolo yolo-coco
+
 # import packages
 import cv2
 import numpy as np
 import argparse
 import datetime
 import time
-import dlib
 import os
 import imutils
 from imutils.video import VideoStream
 from imutils.video import FPS
-from OZ_CentroidTracker import CentroidTracker
-from OZ_NMS import non_max_suppression
-import OZ_HelperFunctions
+from OZ_HelperFunctions import *
 
+# **MOUSE CALLBACK FUNCTION** #########################################################################################
 
+# initialize list of mouse input coordinates
 mouse_pts = []
 
-
-# mouse callback function, takes 8 clicks
+# mouse callback functiontakes 8 clicks
 # 1-4: rectangle region of interest (red circles)
 #   Points must be clicked in the following order: Top-Left, Top-Right, Bottom-Right, Bottom-Left
-# 5-7: define 6 feet in vertical and horizontal direction
-#   Points 5 and 6 form a horizontal line and points 5 and 7 form a vertical line
-# 8: break
+# 5-6: 2 points that are 6 feet apart on the ground plane
+# 7: break, destroy window, start video
 def get_mouse_points(event, x, y, flags, param):
     global mouse_pts
     if event == cv2.EVENT_LBUTTONDOWN:
@@ -40,6 +40,7 @@ def get_mouse_points(event, x, y, flags, param):
         mouse_pts.append((x, y))
 
 
+# **MAIN SOCIAL DISTANCE DETECTOR FUNCTION** ##########################################################################
 def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid, skip, threshold):
     vs = cv2.VideoCapture(vid_input)
     global image
@@ -57,16 +58,14 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
     fps = int(vs.get(cv2.CAP_PROP_FPS))
     scale_w, scale_h = float(400 / width), float(600 / height)
 
-    # instantiate centroid tracker
-    ct = CentroidTracker(maxDisappeared=5, maxDistance=50)
-
     # looping over each frame of video input
     while True:
         (grabbed, frame) = vs.read()
         if not grabbed:
+            print("INFO: END OF VIDEO FILE")
             break
 
-        frame = imutils.resize(frame, width=750)
+        frame = imutils.resize(frame, width=500)
 
         # grabbing frame dimensions
         if W is None or H is None:
@@ -75,7 +74,7 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
         # initialize writer for output video
         if args["output"] is not None and writer is None:
             fourcc = cv2.VideoWriter_fourcc(*"MJPG")
-            writer = cv2.VideoWriter(args["output"], fourcc, 30, (W, H), True)
+            writer = cv2.VideoWriter(vid_output, fourcc, 30, (W, H), True)
 
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
@@ -85,7 +84,7 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
                 image = frame
                 cv2.imshow("image", image)
                 cv2.waitKey(1)
-                if len(mouse_pts) == 8:
+                if len(mouse_pts) == 7:
                     cv2.destroyWindow("image")
                     break
             points = mouse_pts
@@ -95,78 +94,31 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
         # creating transformation matrix from first four points
         src = np.float32(np.array(points[:4]))
         dst = np.float32([[0, H], [W, H], [W, 0], [0, 0]])
-        prespective_transform = cv2.getPerspectiveTransform(src, dst)
+        perspective_transform = cv2.getPerspectiveTransform(src, dst)
 
         # warping points 5 - 7 using transformation matrix
-        pts = np.float32(np.array([points[4:7]]))
-        warped_pt = cv2.perspectiveTransform(pts, prespective_transform)[0]
+        pts = np.float32(np.array([points[4:6]]))
+        warped_pt = cv2.perspectiveTransform(pts, perspective_transform)[0]
 
         # calculating number of pixels that make up approx. 6 feet
-        distance_w = np.sqrt((warped_pt[0][0] - warped_pt[1][0]) ** 2 + (warped_pt[0][1] - warped_pt[1][1]) ** 2)
-        distance_h = np.sqrt((warped_pt[0][0] - warped_pt[2][0]) ** 2 + (warped_pt[0][1] - warped_pt[2][1]) ** 2)
+        safe_dist = np.sqrt((warped_pt[0][0] - warped_pt[1][0]) ** 2 + (warped_pt[0][1] - warped_pt[1][1]) ** 2)
+
+        # drawing the rectangle on the video for the remaining frames
         pnts = np.array(points[:4], np.int32)
-        cv2.polylines(frame, [pnts], True, (70, 70, 70), thickness=2)
+        cv2.polylines(frame, [pnts], True, (0, 0, 0), thickness=2)
 
         # **PERSON DETECTION AND TRACKING** ###########################################################################
+
+        # initialize status and list of bounding boxes
         status = "Waiting"
         boundingboxes = []
 
-        # DETECTION PHASE
+        # Yolo Detection
         if frameCount % skip == 0:
-            # updating status and initializing list of trackers
             status = "Detecting"
-            trackers = []
+            trackers = yolo_detection(frame, yolo_net, layerNames, confid, threshold)
 
-            # passing frame through YOLO detector
-            blob = cv2.dnn.blobFromImage(frame, 1 / 255.0, (416, 416), swapRB=True, crop=False)
-            yolo_net.setInput(blob)
-            start = time.time()
-            layerOutputs = yolo_net.forward(layerNames)
-            end = time.time()
-
-            # initializing lists of detected bounding boxes
-            boxes = []
-
-            # loop over each of the layer outputs
-            for output in layerOutputs:
-                # loop over each of the detections
-                for detection in output:
-                    # extract the class ID and confidence (i.e., probability)
-                    # of the current object detection
-                    scores = detection[5:]
-                    classID = np.argmax(scores)
-                    confidence = scores[classID]
-
-                    # filtering detections
-                    if classID == 0 and confidence > confid:
-                        # scale the bounding box coordinates back relative to the size of the image
-                        # *Note: YOLO  returns the center (x, y)-coordinates of bbox, then width and height
-                        box = detection[0:4] * np.array([W, H, W, H])
-                        (centerX, centerY, width, height) = box.astype(int)
-                        startX = int(centerX - (width / 2))
-                        startY = int(centerY - (width / 2))
-                        endX = int(centerX + (width / 2))
-                        endY = int(centerY + (width / 2))
-                        box = (startX, startY, endX, endY)
-
-                        # update list of bounding boxes
-                        boxes.append(box)
-
-            # apply non-maximum suppression algorithm
-            bboxes = np.array(boxes).astype(int)
-            boxes = non_max_suppression(bboxes, threshold)
-
-            if len(boxes) > 0:
-                for box in boxes:
-                    # construct a dlib rectangle object from the bounding box coordinates
-                    tracker = dlib.correlation_tracker()
-                    rect = dlib.rectangle(box[0], box[1], box[2], box[3])
-
-                    # start the dlib correlation tracker and add to list of trackers
-                    tracker.start_track(rgb, rect)
-                    trackers.append(tracker)
-
-        # TRACKING PHASE
+        # Object Tracking
         else:
             for tracker in trackers:
                 # set status
@@ -184,16 +136,23 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
                 # add the bounding box coordinates to the rectangles list
                 boundingboxes.append((startX, startY, endX, endY))
 
-        # call update function in centroid tracker
-        objects = ct.update(boundingboxes)
-
-        for (objectID, bbox) in objects.items():
-            # draw bounding box and ID
+        for bbox in boundingboxes:
             x1, y1, x2, y2 = bbox
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 0), 2)
-            text = "ID: {}".format(objectID)
-            cv2.putText(frame, text, (x1, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 1)
 
+        # **COORDINATE MAPPING AND DISTANCE CALCULATION** #############################################################
+
+        if len(boundingboxes) > 0:
+
+            bottom_points = transform_box_points(boundingboxes, perspective_transform)
+
+            distances, checked_boxes = violation_detection(boundingboxes, bottom_points, safe_dist)
+
+            risk_count = get_violation_count(distances)
+
+        # **OUTPUT DISPLAY AND CLEAN UP** #############################################################################
+
+        # display status
         text = "Status: " + status
         cv2.putText(frame, text, (10, H - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
@@ -221,10 +180,11 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
     cv2.destroyAllWindows()
 
 
+# **MAIN FUNCTION** ###################################################################################################
 if __name__ == "__main__":
     # constructing argument parser and parsing arguments
     ap = argparse.ArgumentParser()
-    ap.add_argument("-i", "--input", type=str,
+    ap.add_argument("-i", "--input", required=True, type=str,
                     help="path to input video")
     ap.add_argument("-o", "--output", type=str,
                     help="path to optional output video")
@@ -233,7 +193,7 @@ if __name__ == "__main__":
     ap.add_argument("-c", "--confidence", type=float, default=0.5,
                     help="minimum probability to filter weak detections")
     ap.add_argument("-s", "--skip", type=int, default=30,
-                    help="# of skip frames between detections")
+                    help="number of frames between yolo detections")
     ap.add_argument("-t", "--threshold", type=float, default=0.3,
                     help="threshold when applying non-maximum suppression")
     args = vars(ap.parse_args())
@@ -243,7 +203,7 @@ if __name__ == "__main__":
     configPath = os.path.sep.join([args["yolo"], "yolov3.cfg"])
 
     # loading YOLO object detector
-    print("[INFO] loading YOLO from disk...")
+    print("INFO: LOADING YOLO FROM DISK...")
     net = cv2.dnn.readNetFromDarknet(configPath, weightsPath)
     ln = net.getLayerNames()
     ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
@@ -253,4 +213,5 @@ if __name__ == "__main__":
     cv2.setMouseCallback("image", get_mouse_points)
 
     # calling SDD function
-    social_distance_detector(args["input"], args["output"], net, ln, args["confidence"], args["skip"], args["threshold"])
+    social_distance_detector(args["input"], args["output"], net, ln,
+                             args["confidence"], args["skip"], args["threshold"])
