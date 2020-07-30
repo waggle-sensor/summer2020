@@ -168,7 +168,14 @@ def test(model, classes, img_size, valid_path, check_num, out_folder, silent=Fal
 
 
 def benchmark(
-    prefix, check_num, config, data_config, classes, sample_dir, out=None, silent=False
+    img_folder,
+    check_num,
+    config,
+    data_config,
+    classes,
+    sample_dir,
+    out=None,
+    silent=False,
 ):
     benchmark_avg(
         prefix,
@@ -263,3 +270,46 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
     output.close()
 
     return out_path
+
+
+def series_benchmark():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--start", required=True, type=int, help="starting benchmark epoch",
+    )
+    parser.add_argument(
+        "--end", required=True, type=int, help="ending benchmark epoch",
+    )
+    parser.add_argument(
+        "--delta", type=int, help="interval to plot", default=3, required=False
+    )
+    parser.add_argument("--prefix", required=True, help="prefix of model to test")
+    parser.add_argument("--output", required=False, default="./output/")
+    opt = parser.parse_args()
+
+    os.makedirs(opt.output, exist_ok=True)
+
+    for test in ("", "test_"):
+        output = open(f"{opt.output}/val_precision_{test}time.csv", "w+")
+        output.write("epoch,all_precision\n")
+        for i in tqdm(
+            range(opt.start, opt.end, opt.delta), f"Benchmarking {test} results"
+        ):
+            if not os.path.exists(f"{opt.output}/benchmark_{test}{i}.csv"):
+                benchmark.benchmark(
+                    opt.prefix,
+                    i,
+                    "config/yolov3.cfg",
+                    "config/chars.data",
+                    "config/chars.names",
+                    "data/images/objs/" if test == str() else "data/temp/",
+                    out=f"{opt.output}/benchmark_{test}",
+                    silent=True,
+                )
+
+            results, _ = utils.load_data(
+                f"{opt.output}/benchmark_{test}{i}.csv", by_actual=True
+            )
+            output.write(f"{i},{benchmark.mean_precision(results[:-1])}\n")
+
+        output.close()

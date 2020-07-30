@@ -510,3 +510,21 @@ normal pdf | 88.3% | 96.7%
   * Wrote functions to resample while retaining a proportion of the old training data
   * Need to fix to account for the same train/valid/test splits
 * Need to test retraining functionality and clean up old code
+
+**Wednesday, July 29**
+
+* Created functions to extract a proportion of the train/test/validation set for previously-seen images
+* Implemented new early stop methodology
+* Deployed retraining model overnight, with the same sampling methods
+* Fixed bug in creating splits for the bandwidth problem
+
+**Thursday, July 30**
+
+* Attended AI/ML scrum
+* Created functions to save "reload" splits for a given image set in the process, as skipping augmentation means `random` is no longer seeded properly
+* Analyzed overnight results, with an early stop at epoch 46 for the initial training
+  * Program had a bug after first iteration of median threshold sampling, need to fix and re-run
+* Attended Learning Off the Lawn presentations
+* Worked on presentation
+* To do: rewrite some benchmarking tools to account for testing checkpoints on one iteration's test sets in addition to all iterations
+  * Need to compile split list files into one image folder

@@ -178,7 +178,7 @@ def train(img_folder, opt, load_weights=None):
 
         # Use UP criteria for early stop
         if bool(opt["early_stop"]) and (
-            epoch == opt["start_epoch"] + 1 or epoch % opt["strip_len"] == 0
+            epoch == opt["start_epoch"] or epoch % opt["strip_len"] == 0
         ):
             print("\n---Evaluating validation set for early stop---")
 

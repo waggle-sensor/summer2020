@@ -155,7 +155,7 @@ def create_sample(data_config, results, undersample, name, sample_func, **func_a
 
     create_labels(retrain, use_actual=True)
     create_config(retrain, name, data_config)
-    
+
     return retrain
 
 

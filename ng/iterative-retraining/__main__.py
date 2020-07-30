@@ -33,9 +33,9 @@ def label_sample_set(img_path):
 
 def split_set(labeled_set, output, train_prop, valid_prop, save=True):
     print(f"Getting splits for {labeled_set.prefix}")
-    if labeled_set.load_splits(output) and len(labeled_set.train) / len(
-        labeled_set
-    ) == round(train_prop):
+    if labeled_set.load_splits(output) and len(labeled_set.train) == round(
+        train_prop * len(labeled_set)
+    ):
         print("Previous splits found and validated")
         return False
     else:
