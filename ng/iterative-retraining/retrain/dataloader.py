@@ -5,6 +5,7 @@ import numpy as np
 from PIL import Image
 import torch
 import torch.nn.functional as F
+import math
 
 from torch.utils.data import Dataset
 import torchvision.transforms as transforms
@@ -74,6 +75,26 @@ class ImageFolder(Dataset):
         with open(output, "w+") as out:
             out.write("\n".join(self.imgs))
 
+    def get_batch_splits(self, batch_size, output):
+        batches = math.ceil(len(self) / batch_size)
+        batch_files = [f"{output}/{self.prefix}{i}.txt" for i in range(batches)]
+        if all(os.path.exists(path) for path in batch_files):
+            batch_splits = [open(path, "r").read().split("\n") for path in batch_files]
+        else:
+            batch_splits = self.split_batch(batch_size)
+            for i, path in enumerate(batch_files):
+                with open(path, "w+") as out:
+                    out.write("\n".join(batch_splits[i]))
+        return self.convert_splits(batch_splits)
+
+    def convert_splits(self, splits):
+        return [
+            ImageFolder(
+                img_list, self.img_size, prefix=f"{self.prefix}{i}", from_path=False
+            )
+            for i, img_list in enumerate(splits)
+        ]
+
     def split_batch(self, batch_size):
         """Split an ImageFolder into multiple batches of a finite size.
 
@@ -81,15 +102,10 @@ class ImageFolder(Dataset):
         """
         random.shuffle(list(self.imgs))
         splits = list()
-        for i in range(0, len(self.imgs), batch_size):
-            upper_bound = min(len(self.imgs), i + batch_size)
+        for i in range(0, len(self), batch_size):
+            upper_bound = min(len(self), i + batch_size)
             splits.append(set(list(self.imgs)[i:upper_bound]))
-        return [
-            ImageFolder(
-                img_list, self.img_size, prefix=self.prefix + str(i), from_path=False
-            )
-            for i, img_list in enumerate(splits)
-        ]
+        return splits
 
     def label(self, classes, ground_truth_func, x_cent=0.5, y_cent=0.5, w=1.0, h=1.0):
         for img in self.imgs:
@@ -105,6 +121,7 @@ class LabeledSet(ImageFolder):
 
         self.filter_images()
         self.labels = self.get_labels()
+        self.sets = ("train", "valid", "test")
 
     def filter_images(self):
         labeled_imgs = set()
@@ -161,13 +178,23 @@ class LabeledSet(ImageFolder):
         return self
 
     def save_splits(self, folder):
-        for i, name in enumerate(("train", "valid", "test")):
+        for i, name in enumerate(self.sets):
             img_set = getattr(self, name, None)
             if img_set is not None:
                 filename = f"{folder}/{self.prefix}_{name}.txt"
                 img_set.save_img_list(filename)
 
-    def split_img_set(self, prop_train, prop_valid, prop_test):
+    def load_splits(self, folder):
+        split_paths = [f"{folder}/{self.prefix}_{name}" for name in self.sets]
+        if all(os.path.exists(path) for path in split_paths):
+            file_lists = [open(path, "r").read().split("\n") for path in split_paths]
+            labeled_sets = self.convert_splits(file_lists)
+            for i, name in enumerate(self.sets):
+                setattr(self, name, labeled_sets[i])
+            return True
+        return False
+
+    def split_img_set(self, prop_train, prop_valid):
         """Split labeled images in an image folder into train, validation, and test sets.
 
         Assumes labels are consistent with the provided class list and labels are in
@@ -176,9 +203,10 @@ class LabeledSet(ImageFolder):
         This relies on a modified implementation of iterative stratification from
         Sechidis et. al 2011, as images may contain multiple labels/classes.
         """
-        sets = ("train", "valid", "test")
 
         img_dict = self.make_img_dict()
+
+        prop_test = 1 - prop_train - prop_valid
         proportions = [prop_train, prop_valid, prop_test]
         img_lists = sampling.iterative_stratification(img_dict, proportions)
 
@@ -199,7 +227,7 @@ class LabeledSet(ImageFolder):
         ]
 
     def split_batch(self, batch_size):
-        """Split an ImageFolder into multiple batches of a finite size.
+        """Split an LabeledDataset into multiple batches of a finite size.
 
         This function is meant to be used for simulations at the inferencing/sampling stage.
         It does not support stratified splitting at the train, validation, and

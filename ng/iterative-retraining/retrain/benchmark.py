@@ -7,7 +7,6 @@ import os
 import glob
 from tqdm import tqdm
 from torch.utils.data import DataLoader
-from retrain.dataloader import ListDataset
 
 import pandas as pd
 import numpy as np

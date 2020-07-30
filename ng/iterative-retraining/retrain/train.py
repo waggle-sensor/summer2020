@@ -20,7 +20,7 @@ import yolov3.utils as yoloutils
 
 def train(img_folder, opt, load_weights=None):
     """Trains a given image set, with an early stop.
-    
+
     Precondition: img_folder has been split into train, test, and validation sets.
     """
     os.makedirs(opt["checkpoints"], exist_ok=True)
@@ -123,7 +123,10 @@ def train(img_folder, opt, load_weights=None):
                 )
 
                 metric_table = [
-                    ["Metrics", *[f"YOLO Layer {i}" for i in range(len(model.yolo_layers))]]
+                    [
+                        "Metrics",
+                        *[f"YOLO Layer {i}" for i in range(len(model.yolo_layers))],
+                    ]
                 ]
 
                 # Log metrics at each YOLO layer
@@ -154,7 +157,9 @@ def train(img_folder, opt, load_weights=None):
                 # Determine approximate time left for epoch
                 epoch_batches_left = len(dataloader) - (batch_i + 1)
                 time_left = datetime.timedelta(
-                    seconds=epoch_batches_left * (time.time() - start_time) / (batch_i + 1)
+                    seconds=epoch_batches_left
+                    * (time.time() - start_time)
+                    / (batch_i + 1)
                 )
                 log_str += f"\n---- ETA {time_left}"
 

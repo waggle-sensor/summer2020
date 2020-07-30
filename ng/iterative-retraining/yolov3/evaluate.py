@@ -14,7 +14,6 @@ from matplotlib.ticker import NullLocator
 from terminaltables import AsciiTable
 
 import yolov3.utils as utils
-from retrain.dataloader import ListDataset
 
 
 def detect(input_imgs, conf_thres, model, nms_thres=0.5):
