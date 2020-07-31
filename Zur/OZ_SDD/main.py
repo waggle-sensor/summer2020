@@ -18,7 +18,8 @@ from OZ_HelperFunctions import *
 # initialize list of mouse input coordinates
 mouse_pts = []
 
-# mouse callback functiontakes 8 clicks
+
+# mouse callback function takes 7 clicks
 # 1-4: rectangle region of interest (red circles)
 #   Points must be clicked in the following order: Top-Left, Top-Right, Bottom-Right, Bottom-Left
 # 5-6: 2 points that are 6 feet apart on the ground plane
@@ -40,17 +41,17 @@ def get_mouse_points(event, x, y, flags, param):
         mouse_pts.append((x, y))
 
 
-# **MAIN SOCIAL DISTANCE DETECTOR FUNCTION** ##########################################################################
+# **SOCIAL DISTANCE DETECTOR FUNCTION** ###############################################################################
 def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid, skip, threshold):
     vs = cv2.VideoCapture(vid_input)
     global image
 
     # initializing:
-    writer = None
-    (W, H) = (None, None)
-    trackers = []
-    frameCount = 0
-    points = []
+    writer = None  # video output writer
+    (W, H) = (None, None)  # frame dimensions
+    trackers = []  # list to store results of yolo detection
+    frameCount = 0  # keep track of number of frames so far
+    points = []  # list of mouse input coordinates
 
     # Get video height, width and fps
     height = int(vs.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -61,11 +62,14 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
     # looping over each frame of video input
     while True:
         (grabbed, frame) = vs.read()
+
+        # break if no frame left to grab
         if not grabbed:
             print("INFO: END OF VIDEO FILE")
             break
 
-        frame = imutils.resize(frame, width=500)
+        # resizing frames for consistency, regardless of size of input video
+        frame = imutils.resize(frame, width=750)
 
         # grabbing frame dimensions
         if W is None or H is None:
@@ -76,6 +80,7 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
             fourcc = cv2.VideoWriter_fourcc(*"MJPG")
             writer = cv2.VideoWriter(vid_output, fourcc, 30, (W, H), True)
 
+        # convert frame color from BGR to RGB, used for dlib trackers
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
         # pulling first frame of the video and waiting for mouse click inputs
@@ -91,12 +96,12 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
 
         # **IMAGE TRANSFORMATION** ####################################################################################
 
-        # creating transformation matrix from first four points
+        # creating transformation matrix from first four mouse input points
         src = np.float32(np.array(points[:4]))
         dst = np.float32([[0, H], [W, H], [W, 0], [0, 0]])
         perspective_transform = cv2.getPerspectiveTransform(src, dst)
 
-        # warping points 5 - 7 using transformation matrix
+        # warping mouse points 5 - 7 using transformation matrix
         pts = np.float32(np.array([points[4:6]]))
         warped_pt = cv2.perspectiveTransform(pts, perspective_transform)[0]
 
@@ -123,6 +128,7 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
             for tracker in trackers:
                 # set status
                 status = "Tracking"
+
                 # update the tracker and grab the updated position
                 tracker.update(rgb)
                 pos = tracker.get_position()
@@ -136,19 +142,20 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
                 # add the bounding box coordinates to the rectangles list
                 boundingboxes.append((startX, startY, endX, endY))
 
-        for bbox in boundingboxes:
-            x1, y1, x2, y2 = bbox
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 0), 2)
+        # for bbox in boundingboxes:
+        # x1, y1, x2, y2 = bbox
+        # cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 0), 2)
 
         # **COORDINATE MAPPING AND DISTANCE CALCULATION** #############################################################
 
         if len(boundingboxes) > 0:
-
             bottom_points = transform_box_points(boundingboxes, perspective_transform)
 
             distances, checked_boxes = violation_detection(boundingboxes, bottom_points, safe_dist)
 
             risk_count = get_violation_count(distances)
+
+            frame = SDD_output(frame, boundingboxes, checked_boxes)
 
         # **OUTPUT DISPLAY AND CLEAN UP** #############################################################################
 
@@ -156,7 +163,7 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
         text = "Status: " + status
         cv2.putText(frame, text, (10, H - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
-        # check to see if we should write the frame to disk
+        # check to see if we should write the frame to output video
         if writer is not None:
             writer.write(frame)
 
@@ -180,38 +187,38 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
     cv2.destroyAllWindows()
 
 
-# **MAIN FUNCTION** ###################################################################################################
-if __name__ == "__main__":
-    # constructing argument parser and parsing arguments
-    ap = argparse.ArgumentParser()
-    ap.add_argument("-i", "--input", required=True, type=str,
-                    help="path to input video")
-    ap.add_argument("-o", "--output", type=str,
-                    help="path to optional output video")
-    ap.add_argument("-y", "--yolo", required=True,
-                    help="base path to YOLO directory")
-    ap.add_argument("-c", "--confidence", type=float, default=0.5,
-                    help="minimum probability to filter weak detections")
-    ap.add_argument("-s", "--skip", type=int, default=30,
-                    help="number of frames between yolo detections")
-    ap.add_argument("-t", "--threshold", type=float, default=0.3,
-                    help="threshold when applying non-maximum suppression")
-    args = vars(ap.parse_args())
+# **ARGUMENT PARSER, LOAD YOLO, CALL SDD** ############################################################################
 
-    # deriving the paths to the YOLO weights and model configuration
-    weightsPath = os.path.sep.join([args["yolo"], "yolov3.weights"])
-    configPath = os.path.sep.join([args["yolo"], "yolov3.cfg"])
+# constructing argument parser and parsing arguments
+ap = argparse.ArgumentParser()
+ap.add_argument("-i", "--input", required=True, type=str,
+                help="path to input video")
+ap.add_argument("-o", "--output", type=str,
+                help="path to optional output video")
+ap.add_argument("-y", "--yolo", required=True,
+                help="base path to YOLO directory")
+ap.add_argument("-c", "--confidence", type=float, default=0.5,
+                help="minimum probability to filter weak detections")
+ap.add_argument("-s", "--skip", type=int, default=30,
+                help="number of frames between yolo detections")
+ap.add_argument("-t", "--threshold", type=float, default=0.3,
+                help="threshold when applying non-maximum suppression")
+args = vars(ap.parse_args())
 
-    # loading YOLO object detector
-    print("INFO: LOADING YOLO FROM DISK...")
-    net = cv2.dnn.readNetFromDarknet(configPath, weightsPath)
-    ln = net.getLayerNames()
-    ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
+# deriving the paths to the YOLO weights and model configuration
+weightsPath = os.path.sep.join([args["yolo"], "yolov3.weights"])
+configPath = os.path.sep.join([args["yolo"], "yolov3.cfg"])
 
-    # calling mouse callback
-    cv2.namedWindow("image")
-    cv2.setMouseCallback("image", get_mouse_points)
+# loading YOLO object detector
+print("INFO: LOADING YOLO FROM DISK...")
+net = cv2.dnn.readNetFromDarknet(configPath, weightsPath)
+ln = net.getLayerNames()
+ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 
-    # calling SDD function
-    social_distance_detector(args["input"], args["output"], net, ln,
-                             args["confidence"], args["skip"], args["threshold"])
+# calling mouse callback
+cv2.namedWindow("image")
+cv2.setMouseCallback("image", get_mouse_points)
+
+# calling SDD function
+social_distance_detector(args["input"], args["output"], net, ln,
+                         args["confidence"], args["skip"], args["threshold"])
