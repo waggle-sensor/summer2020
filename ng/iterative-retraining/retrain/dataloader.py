@@ -80,6 +80,7 @@ class ImageFolder(Dataset):
         batch_files = [f"{output}/{self.prefix}{i}.txt" for i in range(batches)]
         if all(os.path.exists(path) for path in batch_files):
             batch_splits = [open(path, "r").read().split("\n") for path in batch_files]
+            print("Previous batch splits found")
         else:
             batch_splits = self.split_batch(batch_size)
             for i, path in enumerate(batch_files):
@@ -152,7 +153,7 @@ class LabeledSet(ImageFolder):
 
     def group_by_class(self):
         class_dict = dict()
-        for img, class_list in self.make_img_dict():
+        for img, class_list in self.make_img_dict().items():
             for c in class_list:
                 if c not in class_dict.keys():
                     class_dict[c] = set()
@@ -185,7 +186,7 @@ class LabeledSet(ImageFolder):
                 img_set.save_img_list(filename)
 
     def load_splits(self, folder):
-        split_paths = [f"{folder}/{self.prefix}_{name}" for name in self.sets]
+        split_paths = [f"{folder}/{self.prefix}_{name}.txt" for name in self.sets]
         if all(os.path.exists(path) for path in split_paths):
             file_lists = [open(path, "r").read().split("\n") for path in split_paths]
             labeled_sets = self.convert_splits(file_lists)

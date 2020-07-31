@@ -143,52 +143,18 @@ class ClassResults:
         out.close()
 
 
-def test(model, classes, img_size, valid_path, check_num, out_folder, silent=False):
-    """Tests weights against the test data set."""
-
-    class Options(object):
-        pass
-
-    opt = Options()
-    opt.iou_thres = 0.5
-    opt.conf_thres = 0.5
-    opt.nms_thres = 0.5
-    opt.img_size = img_size
-
-    utils.rewrite_test_list(valid_path, ORIG_DATA)
-    utils.save_stdout(
-        out_folder + f"/mAP_{check_num}.txt",
-        evaluate.get_results,
-        model,
-        valid_path.replace(".txt", "-new.txt"),
-        opt,
-        classes,
-        silent=silent,
-    )
+def benchmark(img_folder, prefix, epoch, config):
+    benchmark_avg(img_folder, prefix, epoch, epoch, 1, config)
 
 
-def benchmark(
-    img_folder,
-    check_num,
-    config,
-    data_config,
-    classes,
-    sample_dir,
-    out=None,
-    silent=False,
-):
-    benchmark_avg(
-        prefix,
-        check_num,
-        check_num,
-        1,
-        config,
-        data_config,
-        classes,
-        sample_dir,
-        out,
-        silent,
-    )
+def get_checkpoint(folder, prefix, epoch):
+    print(f"{folder}/{prefix}*_ckpt_{epoch}.pth")
+    ckpts = glob.glob(f"{folder}/{prefix}*_ckpt_{epoch}.pth")
+
+    if len(ckpts) == 0:
+        return f"{folder}/init_ckpt_{epoch}.pth"
+
+    return ckpts[0]
 
 
 def benchmark_avg(img_folder, prefix, start, end, total, config):
@@ -208,9 +174,7 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
     checkpoints = list()
 
     for n in tqdm(checkpoints_i, "Benchmarking epochs"):
-        ckpt = f"{config['checkpoints']}/init_ckpt_{n}.pth"
-        if not os.path.exists(ckpt):
-            ckpt = glob.glob(f"{config['checkpoints']}/{prefix}*_ckpt_{n}.pth")[0]
+        ckpt = get_checkpoint(config["checkpoints"], prefix, n)
 
         model_def = utils.parse_model_config(config["model_config"])
         model = models.get_eval_model(model_def, config["img_size"], ckpt)
@@ -259,7 +223,9 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
             row["hit"] = False
 
     filename = (
-        f"{start}.csv" if total == 1 else f"{prefix}_benchmark_avg_{start}_{end}.csv"
+        f"{prefix}_benchmark_{start}.csv"
+        if total == 1
+        else f"{prefix}_benchmark_avg_{start}_{end}.csv"
     )
     out_path = f"{config['output']}/{filename}"
     output = open(out_path, "w+")
@@ -270,6 +236,28 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
     output.close()
 
     return out_path
+
+
+def series_benchmark_loss(img_folder, prefix, start, end, delta, config, filename=None):
+    model_def = utils.parse_model_config(config["model_config"])
+
+    if filename is None:
+        filename = f"{prefix}_loss_{start}_{end}.csv"
+
+    out = open(f"{config['output']}/{filename}", "w+")
+    out.write("epoch,loss,mAP,precision\n")
+
+    for epoch in tqdm(range(start, end + 1, delta), "Benchmarking epochs"):
+        ckpt = get_checkpoint(config["checkpoints"], prefix, epoch)
+        model = models.get_eval_model(model_def, config["img_size"], ckpt)
+
+        results = evaluate.get_results(
+            model, img_folder, config, class_names, silent=True
+        )
+        out.write(
+            f"{epoch},{results['val_loss']},{results['val_mAP']},{results['val_precision']}"
+        )
+    out.close()
 
 
 def series_benchmark():
@@ -284,10 +272,11 @@ def series_benchmark():
         "--delta", type=int, help="interval to plot", default=3, required=False
     )
     parser.add_argument("--prefix", required=True, help="prefix of model to test")
-    parser.add_argument("--output", required=False, default="./output/")
+    parser.add_argument("--config", required=True)
+    parser.add_argument("--out", default=None)
     opt = parser.parse_args()
 
-    os.makedirs(opt.output, exist_ok=True)
+    config = utils.parse_config(opt.config)
 
     for test in ("", "test_"):
         output = open(f"{opt.output}/val_precision_{test}time.csv", "w+")

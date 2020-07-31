@@ -117,7 +117,7 @@ def train(img_folder, opt, load_weights=None):
 
                 log_str = "\n---- [Epoch %d/%d, Batch %d/%d] ----\n" % (
                     epoch,
-                    opt["max_epochs"],
+                    end_epoch,
                     batch_i,
                     len(dataloader),
                 )
@@ -180,7 +180,7 @@ def train(img_folder, opt, load_weights=None):
         if bool(opt["early_stop"]) and (
             epoch == opt["start_epoch"] or epoch % opt["strip_len"] == 0
         ):
-            print("\n---Evaluating validation set for early stop---")
+            print(f"\n---Evaluating validation set on epoch {epoch} for early stop---")
 
             valid_results = evaluate.get_results(
                 model, img_folder.valid, opt, class_names, logger, epoch
@@ -200,7 +200,7 @@ def train(img_folder, opt, load_weights=None):
                 break
 
         if epoch % opt["evaluation_interval"] == 0:
-            print("\n---Evaluating test set...---")
+            print(f"\n---Evaluating test set on epoch {epoch}---")
             evaluate.get_results(
                 model, img_folder.test, opt, class_names, logger, epoch
             )

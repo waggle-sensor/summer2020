@@ -33,11 +33,18 @@ def label_sample_set(img_path):
 
 def split_set(labeled_set, output, train_prop, valid_prop, save=True):
     print(f"Getting splits for {labeled_set.prefix}")
-    if labeled_set.load_splits(output) and len(labeled_set.train) == round(
-        train_prop * len(labeled_set)
-    ):
-        print("Previous splits found and validated")
-        return False
+
+    if labeled_set.load_splits(output):
+        train_imgs = sum(
+            round(train_prop * len(v)) for v in labeled_set.group_by_class().values()
+        )
+        if abs(len(labeled_set.train) - train_imgs) <= 2:
+            print("Previous splits found and validated")
+            return False
+        else:
+            raise ValueError(
+                "Train list mismatch found. Manually delete splits to proceed."
+            )
     else:
         print("Generating new splits")
         labeled_set.split_img_set(train_prop, valid_prop)
@@ -121,6 +128,7 @@ if __name__ == "__main__":
 
             sample_filename = f"{config['output']}/{name}{i}_sample_{last_epoch}.txt"
             if os.path.exists(sample_filename):
+                print("Loading existing samples")
                 retrain_files = open(sample_filename, "r").read().split("\n")
             else:
                 with open(sample_filename, "w+") as out:
