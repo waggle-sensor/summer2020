@@ -121,11 +121,11 @@ def median_thresh_sample(result, thresh=0.5):
 def iqr_sample(result, thresh=0.5):
     confidences = result.get_confidences(thresh)
     q1 = np.quantile(confidences, 0.25, interpolation="midpoint")
-    q2 = np.quantile(confidences, 0.5, interpolation="midpoint")
+    q3 = np.quantile(confidences, 0.75, interpolation="midpoint")
 
-    print(f"q1: {q1}, q2: {q2}")
+    print(f"q1: {q1}, q3: {q3}")
 
-    return prob_sample(result, in_range(result, q1, q2), const, q1, q2)
+    return prob_sample(result, in_range(result, q1, q3), const, q1, q3)
 
 
 def normal_sample(result, p=0.4, thresh=0.5):
