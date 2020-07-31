@@ -1,17 +1,19 @@
-import glob
-import random
 import os
+import math
+import random
+
+import glob
 import numpy as np
 from PIL import Image
+
 import torch
 import torch.nn.functional as F
-import math
-
 from torch.utils.data import Dataset
 import torchvision.transforms as transforms
+
 import retrain.sampling as sampling
 from retrain.augment import Augmenter
-from retrain.utils import get_label_path
+from retrain.utils import get_label_path, get_lines
 
 
 def pad_to_square(img, pad_value):
@@ -33,12 +35,15 @@ def resize(image, size):
 
 
 class ImageFolder(Dataset):
-    def __init__(self, src, img_size=416, prefix=str(), from_path=True):
-        if from_path:
-            self.path = src
-            self.imgs = self.get_images()
-        else:
+    def __init__(self, src, img_size=416, prefix=str()):
+        if isinstance(src, list):
             self.imgs = set(src)
+        elif ".txt" in src and os.path.isfile(src):
+            self.imgs = get_lines(src)
+        elif os.path.isdir(src):
+            self.imgs = self.get_images(src)
+        else:
+            raise TypeError("ImageFolder source must be file list or folder")
 
         self.prefix = prefix
         self.img_size = img_size
@@ -57,9 +62,9 @@ class ImageFolder(Dataset):
     def __len__(self):
         return len(self.imgs)
 
-    def get_images(self):
+    def get_images(self, path):
         extensions = (".jpg", ".png", ".gif", ".bmp")
-        raw_imgs = sorted(glob.glob(f"{self.path}/images/**/*.*", recursive=True))
+        raw_imgs = sorted(glob.glob(f"{path}/images/**/*.*", recursive=True))
         imgs = {file for file in raw_imgs if file[-4:].lower() in extensions}
 
         return imgs
@@ -79,7 +84,7 @@ class ImageFolder(Dataset):
         batches = math.ceil(len(self) / batch_size)
         batch_files = [f"{output}/{self.prefix}{i}.txt" for i in range(batches)]
         if all(os.path.exists(path) for path in batch_files):
-            batch_splits = [open(path, "r").read().split("\n") for path in batch_files]
+            batch_splits = [get_lines(path) for path in batch_files]
             print("Previous batch splits found")
         else:
             batch_splits = self.split_batch(batch_size)
@@ -90,9 +95,7 @@ class ImageFolder(Dataset):
 
     def convert_splits(self, splits):
         return [
-            ImageFolder(
-                img_list, self.img_size, prefix=f"{self.prefix}{i}", from_path=False
-            )
+            ImageFolder(img_list, self.img_size, prefix=f"{self.prefix}{i}")
             for i, img_list in enumerate(splits)
         ]
 
@@ -116,8 +119,8 @@ class ImageFolder(Dataset):
 
 
 class LabeledSet(ImageFolder):
-    def __init__(self, img_list, num_classes, img_size=416, prefix=str(), **args):
-        super().__init__(img_list, img_size, prefix, **args)
+    def __init__(self, src, num_classes, img_size=416, prefix=str(), **args):
+        super().__init__(src, img_size, prefix, **args)
         self.num_classes = num_classes
 
         self.filter_images()
@@ -135,10 +138,9 @@ class LabeledSet(ImageFolder):
 
     def get_classes(self, label_path):
         """Get a list of classes from a Darknet label."""
-        with open(label_path, "r") as label_file:
-            labels = label_file.read().split("\n")
-            classes = [int(lab.split(" ")[0]) for lab in labels if lab != ""]
-            return [c for c in classes if c in range(self.num_classes)]
+        labels = get_lines(label_path)
+        classes = [int(lab.split(" ")[0]) for lab in labels if lab != ""]
+        return [c for c in classes if c in range(self.num_classes)]
 
     def get_labels(self):
         return {get_label_path(img) for img in self.imgs}
@@ -179,7 +181,7 @@ class LabeledSet(ImageFolder):
         return self
 
     def save_splits(self, folder):
-        for i, name in enumerate(self.sets):
+        for name in self.sets:
             img_set = getattr(self, name, None)
             if img_set is not None:
                 filename = f"{folder}/{self.prefix}_{name}.txt"
@@ -188,7 +190,7 @@ class LabeledSet(ImageFolder):
     def load_splits(self, folder):
         split_paths = [f"{folder}/{self.prefix}_{name}.txt" for name in self.sets]
         if all(os.path.exists(path) for path in split_paths):
-            file_lists = [open(path, "r").read().split("\n") for path in split_paths]
+            file_lists = [get_lines(path) for path in split_paths]
             labeled_sets = self.convert_splits(file_lists)
             for i, name in enumerate(self.sets):
                 setattr(self, name, labeled_sets[i])
@@ -222,7 +224,6 @@ class LabeledSet(ImageFolder):
                 self.num_classes,
                 self.img_size,
                 prefix=f"{self.prefix}{i}",
-                from_path=False,
             )
             for i, img_list in enumerate(splits)
         ]

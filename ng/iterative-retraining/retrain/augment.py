@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
+import os
+from collections import Counter
+
 import albumentations as alb
 import albumentations.augmentations.transforms as trans
 import cv2
 from tqdm import tqdm
-import os
-from collections import Counter
+
 from retrain.utils import get_label_path
 
 
@@ -59,14 +61,14 @@ class Augmenter:
         desired = {i: imgs_per_class for i in range(self.img_folder.num_classes)}
         incr_factors = dict()
 
-        imgs_by_label_count = {
-            k: v
-            for k, v in sorted(
+        imgs_by_label_count = dict(
+            sorted(
                 self.img_folder.make_img_dict().items(),
                 key=lambda x: len(x[1]),
                 reverse=True,
             )
-        }
+        )
+
         # This algorithm could be optimized by sorting by the labels
         # by the most desired and normalizing classes relative to each other
         while sum(desired.values()) > 0:
@@ -140,8 +142,8 @@ def augment_img(aug, suffix, img_path, count=1, min_visibility=0.50):
         cv2.imwrite(aug_path, aug_img)
 
         with open(new_txt_path, "w+") as out:
-            for i, bbox_str in enumerate(new_bboxes):
-                out.write(f"{field_ids[i]} {bbox_str}\n")
+            for box_i, bbox_str in enumerate(new_bboxes):
+                out.write(f"{field_ids[box_i]} {bbox_str}\n")
 
 
 def parse_label(label_path):

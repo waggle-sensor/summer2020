@@ -165,8 +165,6 @@ def evaluate(
 
 def get_results(model, img_list, opt, class_names, logger=None, epoch=0, silent=False):
 
-    print("Compute mAP...")
-
     precision, recall, AP, f1, ap_class, loss = evaluate(
         model,
         img_list=img_list,
@@ -189,11 +187,12 @@ def get_results(model, img_list, opt, class_names, logger=None, epoch=0, silent=
     if logger is not None:
         logger.list_of_scalars_summary(evaluation_metrics, epoch)
 
-    # Print class APs and mAP
-    ap_table = [["Index", "Class name", "AP"]]
-    for i, c in enumerate(ap_class):
-        ap_table += [[c, class_names[c], "%.5f" % AP[i]]]
-    print(AsciiTable(ap_table).table)
-    print(f"---- mAP {AP.mean()}")
+    if not silent:
+        # Print class APs and mAP
+        ap_table = [["Index", "Class name", "AP"]]
+        for i, c in enumerate(ap_class):
+            ap_table += [[c, class_names[c], "%.5f" % AP[i]]]
+        print(AsciiTable(ap_table).table)
+        print(f"---- mAP {AP.mean()}")
 
     return dict(evaluation_metrics)

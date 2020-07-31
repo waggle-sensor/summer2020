@@ -1,17 +1,14 @@
 import random
-import numpy as np
-import statistics as stats
 import os
-import retrain.utils as utils
+
+import statistics as stats
+import numpy as np
 import scipy.stats
 import matplotlib.pyplot as plt
 
 
 def sort_list_dict(freq, desc=False):
-    return {
-        k: v
-        for k, v in sorted(freq.items(), key=lambda item: len(item[1]), reverse=desc)
-    }
+    return dict(sorted(freq.items(), key=lambda item: len(item[1]), reverse=desc))
 
 
 def multi_argmax(arr):
@@ -188,7 +185,7 @@ def create_sample(results, name, max_samp, sample_func, **func_args):
 
     # Evaluate the numbers that may be under the quota first
     # to distribute samples among all (inferred) classes
-    retrain_by_class = sorted(retrain_by_class, key=lambda x: len(x))
+    retrain_by_class = sorted(retrain_by_class, key=len)
     for i, sample_list in enumerate(retrain_by_class):
         random.shuffle(sample_list)
         images_left = max_samp - len(retrain)

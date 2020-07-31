@@ -11,11 +11,10 @@ from terminaltables import AsciiTable
 
 import yolov3.evaluate as evaluate
 from yolov3.models import Darknet
-
-import retrain.utils as utils
-from retrain.dataloader import ListDataset
 from yolov3.logger import Logger
 import yolov3.utils as yoloutils
+
+import retrain.utils as utils
 
 
 def train(img_folder, opt, load_weights=None):
@@ -101,7 +100,7 @@ def train(img_folder, opt, load_weights=None):
                 imgs = Variable(imgs.to(device))
                 targets = Variable(targets.to(device))
 
-                loss, outputs = model(imgs, targets)
+                loss, _ = model(imgs, targets)
 
                 loss.backward()
 
@@ -130,7 +129,7 @@ def train(img_folder, opt, load_weights=None):
                 ]
 
                 # Log metrics at each YOLO layer
-                for i, metric in enumerate(metrics):
+                for metric in metrics:
                     formats = {m: "%.6f" for m in metrics}
                     formats["grid_size"] = "%2d"
                     formats["cls_acc"] = "%.2f%%"

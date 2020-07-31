@@ -1,19 +1,17 @@
-import yolov3.evaluate as evaluate
-import yolov3.models as models
-import retrain.utils as utils
 import statistics as stats
-
-import os
+import csv
+import itertools
 import glob
 from tqdm import tqdm
-from torch.utils.data import DataLoader
 
 import pandas as pd
 import numpy as np
-import csv
-import itertools
-
+from torch.utils.data import DataLoader
 from sklearn.metrics import confusion_matrix
+
+import yolov3.evaluate as evaluate
+import yolov3.models as models
+import retrain.utils as utils
 
 
 def load_data(output, by_actual=True):
@@ -148,10 +146,10 @@ def benchmark(img_folder, prefix, epoch, config):
 
 
 def get_checkpoint(folder, prefix, epoch):
-    print(f"{folder}/{prefix}*_ckpt_{epoch}.pth")
     ckpts = glob.glob(f"{folder}/{prefix}*_ckpt_{epoch}.pth")
 
     if len(ckpts) == 0:
+        print(f"{folder}/{prefix}*_ckpt_{epoch}.pth")
         return f"{folder}/init_ckpt_{epoch}.pth"
 
     return ckpts[0]
@@ -169,9 +167,10 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
 
     classes = utils.load_classes(config["class_list"])
 
-    checkpoints_i = set(np.linspace(start, end, total, dtype=np.dtype(np.int16)))
+    checkpoints_i = list(
+        sorted(set(np.linspace(start, end, total, dtype=np.dtype(np.int16))))
+    )
     print("Benchmarking on epochs", checkpoints_i)
-    checkpoints = list()
 
     for n in tqdm(checkpoints_i, "Benchmarking epochs"):
         ckpt = get_checkpoint(config["checkpoints"], prefix, n)
@@ -194,7 +193,7 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
             for detection in detections:
                 if detection is None:
                     continue
-                (_, _, _, _, conf, cls_conf, cls_pred) = detection.numpy()[0]
+                (_, _, _, _, _, cls_conf, cls_pred) = detection.numpy()[0]
 
                 if cls_pred not in confs.keys():
                     confs[cls_pred] = [cls_conf]
@@ -202,7 +201,7 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
                 else:
                     confs[cls_pred].append(cls_conf)
 
-    for i, row in results.iterrows():
+    for _, row in results.iterrows():
         best_class = None
         best_conf = float("-inf")
 
@@ -239,8 +238,6 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
 
 
 def series_benchmark_loss(img_folder, prefix, start, end, delta, config, filename=None):
-    model_def = utils.parse_model_config(config["model_config"])
-
     if filename is None:
         filename = f"{prefix}_loss_{start}_{end}.csv"
 
@@ -249,56 +246,9 @@ def series_benchmark_loss(img_folder, prefix, start, end, delta, config, filenam
 
     for epoch in tqdm(range(start, end + 1, delta), "Benchmarking epochs"):
         ckpt = get_checkpoint(config["checkpoints"], prefix, epoch)
+        model_def = utils.parse_model_config(config["model_config"])
         model = models.get_eval_model(model_def, config["img_size"], ckpt)
 
-        results = evaluate.get_results(
-            model, img_folder, config, class_names, silent=True
-        )
-        out.write(
-            f"{epoch},{results['val_loss']},{results['val_mAP']},{results['val_precision']}"
-        )
+        results = evaluate.get_results(model, img_folder, config, list(), silent=True)
+        out.write(f"{epoch},{results['val_loss']},{results['val_mAP']}\n")
     out.close()
-
-
-def series_benchmark():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--start", required=True, type=int, help="starting benchmark epoch",
-    )
-    parser.add_argument(
-        "--end", required=True, type=int, help="ending benchmark epoch",
-    )
-    parser.add_argument(
-        "--delta", type=int, help="interval to plot", default=3, required=False
-    )
-    parser.add_argument("--prefix", required=True, help="prefix of model to test")
-    parser.add_argument("--config", required=True)
-    parser.add_argument("--out", default=None)
-    opt = parser.parse_args()
-
-    config = utils.parse_config(opt.config)
-
-    for test in ("", "test_"):
-        output = open(f"{opt.output}/val_precision_{test}time.csv", "w+")
-        output.write("epoch,all_precision\n")
-        for i in tqdm(
-            range(opt.start, opt.end, opt.delta), f"Benchmarking {test} results"
-        ):
-            if not os.path.exists(f"{opt.output}/benchmark_{test}{i}.csv"):
-                benchmark.benchmark(
-                    opt.prefix,
-                    i,
-                    "config/yolov3.cfg",
-                    "config/chars.data",
-                    "config/chars.names",
-                    "data/images/objs/" if test == str() else "data/temp/",
-                    out=f"{opt.output}/benchmark_{test}",
-                    silent=True,
-                )
-
-            results, _ = utils.load_data(
-                f"{opt.output}/benchmark_{test}{i}.csv", by_actual=True
-            )
-            output.write(f"{i},{benchmark.mean_precision(results[:-1])}\n")
-
-        output.close()

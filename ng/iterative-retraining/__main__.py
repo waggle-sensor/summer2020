@@ -1,6 +1,7 @@
 import argparse
 import random
 import os
+
 import retrain.utils as utils
 from retrain.train import train
 from retrain.dataloader import LabeledSet, ImageFolder
@@ -17,13 +18,8 @@ def train_initial(init_folder, config):
     return end_epoch
 
 
-def get_num_classes(config):
-    class_names = utils.load_classes(config["class_list"])
-    return len(class_names)
-
-
-def get_epoch_num(checkpoint):
-    return int(checkpoint.split("_")[-1][:-4])
+def get_epoch_num(check_file):
+    return int(check_file.split("_")[-1][:-4])
 
 
 def label_sample_set(img_path):
@@ -45,12 +41,12 @@ def split_set(labeled_set, output, train_prop, valid_prop, save=True):
             raise ValueError(
                 "Train list mismatch found. Manually delete splits to proceed."
             )
-    else:
-        print("Generating new splits")
-        labeled_set.split_img_set(train_prop, valid_prop)
-        if save:
-            labeled_set.save_splits(output)
-        return True
+
+    print("Generating new splits")
+    labeled_set.split_img_set(train_prop, valid_prop)
+    if save:
+        labeled_set.save_splits(output)
+    return True
 
 
 if __name__ == "__main__":
@@ -69,7 +65,7 @@ if __name__ == "__main__":
     config = utils.parse_retrain_config(opt.retrain_config)
 
     classes = utils.load_classes(config["class_list"])
-    num_classes = get_num_classes(config)
+    num_classes = len(classes)
 
     init_images = LabeledSet(config["initial_set"], num_classes, prefix="init")
     split_set(init_images, config["output"], config["train_init"], config["valid_init"])
@@ -106,11 +102,9 @@ if __name__ == "__main__":
 
             # TODO make this applicable for multiple labels
             sample_folder.label(classes, label_sample_set)
+
             sample_labeled = LabeledSet(
-                sample_folder.imgs,
-                num_classes,
-                img_size=config["img_size"],
-                from_path=False,
+                sample_folder.imgs, num_classes, img_size=config["img_size"],
             )
 
             # Benchmark data at the edge
@@ -135,9 +129,7 @@ if __name__ == "__main__":
                     out.write("\n".join(retrain_files))
 
             # Receive raw sampled data in the cloud, with ground truth annotations
-            retrain_obj = LabeledSet(
-                retrain_files, num_classes, prefix=f"{name}{i}", from_path=False
-            )
+            retrain_obj = LabeledSet(retrain_files, num_classes, prefix=f"{name}{i}")
 
             new_splits = split_set(
                 retrain_obj,
@@ -149,16 +141,16 @@ if __name__ == "__main__":
 
             if new_splits:
                 # If reloaded, splits have old images already incorporated
-                for name in retrain_obj.sets:
+                for set_name in retrain_obj.sets:
                     # Calculate proportion of old examples needed
                     number_desired = (1 / config["retrain_new"] - 1) * len(
-                        getattr(retrain_obj, name)
+                        getattr(retrain_obj, set_name)
                     )
-                    print(name, number_desired)
-                    extra_images = getattr(seen_images, name).split_batch(
+                    print(set_name, number_desired)
+                    extra_images = getattr(seen_images, set_name).split_batch(
                         round(number_desired)
                     )[0]
-                    orig_set = getattr(retrain_obj, name)
+                    orig_set = getattr(retrain_obj, set_name)
                     orig_set += extra_images
 
             seen_images += retrain_obj
