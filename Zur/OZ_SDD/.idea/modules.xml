@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/OZ_SDD.iml" filepath="$PROJECT_DIR$/.idea/OZ_SDD.iml" />
       <module fileurl="file://$PROJECT_DIR$/../../SDD Code/SDDwBEV2/.idea/Social-Distancing-AI.iml" filepath="$PROJECT_DIR$/../../SDD Code/SDDwBEV2/.idea/Social-Distancing-AI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../SDD Code/SocialDistancingAI/.idea/SocialDistancingAI.iml" filepath="$PROJECT_DIR$/../../SDD Code/SocialDistancingAI/.idea/SocialDistancingAI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../SDD Code/TDS_SDD_1/.idea/covid-social-distancing-detection.iml" filepath="$PROJECT_DIR$/../../SDD Code/TDS_SDD_1/.idea/covid-social-distancing-detection.iml" />
     </modules>
   </component>
 </project>
