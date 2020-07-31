@@ -236,3 +236,11 @@ Thursday 7/30
 4. Attended Learning Off the Lawn presentations
 5. Started phase 3 of the social distance detector: coordinate mapping and distance calculation
 6. Transformed bounding box points and wrote helper functions to calculate distances between each pair of points and compare to min safe distance threshold
+
+Friday 7/31
+1. Went through code I have so far, worked on organizing and commenting for easier debugging
+2. Finished a first draft of the SDD code, very basic output for now
+3. Brainstorming ways to test the code, as of now not sure if it works because no info on people in stock videos and don't have markers/object of known measurements
+4. Testing YOLO on small scale lego pics, result: YOLO doesn't recognize LEGOs as people
+5. AI/ML Demo Meeting
+6. Started creating version of SDD that takes in images for testing purposes
