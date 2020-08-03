@@ -149,7 +149,6 @@ def get_checkpoint(folder, prefix, epoch):
     ckpts = glob.glob(f"{folder}/{prefix}*_ckpt_{epoch}.pth")
 
     if len(ckpts) == 0:
-        print(f"{folder}/{prefix}*_ckpt_{epoch}.pth")
         return f"{folder}/init_ckpt_{epoch}.pth"
 
     return ckpts[0]

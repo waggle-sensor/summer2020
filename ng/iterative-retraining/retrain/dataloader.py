@@ -36,7 +36,7 @@ def resize(image, size):
 
 class ImageFolder(Dataset):
     def __init__(self, src, img_size=416, prefix=str()):
-        if isinstance(src, list):
+        if isinstance(src, (list, set)):
             self.imgs = set(src)
         elif ".txt" in src and os.path.isfile(src):
             self.imgs = get_lines(src)

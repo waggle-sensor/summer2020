@@ -34,7 +34,8 @@ def split_set(labeled_set, output, train_prop, valid_prop, save=True):
         train_imgs = sum(
             round(train_prop * len(v)) for v in labeled_set.group_by_class().values()
         )
-        if abs(len(labeled_set.train) - train_imgs) <= 2:
+        # TODO: FIx bug where in retraining, other sets are incorporated
+        if abs(len(labeled_set.train) - train_imgs) <= 4:
             print("Previous splits found and validated")
             return False
         else:
@@ -107,24 +108,29 @@ if __name__ == "__main__":
                 sample_folder.imgs, num_classes, img_size=config["img_size"],
             )
 
-            # Benchmark data at the edge
-            bench_file = bench.benchmark_avg(
-                sample_labeled, name, 1, last_epoch, config["conf_check_num"], config
-            )
-
-            # Create samples from the benchmark
-            results, _ = bench.load_data(bench_file, by_actual=False)
-            retrain_list = sample.create_sample(
-                results, name, config["bandwidth"], func, thresh=0.0
-            )
-
-            retrain_files = [data["file"] for data in retrain_list]
-
             sample_filename = f"{config['output']}/{name}{i}_sample_{last_epoch}.txt"
             if os.path.exists(sample_filename):
                 print("Loading existing samples")
                 retrain_files = open(sample_filename, "r").read().split("\n")
+
             else:
+                # Benchmark data at the edge
+                bench_file = bench.benchmark_avg(
+                    sample_labeled,
+                    name,
+                    1,
+                    last_epoch,
+                    config["conf_check_num"],
+                    config,
+                )
+
+                # Create samples from the benchmark
+                results, _ = bench.load_data(bench_file, by_actual=False)
+                retrain_list = sample.create_sample(
+                    results, name, config["bandwidth"], func, thresh=0.0
+                )
+
+                retrain_files = [data["file"] for data in retrain_list]
                 with open(sample_filename, "w+") as out:
                     out.write("\n".join(retrain_files))
 
