@@ -528,3 +528,99 @@ normal pdf | 88.3% | 96.7%
 * Worked on presentation
 * To do: rewrite some benchmarking tools to account for testing checkpoints on one iteration's test sets in addition to all iterations
   * Need to compile split list files into one image folder
+
+**Friday, July 31**
+
+* Completed loss and mAP benchmarking over epochs on a validation set
+* New train/test set stops after epoch 48, using that as the baseline
+* Early stop and iterative retraining appears to be working, need to write pipeline to analyze results based on sample set files
+* Gave presentation to the SAGE team on my revised pipeline
+  * Rick suggests using Monte Carlo dropout for an improved measurement of confidence
+    * Seems similar to the smoothed average of model output confidences, except we bias more towards the current epoch model
+    * Worth looking into in the future
+  * Sean suggests a continuous pipeline for analyzing, in addition to retraining
+    * Will be building in the near future, using only the names/prefixes of the training methods
+* Outline methods for benchmarking test sets from various file splits
+
+## Week 8
+
+**Monday, August 3**
+
+* Load results from retraining trials overnight
+  * While training, removed the incomplete last batch due to near-zero validation/test set
+  * Not a situation that would occur in real life
+* Fixed bugs with loading lists
+* Basic retraining parameters
+
+Method | Sample Size | Total (Re)Train Set Size | Validation Set Size | Test Set Size | Stopping Epochs
+------- | -------- | --------- | --------- | ------- | -------
+(initial) | 4351 | 3048 | 651 | 652 | 48
+median-thresh | 253 | 272 | 33 | 32 | 54, 60, 66, 72, 78, 102, 114
+normal | 154-164 | 176 | 21 | 21 | 54, 60, 66, 72, 78, 84, 90
+iqr | 250 | 269 | 32 | 32 | 54, 60, 74, 82, 88, 94, 108
+
+* Preliminary Notes
+  * Due to the 80/10/10 split for retraining and the lack of class balancing (to account for real life situations) when creating batches for sampling, some classes were only represented once or twice in the iteration test/validation sets
+  * The iteration rate limit of 500 images and the sampling methods used (using ~50% of the sample batch) makes it unlikely that we will hit our bandwidth limit of 300 images
+  * Due to variations in the iterative stratified sampling algorithm, counts for train/validation/test sets may be off by 1-2 images
+  * The normal sampling method had *p*=0.4 for values within one standard deviation of the mean confidence. This should probably be increased (to 0.75) and re-run
+  * The old quartile range (0.25 to 0.5) was replaced with an interquartile range this time for a greater sample size
+  * The normal method was the only one to hit an early stop with the minimum number of epochs (7 batches * 3 strips * 2 epochs/strip = 42)
+* Analyzed trends between the precision/accuracy of the sample at the edge in relation to retraining time
+  * Note that ground truth is corrected before we retrain images
+  * These are the *entire* samples (not just test sets) before we retrain on that batch
+
+**Median Threshold**
+
+```
+   Batch  Avg. Prec  Avg. Acc  Epochs Trained
+0    0.0   0.938086  0.855955             6.0
+1    1.0   0.973196  0.894340             6.0
+2    2.0   0.964517  0.874532             6.0
+3    3.0   0.982543  0.911128             6.0
+4    4.0   0.981681  0.886946             6.0
+5    5.0   0.956378  0.856634            24.0
+6    6.0   0.983182  0.904097            12.0
+```
+
+**Normal Sampling**
+
+```
+   Batch  Avg. Prec  Avg. Acc  Epochs Trained
+0    0.0   0.938086  0.855955             6.0
+1    1.0   0.982929  0.905957             6.0
+2    2.0   0.964622  0.890447             6.0
+3    3.0   0.978660  0.898563             6.0
+4    4.0   0.987603  0.883946             6.0
+5    5.0   0.965815  0.866714             6.0
+6    6.0   0.979228  0.888711             6.0
+```
+
+**IQR Threshold**
+
+```
+   Batch  Avg. Prec  Avg. Acc  Epochs Trained
+0    0.0   0.938086  0.855955             6.0
+1    1.0   0.986422  0.898950             6.0
+2    2.0   0.965950  0.893017            14.0
+3    3.0   0.966728  0.910968             8.0
+4    4.0   0.980250  0.912477             6.0
+5    5.0   0.970522  0.879621             6.0
+6    6.0   0.982247  0.897518            14.0
+```
+
+* There aren't any clear trends, except precision/accuracy both noticeably increase after the first retraining batch
+* It seems logical to have several test sets for analyzing results over time
+  * Test sets filtered for only sampled (KAIST) images
+  * Initial (74K) test set
+  * Data from all test sets
+  * Only data from the (combined) iteration test sets (75% KAIST + 25% seen data)
+  * Test set for the current iteration (creating several disjoint segments)
+* Wrote scripts to benchmark and visualize results from IQR and median threshold
+  * It appears as though batches beginning with low (< 0.85) precision *do* increase slightly over the course of the retraining iteration
+    * Interesting due to the fact that training and testing data aren't related, aside from class balance (and even that is offset by augmentation)
+  * Some batches start with high precision (> 0.95) due to small sample size
+  * Initial testing set appears to always decrease
+  * Testing set from the sample slightly increases
+  * Unsure if the additional 25% of data retained is useful
+* Running a model with samples below the median threshold overnight
