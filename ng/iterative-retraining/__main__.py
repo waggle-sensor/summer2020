@@ -34,7 +34,8 @@ def split_set(labeled_set, output, train_prop, valid_prop, save=True):
         train_imgs = sum(
             round(train_prop * len(v)) for v in labeled_set.group_by_class().values()
         )
-        if abs(len(labeled_set.train) - train_imgs) <= 2:
+        print(len(labeled_set.train), train_imgs)
+        if abs(len(labeled_set.train) - train_imgs) <= 100:
             print("Previous splits found and validated")
             return False
         else:
@@ -89,6 +90,10 @@ if __name__ == "__main__":
     batched_samples = all_samples.get_batch_splits(
         config["sampling_batch"], config["output"]
     )
+
+    # Remove the last batch if incomplete
+    if len(batched_samples[-1]) != len(batched_samples[0]):
+        batched_samples = batched_samples[:-1]
 
     sample_methods = {
         "median-thresh": sample.median_thresh_sample,
@@ -146,6 +151,8 @@ if __name__ == "__main__":
                     number_desired = (1 / config["retrain_new"] - 1) * len(
                         getattr(retrain_obj, set_name)
                     )
+                    if round(number_desired) == 0:
+                        continue
                     print(set_name, number_desired)
                     extra_images = getattr(seen_images, set_name).split_batch(
                         round(number_desired)
