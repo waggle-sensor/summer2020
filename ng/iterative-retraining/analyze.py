@@ -13,11 +13,13 @@ def series_benchmark(config, prefix):
     # 3. Benchmark that itertion's test set with the average method
     #    (Could plot this, but may not be meaningful due to differing test sets)
     # 4. Benchmark the overall test set with the same average method (and save results)
-    #    4a. plot the overll test set performance as a function of epoch number
+    #    4a. plot the overall test set performance as a function of epoch number
     # 5. (optional) serialize results of the overall test set as JSON for improved speed when using averages
     init_test_set = f"{config['output']}/init_test.txt"
     combined_test = ImageFolder(init_test_set, config["img_size"])
     test_sets = sorted(glob.glob(f"{config['output']}/{prefix}*_test.txt"))
+
+    benchmark_avg(img_folder, prefix, start, end, total, config)
 
 
 if __name__ == "__main__":

@@ -128,7 +128,7 @@ def iqr_sample(result, thresh=0.5):
     return prob_sample(result, in_range(result, q1, q3), const, q1, q3)
 
 
-def normal_sample(result, p=0.4, thresh=0.5):
+def normal_sample(result, p=0.75, thresh=0.5):
     """Sample all within one standard deviation of mean."""
     confidences = result.get_confidences(thresh)
 

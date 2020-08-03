@@ -1,9 +1,9 @@
-from tensorboardX import SummaryWriter
+from torch.utils.tensorboard import SummaryWriter
 
 
 class Logger(object):
     def __init__(self, log_dir, title):
-        self.writer = SummaryWriter(logdir=log_dir, comment=title)
+        self.writer = SummaryWriter(log_dir=f"{log_dir}/{title}")
 
     def scalar_summary(self, tag, value, step):
         self.writer.add_scalar(tag, value, step)

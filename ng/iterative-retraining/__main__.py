@@ -27,15 +27,22 @@ def label_sample_set(img_path):
     return img_path.split("-")[1].split("/")[0]
 
 
-def split_set(labeled_set, output, train_prop, valid_prop, save=True):
+def split_set(labeled_set, output, train_prop, valid_prop, save=True, sample_dir=None):
     print(f"Getting splits for {labeled_set.prefix}")
 
     if labeled_set.load_splits(output):
         train_imgs = sum(
             round(train_prop * len(v)) for v in labeled_set.group_by_class().values()
         )
-        # TODO: FIx bug where in retraining, other sets are incorporated
-        if abs(len(labeled_set.train) - train_imgs) <= 4:
+        train_len = len(labeled_set.train)
+
+        # Case where we use load splits from the mixed set of sampled
+        # and known images
+        if sample_dir is not None:
+            sample_set_imgs = [img for img in labeled_set.imgs if sample_dir in img]
+            train_len = len(sample_set_imgs)
+        
+        if abs(train_len - train_imgs) <= 4:
             print("Previous splits found and validated")
             return False
         else:
@@ -147,6 +154,7 @@ if __name__ == "__main__":
                 config["train_sample"],
                 config["valid_sample"],
                 save=False,
+                sample_dir=config["sample_set"]
             )
 
             if new_splits:
