@@ -91,6 +91,10 @@ if __name__ == "__main__":
         config["sampling_batch"], config["output"]
     )
 
+    # Remove the last batch if incomplete
+    if len(batched_samples[-1]) != len(batched_samples[0]):
+        batched_samples = batched_samples[:-1]
+
     sample_methods = {
         "median-thresh": sample.median_thresh_sample,
         "iqr": sample.iqr_sample,
@@ -152,6 +156,8 @@ if __name__ == "__main__":
                     number_desired = (1 / config["retrain_new"] - 1) * len(
                         getattr(retrain_obj, set_name)
                     )
+                    if round(number_desired) == 0:
+                        continue
                     print(set_name, number_desired)
                     extra_images = getattr(seen_images, set_name).split_batch(
                         round(number_desired)
