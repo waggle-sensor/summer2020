@@ -103,9 +103,10 @@ if __name__ == "__main__":
         batched_samples = batched_samples[:-1]
 
     sample_methods = {
-        "median-thresh": sample.median_thresh_sample,
-        "iqr": sample.iqr_sample,
-        "normal": sample.normal_sample,
+        # "median-thresh": sample.median_thresh_sample,
+        # "iqr": sample.iqr_sample,
+        # "normal": sample.normal_sample,
+        "median-below-thresh": sample.median_below_thresh_sample
     }
 
     for name, func in sample_methods.items():

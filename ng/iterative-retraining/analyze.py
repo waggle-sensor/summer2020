@@ -1,12 +1,23 @@
 import argparse
 import glob
 import pandas as pd
+import matplotlib.pyplot as plt
 import os
 from tqdm import tqdm
 import itertools
 from retrain.dataloader import ImageFolder, LabeledSet
 import retrain.utils as utils
 import retrain.benchmark as bench
+
+
+def get_epoch_splits(config, prefix, incl_last_epoch=False):
+    splits = list(
+        map(get_epoch, sort_by_epoch(f"{config['output']}/{prefix}*sample*.txt"))
+    )
+    if incl_last_epoch:
+        last_checkpoint = sort_by_epoch(f"{config['checkpoints']}/{prefix}*.pth")[-1]
+        splits.append(get_epoch(last_checkpoint))
+    return splits
 
 
 def series_benchmark(config, prefix, delta=2):
@@ -20,11 +31,7 @@ def series_benchmark(config, prefix, delta=2):
 
     out_dir = config["output"]
     num_classes = len(utils.load_classes(config["class_list"]))
-    epoch_splits = list(
-        map(get_epoch, sort_by_epoch(f"{out_dir}/{prefix}*sample*.txt"))
-    )
-    checkpoints = sort_by_epoch(f"{config['checkpoints']}/init*.pth")
-    checkpoints += sort_by_epoch(f"{config['checkpoints']}/{prefix}*.pth")
+    epoch_splits = get_epoch_splits(config, prefix)
 
     # Initial test set
     init_test_set = f"{out_dir}/init_test.txt"
@@ -54,16 +61,14 @@ def series_benchmark(config, prefix, delta=2):
         "all": all_test,
     }
 
-    epoch_splits.append(get_epoch(checkpoints[-1]))
+    epoch_splits = get_epoch_splits(config, prefix, True)
 
     # Begin benchmarking
     os.makedirs(f"{out_dir}/{prefix}-series/", exist_ok=True)
     for i, split in enumerate(epoch_splits):
         # Get specific iteration set
-        if i == 0:
-            test_sets[f"cur_iter{i}"] = init_test_folder
-        else:
-            test_sets[f"cur_iter{i}"] = LabeledSet(iter_test_set[i - 1], num_classes)
+        if i != 0:
+            test_sets[f"cur_iter{i}"] = LabeledSet(iter_test_sets[i - 1], num_classes)
 
         start = epoch_splits[i - 1] if i else 0
 
@@ -77,9 +82,45 @@ def series_benchmark(config, prefix, delta=2):
                 if not os.path.exists(out_name):
                     result_file = bench.benchmark(img_folder, prefix, epoch, config)
                     os.rename(result_file, out_name)
+        if i != 0:
+            test_sets.pop(f"cur_iter{i}")
 
-                results, _ = bench.load_data(out_name, by_actual=True)
-                # print(epoch, name, bench.mean_precision(results))
+
+def aggregate_results(config, prefix, delta=2):
+    names = ["init", "all_iter", "sample", "all"]
+    epoch_splits = get_epoch_splits(config, prefix, True)
+    names += [f"cur_iter{i}" for i in range(len(epoch_splits) - 1)]
+
+    results = pd.DataFrame(columns=["test_set", "epoch", "prec", "acc", "mean_conf"])
+
+    out_folder = f"{config['output']}/{prefix}-series"
+    for name in names:
+        for i in range(0, epoch_splits[-1], delta):
+            out_name = f"{out_folder}/{name}_{i}.csv"
+            if not os.path.exists(out_name):
+                continue
+
+            epoch_res, _ = bench.load_data(out_name, by_actual=True)
+            new_row = {
+                "test_set": name,
+                "epoch": i,
+                "prec": bench.mean_precision(epoch_res),
+                "acc": bench.mean_accuracy(epoch_res),
+                "mean_conf": bench.mean_conf(epoch_res),
+            }
+            results = results.append(new_row, ignore_index=True)
+
+    results.to_csv(f"{out_folder}/{prefix}-series-stats.csv")
+
+    plt.xlabel("Epoch")
+    plt.ylabel("Avg. Precision")
+    for name in names:
+        filtered_data = results[results["test_set"] == name]
+        plt.plot(filtered_data["epoch"], filtered_data["prec"], label=name)
+    plt.legend()
+    for split in epoch_splits:
+        plt.axvline(x=split, color="black", linestyle="dashed")
+    plt.show()
 
 
 def get_epoch(filename):
@@ -138,6 +179,7 @@ if __name__ == "__main__":
     config = utils.parse_retrain_config(opt.config)
 
     series_benchmark(config, opt.prefix)
+    aggregate_results(config, opt.prefix)
     # tabulate_batch_samples(config, opt.prefix)
 
     # images = utils.get_lines(opt.in_list)

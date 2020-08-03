@@ -46,8 +46,13 @@ def load_data(output, by_actual=True, add_all=True):
     return results, mat
 
 
+def mean_conf(class_results):
+    """Computes mean average confidence for a list of classes"""
+    return stats.mean(stats.mean(res.get_confidences()) for res in class_results)
+
+
 def mean_precision(class_results):
-    """Computes mean precision for a least of classes, which shouldn't include All."""
+    """Computes mean precision for a list of classes, which shouldn't include All."""
     return stats.mean([res.precision() for res in class_results])
 
 

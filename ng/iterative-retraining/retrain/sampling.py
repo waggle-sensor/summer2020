@@ -79,7 +79,7 @@ def iterative_stratification(images, proportions):
     return subsets
 
 
-def prob_sample(result, desired, prob_func, *prob_func_args):
+def prob_sample(result, desired, prob_func, *func_args, **func_kwargs):
     """Generate a list of files for sampling.
     result:     a ClassResult holding a list of images
     desired:    number of samples to extract per class
@@ -97,7 +97,7 @@ def prob_sample(result, desired, prob_func, *prob_func_args):
         chosen_this_round = list()
         for row in pool:
             conf = row["conf"]
-            choose = random.random() <= prob_func(conf, *prob_func_args)
+            choose = random.random() <= prob_func(conf, *prob_func_args, **func_kwargs)
             if choose:
                 chosen_this_round.append(row)
         chosen += chosen_this_round
@@ -116,6 +116,15 @@ def median_thresh_sample(result, thresh=0.5):
     print(f"median: {median}")
 
     return prob_sample(result, in_range(result, median), const, median)
+
+
+def median_below_thresh_sample(result, thresh=0.5):
+    confidences = result.get_confidences(thresh)
+
+    median = stats.median(confidences)
+    print(f"median: {median}")
+
+    return prob_sample(result, in_range(result, median), const, median, below=True)
 
 
 def iqr_sample(result, thresh=0.5):
@@ -141,9 +150,13 @@ def normal_sample(result, p=0.75, thresh=0.5):
     )
 
 
-def const(conf, thresh=0.5, max_val=1.0):
-    if max_val >= conf >= thresh:
-        return 1.0
+def const(conf, thresh=0.5, max_val=1.0, below=False):
+    if not below:
+        if max_val >= conf >= thresh:
+            return 1.0
+    else:
+        if thresh >= conf:
+            return 1.0
     return 0.0
 
 
