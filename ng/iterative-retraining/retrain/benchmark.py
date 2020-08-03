@@ -1,20 +1,17 @@
-import yolov3.evaluate as evaluate
-import yolov3.models as models
-import retrain.utils as utils
 import statistics as stats
-
-import os
+import csv
+import itertools
 import glob
 from tqdm import tqdm
-from torch.utils.data import DataLoader
-from retrain.dataloader import ListDataset
 
 import pandas as pd
 import numpy as np
-import csv
-import itertools
-
+from torch.utils.data import DataLoader
 from sklearn.metrics import confusion_matrix
+
+import yolov3.evaluate as evaluate
+import yolov3.models as models
+import retrain.utils as utils
 
 
 def load_data(output, by_actual=True):
@@ -144,48 +141,20 @@ class ClassResults:
         out.close()
 
 
-def test(model, classes, img_size, valid_path, check_num, out_folder, silent=False):
-    """Tests weights against the test data set."""
-
-    class Options(object):
-        pass
-
-    opt = Options()
-    opt.iou_thres = 0.5
-    opt.conf_thres = 0.5
-    opt.nms_thres = 0.5
-    opt.img_size = img_size
-
-    utils.rewrite_test_list(valid_path, ORIG_DATA)
-    utils.save_stdout(
-        out_folder + f"/mAP_{check_num}.txt",
-        evaluate.get_results,
-        model,
-        valid_path.replace(".txt", "-new.txt"),
-        opt,
-        classes,
-        silent=silent,
-    )
+def benchmark(img_folder, prefix, epoch, config):
+    benchmark_avg(img_folder, prefix, epoch, epoch, 1, config)
 
 
-def benchmark(
-    prefix, check_num, config, data_config, classes, sample_dir, out=None, silent=False
-):
-    benchmark_avg(
-        prefix,
-        check_num,
-        check_num,
-        1,
-        config,
-        data_config,
-        classes,
-        sample_dir,
-        out,
-        silent,
-    )
+def get_checkpoint(folder, prefix, epoch):
+    ckpts = glob.glob(f"{folder}/{prefix}*_ckpt_{epoch}.pth")
+
+    if len(ckpts) == 0:
+        return f"{folder}/init_ckpt_{epoch}.pth"
+
+    return ckpts[0]
 
 
-def benchmark_avg(img_folder, prefix, start, end, total, config, model_def):
+def benchmark_avg(img_folder, prefix, start, end, total, config):
     loader = DataLoader(
         img_folder, batch_size=1, shuffle=False, num_workers=config["n_cpu"],
     )
@@ -197,15 +166,15 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, model_def):
 
     classes = utils.load_classes(config["class_list"])
 
-    checkpoints_i = set(np.linspace(start, end, total, dtype=np.dtype(np.int16)))
+    checkpoints_i = list(
+        sorted(set(np.linspace(start, end, total, dtype=np.dtype(np.int16))))
+    )
     print("Benchmarking on epochs", checkpoints_i)
-    checkpoints = list()
 
     for n in tqdm(checkpoints_i, "Benchmarking epochs"):
-        ckpt = f"{config['checkpoints']}/init_ckpt_{n}.pth"
-        if not os.path.exists(ckpt):
-            ckpt = glob.glob(f"{config['checkpoints']}/{prefix}*_ckpt_{n}.pth")[0]
+        ckpt = get_checkpoint(config["checkpoints"], prefix, n)
 
+        model_def = utils.parse_model_config(config["model_config"])
         model = models.get_eval_model(model_def, config["img_size"], ckpt)
 
         for (img_paths, input_imgs) in loader:
@@ -223,7 +192,7 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, model_def):
             for detection in detections:
                 if detection is None:
                     continue
-                (_, _, _, _, conf, cls_conf, cls_pred) = detection.numpy()[0]
+                (_, _, _, _, _, cls_conf, cls_pred) = detection.numpy()[0]
 
                 if cls_pred not in confs.keys():
                     confs[cls_pred] = [cls_conf]
@@ -231,7 +200,7 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, model_def):
                 else:
                     confs[cls_pred].append(cls_conf)
 
-    for i, row in results.iterrows():
+    for _, row in results.iterrows():
         best_class = None
         best_conf = float("-inf")
 
@@ -252,7 +221,9 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, model_def):
             row["hit"] = False
 
     filename = (
-        f"{start}.csv" if total == 1 else f"{prefix}_benchmark_avg_{start}_{end}.csv"
+        f"{prefix}_benchmark_{start}.csv"
+        if total == 1
+        else f"{prefix}_benchmark_avg_{start}_{end}.csv"
     )
     out_path = f"{config['output']}/{filename}"
     output = open(out_path, "w+")
@@ -263,3 +234,20 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, model_def):
     output.close()
 
     return out_path
+
+
+def series_benchmark_loss(img_folder, prefix, start, end, delta, config, filename=None):
+    if filename is None:
+        filename = f"{prefix}_loss_{start}_{end}.csv"
+
+    out = open(f"{config['output']}/{filename}", "w+")
+    out.write("epoch,loss,mAP,precision\n")
+
+    for epoch in tqdm(range(start, end + 1, delta), "Benchmarking epochs"):
+        ckpt = get_checkpoint(config["checkpoints"], prefix, epoch)
+        model_def = utils.parse_model_config(config["model_config"])
+        model = models.get_eval_model(model_def, config["img_size"], ckpt)
+
+        results = evaluate.get_results(model, img_folder, config, list(), silent=True)
+        out.write(f"{epoch},{results['val_loss']},{results['val_mAP']}\n")
+    out.close()

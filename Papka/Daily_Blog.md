@@ -25,3 +25,6 @@ Week 7 (7/20-7/24/2020)
 - began to work on the news page 
 
 Week 8 (7/27-7/31/2020)
+- I launched the news page
+- Wrapped up my work on the website.
+- This is my final week. 

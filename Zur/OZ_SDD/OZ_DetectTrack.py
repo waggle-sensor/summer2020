@@ -176,8 +176,7 @@ while True:
             # add the bounding box coordinates to the rectangles list
             rects.append((startX, startY, endX, endY))
 
-    # use the centroid tracker to associate the (1) old object
-    # centroids with (2) the newly computed object centroids
+    # call update function in centroid tracker
     objects = ct.update(rects)
 
     for(objectID, bbox) in objects.items():

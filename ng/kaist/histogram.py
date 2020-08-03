@@ -31,7 +31,7 @@ def show_overall_hist(results):
     plt.hist(hit_miss[1], bins=20, color=colors[1], range=(0.0, 1.0))
     plt.show()
     title = (
-        f"Confidence Distribution on KAIST Data\n(acc={acc}, "
+        f"Confidence Distribution on KAIST Data (Model)\n(acc={acc}, "
         + f"prec={prec}, n={results[-1].pop})"
     )
     plt.title(title)
@@ -92,7 +92,7 @@ if __name__ == "__main__":
     OUTPUT = "/".join(sys.argv[1].split("/")[:-1])
 
     if "--show" in sys.argv:
-        results, _ = utils.load_data(sys.argv[1], by_actual=False)
+        results, _ = utils.load_data(sys.argv[1], by_actual=True)
         show_overall_hist(results)
         exit(0)
 

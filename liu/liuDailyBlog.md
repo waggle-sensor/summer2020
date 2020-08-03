@@ -819,3 +819,11 @@ Solved by ```sudo killall ibus-daemon``` (https://forum.odroid.com/viewtopic.php
 
 #### To Do List:
  * Analysis report of data sharing / streaming mechanisms in terms of throughput, latency, resource utilization, etc.
+
+### July 29
+#### Work Done
+ * Finish the experiments using RabbitMQ for image streaming sharing. The results for the data sharing comparison can be found at: https://github.com/waggle-sensor/summer2020/blob/master/liu/DataSharing-Comparison/ImageStreamSharing.md.
+ * Summarize the setup and logs for data sharing into the file DataSharing-Comparison. 
+
+#### To Do List:
+ * Add resource utilization into the comparison of data sharing / streaming mechanisms

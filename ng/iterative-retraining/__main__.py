@@ -1,8 +1,10 @@
 import argparse
 import random
+import os
+
 import retrain.utils as utils
 from retrain.train import train
-from retrain.dataloader import ImageFolder
+from retrain.dataloader import LabeledSet, ImageFolder
 import retrain.benchmark as bench
 import retrain.sampling as sample
 
@@ -10,20 +12,42 @@ import retrain.sampling as sample
 def train_initial(init_folder, config):
     config["start_epoch"] = 1
 
-    test_prop = 1 - config["train_init"] - config["valid_init"]
-    init_folder.split_img_set(config["train_init"], config["valid_init"], test_prop)
-
     init_folder.train.augment(config["images_per_class"])
-    init_folder.save_splits(config["output"])
 
-    end_epoch = train(init_folder, config, model_config)
-    #return 1
+    end_epoch = train(init_folder, config)
     return end_epoch
 
 
-def get_num_classes(config):
-    class_names = utils.load_classes(config["class_list"])
-    return len(class_names)
+def get_epoch_num(check_file):
+    return int(check_file.split("_")[-1][:-4])
+
+
+def label_sample_set(img_path):
+    """Sample function of labeling an image given ground truth."""
+    return img_path.split("-")[1].split("/")[0]
+
+
+def split_set(labeled_set, output, train_prop, valid_prop, save=True):
+    print(f"Getting splits for {labeled_set.prefix}")
+
+    if labeled_set.load_splits(output):
+        train_imgs = sum(
+            round(train_prop * len(v)) for v in labeled_set.group_by_class().values()
+        )
+        # TODO: FIx bug where in retraining, other sets are incorporated
+        if abs(len(labeled_set.train) - train_imgs) <= 4:
+            print("Previous splits found and validated")
+            return False
+        else:
+            raise ValueError(
+                "Train list mismatch found. Manually delete splits to proceed."
+            )
+
+    print("Generating new splits")
+    labeled_set.split_img_set(train_prop, valid_prop)
+    if save:
+        labeled_set.save_splits(output)
+    return True
 
 
 if __name__ == "__main__":
@@ -39,12 +63,15 @@ if __name__ == "__main__":
         help="bypass initial training with a checkpoint",
     )
     opt = parser.parse_args()
-
     config = utils.parse_retrain_config(opt.retrain_config)
-    model_config = utils.parse_model_config(config["model_config"])
-    num_classes = get_num_classes(config)
 
-    init_images = ImageFolder(config["initial_set"], num_classes, prefix="init")
+    classes = utils.load_classes(config["class_list"])
+    num_classes = len(classes)
+
+    init_images = LabeledSet(config["initial_set"], num_classes, prefix="init")
+    split_set(init_images, config["output"], config["train_init"], config["valid_init"])
+
+    seen_images = init_images
 
     # Run initial training
     if opt.reload_baseline is None:
@@ -52,16 +79,21 @@ if __name__ == "__main__":
         print(f"Initial training ended on epoch {init_end_epoch}")
         opt.reload_baseline = f"{config['checkpoints']}/init_ckpt_{init_end_epoch}.pth"
     else:
-        init_end_epoch = int(opt.reload_baseline.split("_")[-1][:-4])
+        init_end_epoch = get_epoch_num(opt.reload_baseline)
 
     # Sample
-    all_samples = ImageFolder(config["sample_set"], num_classes)
+    all_samples = ImageFolder(
+        config["sample_set"], img_size=config["img_size"], prefix="sample"
+    )
 
     # Simulate a video feed at the edge
-    batched_samples = all_samples.split_batch(config["sampling_batch"])
+    batched_samples = all_samples.get_batch_splits(
+        config["sampling_batch"], config["output"]
+    )
 
-    config["train_split"] = config["train_sample"]
-    config["valid_split"] = config["valid_sample"]
+    # Remove the last batch if incomplete
+    if len(batched_samples[-1]) != len(batched_samples[0]):
+        batched_samples = batched_samples[:-1]
 
     sample_methods = {
         "median-thresh": sample.median_thresh_sample,
@@ -69,51 +101,75 @@ if __name__ == "__main__":
         "normal": sample.normal_sample,
     }
 
-    seen_images = init_images
-
     for name, func in sample_methods.items():
         last_epoch = init_end_epoch
         for i, sample_folder in enumerate(batched_samples):
-            # Benchmark data at the edge
-            bench_file = bench.benchmark_avg(
-                sample_folder,
-                name,
-                1,
-                last_epoch,
-                config["conf_check_num"],
-                config,
-                model_config,
+
+            # TODO make this applicable for multiple labels
+            sample_folder.label(classes, label_sample_set)
+
+            sample_labeled = LabeledSet(
+                sample_folder.imgs, num_classes, img_size=config["img_size"],
             )
 
-            # Create samples from the benchmark
-            results, _ = bench.load_data(bench_file, by_actual=False)
-            retrain_list = sample.create_sample(
-                results, name, config["bandwidth"], func, thresh=0.0
-            )
+            sample_filename = f"{config['output']}/{name}{i}_sample_{last_epoch}.txt"
+            if os.path.exists(sample_filename):
+                print("Loading existing samples")
+                retrain_files = open(sample_filename, "r").read().split("\n")
+
+            else:
+                # Benchmark data at the edge
+                bench_file = bench.benchmark_avg(
+                    sample_labeled,
+                    name,
+                    1,
+                    last_epoch,
+                    config["conf_check_num"],
+                    config,
+                )
+
+                # Create samples from the benchmark
+                results, _ = bench.load_data(bench_file, by_actual=False)
+                retrain_list = sample.create_sample(
+                    results, name, config["bandwidth"], func, thresh=0.0
+                )
+
+                retrain_files = [data["file"] for data in retrain_list]
+                with open(sample_filename, "w+") as out:
+                    out.write("\n".join(retrain_files))
 
             # Receive raw sampled data in the cloud, with ground truth annotations
-            retrain_obj = ImageFolder(
-                retrain_list, num_classes, prefix=f"name{i}", from_path=False
+            retrain_obj = LabeledSet(retrain_files, num_classes, prefix=f"{name}{i}")
+
+            new_splits = split_set(
+                retrain_obj,
+                config["output"],
+                config["train_sample"],
+                config["valid_sample"],
+                save=False,
             )
 
-            test_prop = 1 - config["train_sample"] - config["valid_sample"]
-            retrain_obj.split_img_set(
-                config["train_sample"], config["valid_sample"], test_prop
-            )
+            if new_splits:
+                # If reloaded, splits have old images already incorporated
+                for set_name in retrain_obj.sets:
+                    # Calculate proportion of old examples needed
+                    number_desired = (1 / config["retrain_new"] - 1) * len(
+                        getattr(retrain_obj, set_name)
+                    )
+                    if round(number_desired) == 0:
+                        continue
+                    print(set_name, number_desired)
+                    extra_images = getattr(seen_images, set_name).split_batch(
+                        round(number_desired)
+                    )[0]
+                    orig_set = getattr(retrain_obj, set_name)
+                    orig_set += extra_images
 
             seen_images += retrain_obj
 
-            for name in ("train", "valid", "test"):
-                # Calculate proportion of old examples needed
-                number_desired = (1 / config["retrain_new"] - 1) * len(
-                    getattr(retrain_obj, name)
-                )
-                retrain_obj += getattr(seen_images, name).split_batch(
-                    round(number_desired)
-                )[0]
-
-            retrain_obj.train.augment(config["images_per_class"])
             retrain_obj.save_splits(config["output"])
+            retrain_obj.train.augment(config["images_per_class"])
 
             config["start_epoch"] = last_epoch + 1
-            last_epoch = train(retrain_obj, config, model_config)
+            checkpoint = utils.find_checkpoint(config, name, last_epoch)
+            last_epoch = train(retrain_obj, config, checkpoint)

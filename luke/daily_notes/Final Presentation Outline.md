@@ -1,0 +1,23 @@
+- Use cases and explanation of goal in segmentation
+- Initial Approach
+  - Computer-aided labeling
+  - After researching the literature around water segmentation, I directed my effort to fully-automated water segmentation
+- Problems that need to be solved to segment water
+  - Water features can take on a wide variety of colors, textures, and can move in a wide variety of ways
+  - Neural nets have to balance accuracy and speed
+    - Water detection is a tricky problem, especially when looking at water images from a variety of sources, so this requires more parameters and more complexity added to the neural nets
+    - More complexity means lower speed
+- Methods for segmentation
+  - Color-based descriptors (single-image)
+    - Most puddles, when viewed from a perspective with a high angle of incidence, appear smooth and shiny
+    - Difficulty: lighting conditions vary tremendously and this rule-of-thumb ratio does not always apply
+  - Texture-based descriptors (single-image)
+    - Supplements color to provide more cues from one image
+    - Difficulty: the classifier must include water that contains choppy waves, smooth puddles, and puddles on asphalt which look grainy
+  - Temporal descriptors (video-based)
+    - My favorite, most creative but also most computationally-expensive
+    - Looks at the intensity of 3x3 patches of video for a certain amount of time, apply the FFT to the graph of the intensity over time, and use those signals to classify the periodic motion of water
+- Future work
+  - Unifying these specialized algorithms to produce one general-purpose water segmentation algorithm 
+  - Implementing these algorithms on specific edge devices
+    - Sage project uses Nvidia NX in nodes

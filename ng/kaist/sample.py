@@ -44,7 +44,7 @@ def prob_sample(result, desired, prob_func, *prob_func_args):
     return chosen
 
 
-def median_thresh_sample(result):
+def median_thresh_sample(result, thresh=0.5):
     confidences = result.get_confidences()
 
     median = stats.median(confidences)
@@ -127,14 +127,14 @@ def create_config(samples, sample_name, data_config):
             new_data_config.write(f"{k} = {v}\n")
 
 
-def create_sample(data_config, results, undersample, name, sample_func, *func_args):
+def create_sample(data_config, results, undersample, name, sample_func, **func_args):
     retrain_by_class = list()
 
     print(f"===== {name} ======")
     for result in results:
         if result.name == "All":
             continue
-        retrain_by_class.append(sample_func(result, *func_args))
+        retrain_by_class.append(sample_func(result, **func_args))
 
     if undersample:
         max_samp = float("inf")
