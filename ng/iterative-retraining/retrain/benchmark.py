@@ -14,7 +14,7 @@ import yolov3.models as models
 import retrain.utils as utils
 
 
-def load_data(output, by_actual=True):
+def load_data(output, by_actual=True, add_all=True):
     samples = dict()
     all_data = list()
 
@@ -40,7 +40,8 @@ def load_data(output, by_actual=True):
     results = [ClassResults(k, v) for k, v in samples.items()]
     mat = confusion_matrix(actual, pred, labels=list(samples.keys()) + [""])
 
-    results.append(ClassResults("All", all_data))
+    if add_all:
+        results.append(ClassResults("All", all_data))
 
     return results, mat
 
@@ -142,7 +143,7 @@ class ClassResults:
 
 
 def benchmark(img_folder, prefix, epoch, config):
-    benchmark_avg(img_folder, prefix, epoch, epoch, 1, config)
+    return benchmark_avg(img_folder, prefix, epoch, epoch, 1, config)
 
 
 def get_checkpoint(folder, prefix, epoch):
@@ -169,9 +170,13 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
     checkpoints_i = list(
         sorted(set(np.linspace(start, end, total, dtype=np.dtype(np.int16))))
     )
-    print("Benchmarking on epochs", checkpoints_i)
 
-    for n in tqdm(checkpoints_i, "Benchmarking epochs"):
+    single = total == 1
+
+    if not single:
+        print("Benchmarking on epochs", checkpoints_i)
+
+    for n in tqdm(checkpoints_i, "Benchmarking epochs", disable=single):
         ckpt = get_checkpoint(config["checkpoints"], prefix, n)
 
         model_def = utils.parse_model_config(config["model_config"])
@@ -185,7 +190,7 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
                 ]
                 results.loc[path] = [path, dict(), actual_class, None, None, None]
 
-            detections = evaluate.detect(input_imgs, 0.5, model)
+            detections = evaluate.detect(input_imgs, config["conf_thres"], model)
 
             confs = results.loc[path]["confs"]
 
@@ -222,7 +227,7 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
 
     filename = (
         f"{prefix}_benchmark_{start}.csv"
-        if total == 1
+        if single
         else f"{prefix}_benchmark_avg_{start}_{end}.csv"
     )
     out_path = f"{config['output']}/{filename}"

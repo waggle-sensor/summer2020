@@ -41,7 +41,7 @@ def split_set(labeled_set, output, train_prop, valid_prop, save=True, sample_dir
         if sample_dir is not None:
             sample_set_imgs = [img for img in labeled_set.imgs if sample_dir in img]
             train_len = len(sample_set_imgs)
-        
+
         if abs(train_len - train_imgs) <= 4:
             print("Previous splits found and validated")
             return False
@@ -154,7 +154,7 @@ if __name__ == "__main__":
                 config["train_sample"],
                 config["valid_sample"],
                 save=False,
-                sample_dir=config["sample_set"]
+                sample_dir=config["sample_set"],
             )
 
             if new_splits:
