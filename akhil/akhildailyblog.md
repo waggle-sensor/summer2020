@@ -1,4 +1,4 @@
-beginnersvariantChameleon-SageSage-Chameleonpresentationpresentation# Daily Notes - Akhil Kodumuri
+documentationbeginnersvariantChameleon-SageSage-Chameleonpresentationpresentation# Daily Notes - Akhil Kodumuri
 
 ## Week 1
 
@@ -408,3 +408,20 @@ I finished changing the naming conventions to the Chamaleon-Sage images. I also 
 
 #### Errors/Issues
 - how to create a professional image writeup
+
+### Thursday July 30, 2020
+#### Meetings/Out of work
+11am - 11:30am -> Daily scrum meeting
+#### Work done/Things learned
+I received feedback for the documentation I am working on for publishing the Chameleon-Sage images to the Chameleon catalog. I made the necessary changes and continued working on the backdating script. I also worked a little bit with debugging an error that comes up when trying to build the `sage-gpu` image.
+#### Errors/Issues
+- error with sage-gpu image build
+
+### Friday July 31, 2020
+#### Meetings/Out of work
+11am - 11:30am -> Daily scrum meeting
+12:30 - 2:20 -> Cohort Trivia
+#### Work done/Things learned
+I finished the backdating script and worked on testing it with edge cases. I continued to debug the `sage-gpu` image build. I also worked on squashing the commit for the Image-build-action pull request.
+#### Errors/Issues
+- error with sage-gpu image build
