@@ -1,5 +1,6 @@
 # Usage
 # python main.py --input videos/test_video2.mp4 --output output/output_01.avi --yolo yolo-coco
+# python main.py --input videos/pedestrians.mp4 --output output/output_01.avi --yolo yolo-coco
 
 # import packages
 import cv2
@@ -47,7 +48,7 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
     global image
 
     # initializing:
-    writer = None  # video output writer
+    # writer = None  # video output writer
     (W, H) = (None, None)  # frame dimensions
     trackers = []  # list to store results of yolo detection
     frameCount = 0  # keep track of number of frames so far
@@ -58,7 +59,13 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
     width = int(vs.get(cv2.CAP_PROP_FRAME_WIDTH))
     fps = int(vs.get(cv2.CAP_PROP_FPS))
     scale_w, scale_h = float(400 / width), float(600 / height)
-
+    """
+    fourcc = cv2.VideoWriter_fourcc(*"XVID")
+    output_movie = cv2.VideoWriter("SDD_Street_Output.avi", fourcc, fps, (width, height))
+    bird_movie = cv2.VideoWriter(
+        "SDD_Bird_Output.avi", fourcc, fps, (int(width * scale_w), int(height * scale_h))
+    )
+    """
     # looping over each frame of video input
     while True:
         (grabbed, frame) = vs.read()
@@ -74,12 +81,12 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
         # grabbing frame dimensions
         if W is None or H is None:
             (H, W) = frame.shape[:2]
-
+        """
         # initialize writer for output video
         if args["output"] is not None and writer is None:
             fourcc = cv2.VideoWriter_fourcc(*"MJPG")
             writer = cv2.VideoWriter(vid_output, fourcc, 30, (W, H), True)
-
+        """
         # convert frame color from BGR to RGB, used for dlib trackers
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
@@ -151,22 +158,22 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
         if len(boundingboxes) > 0:
             bottom_points = transform_box_points(boundingboxes, perspective_transform)
 
-            distances, checked_boxes = violation_detection(boundingboxes, bottom_points, safe_dist)
+            distance_pairs, box_pairs = violation_detection(boundingboxes, bottom_points, safe_dist)
 
-            risk_count = get_violation_count(distances)
+            risk_count = get_violation_count(distance_pairs)
 
-            frame = SDD_output(frame, boundingboxes, checked_boxes)
+            frame = SDD_output(frame, boundingboxes, box_pairs)
 
         # **OUTPUT DISPLAY AND CLEAN UP** #############################################################################
 
         # display status
         text = "Status: " + status
         cv2.putText(frame, text, (10, H - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
-
+        """
         # check to see if we should write the frame to output video
         if writer is not None:
             writer.write(frame)
-
+        """
         # increment the total number of frames processed thus far
         frameCount += 1
 
@@ -177,11 +184,11 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
         # if the `q` key was pressed, break from the loop
         if key == ord("q"):
             break
-
+    """
     # check to see if we need to release the video writer pointer
     if writer is not None:
         writer.release()
-
+    """
     vs.release()
 
     cv2.destroyAllWindows()

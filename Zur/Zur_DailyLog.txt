@@ -244,3 +244,13 @@ Friday 7/31
 4. Testing YOLO on small scale lego pics, result: YOLO doesn't recognize LEGOs as people
 5. AI/ML Demo Meeting
 6. Started creating version of SDD that takes in images for testing purposes
+
+Week 8 (8/3 - 8/7)
+
+Monday 8/3
+1. Fixed mouse callback issue with ImageSDD code
+2. Fixed some errors in helper functions, cleaned up / commented code
+3. Finished draft of ImageSDD code
+4. Initial video and image tests not looking good, going through code and trying different edits before family photo shoot
+5. Brainstormed different options for output frequency aesthetics
+6. Initial debugging attempts unsuccessful, will try tomorrow to create a version that uses yolo every frame and see if that does anything

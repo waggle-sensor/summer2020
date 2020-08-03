@@ -12,7 +12,7 @@ def get_mouse_points(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
         if len(mouse_pts) < 4:
             cv2.circle(image, (x, y), 5, (255, 0, 0), -1)
-        else:
+        elif 4 <= len(mouse_pts) < 6:
             cv2.circle(image, (x, y), 5, (0, 255, 0), -1)
 
         if 1 <= len(mouse_pts) <= 3:
@@ -22,25 +22,12 @@ def get_mouse_points(event, x, y, flags, param):
                 cv2.line(image, (x, y), (mouse_pts[0][0], mouse_pts[0][1]), (70, 70, 70), 2)
 
         mouse_pts.append((x, y))
+        cv2.imshow("image", image)
 
 
-def image_SDD(input, yolo_net, layerNames, confid, threshold):
-    img = cv2.imread(input)
-    img = imutils.resize(img, width=750)
-    global image
-
-    (W, H) = img.shape[:2]
-    points = []
+def image_SDD(img, points, yolo_net, layerNames, confid, threshold):
+    (H, W) = img.shape[:2]
     boundingboxes = []
-
-    while True:
-        image = img
-        cv2.imshow("out1", image)
-        cv2.waitKey(1)
-        if len(mouse_pts) == 7:
-            cv2.destroyWindow("image")
-            break
-    points = mouse_pts
 
     src = np.float32(np.array(points[:4]))
     dst = np.float32([[0, H], [W, H], [W, 0], [0, 0]])
@@ -52,7 +39,7 @@ def image_SDD(input, yolo_net, layerNames, confid, threshold):
     safe_dist = np.sqrt((warped_pt[0][0] - warped_pt[1][0]) ** 2 + (warped_pt[0][1] - warped_pt[1][1]) ** 2)
 
     pnts = np.array(points[:4], np.int32)
-    cv2.polylines(img, [pnts], True, (0, 0, 0), thickness=2)
+    cv2.polylines(img, [pnts], True, (255, 0, 0), thickness=2)
 
     blob = cv2.dnn.blobFromImage(img, 1 / 255.0, (416, 416), swapRB=True, crop=False)
     yolo_net.setInput(blob)
@@ -85,17 +72,19 @@ def image_SDD(input, yolo_net, layerNames, confid, threshold):
     bboxes = np.array(boundingboxes).astype(int)
     boundingboxes = non_max_suppression(bboxes, threshold)
 
-    for box in boundingboxes:
-        x1, y1, x2, y2 = box
-        cv2.rectangle(img, (x1, y1), (x2, y2), (0, 0, 0), 2)
+    bottom_points = transform_box_points(boundingboxes, perspective_transform)
+    distance_pairs, box_pairs = violation_detection(boundingboxes, bottom_points, safe_dist)
+    img = SDD_output(img, boundingboxes, box_pairs)
 
     cv2.imshow("output", img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
 
+########################################################################################################################
+
 ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--input", required=True, type=str,
+ap.add_argument("-i", "--image", required=True, type=str,
                 help="path to image")
 ap.add_argument("-y", "--yolo", required=True,
                 help="base path to YOLO directory")
@@ -116,7 +105,18 @@ ln = net.getLayerNames()
 ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 
 # calling mouse callback
+# cv2.namedWindow("image")
+image = cv2.imread(args["image"])
+image = imutils.resize(image, width=750)
+copy = image.copy()
 cv2.namedWindow("image")
 cv2.setMouseCallback("image", get_mouse_points)
 
-image_SDD(args["input"], net, ln, args["confidence"], args["threshold"])
+while True:
+    cv2.imshow("image", image)
+    cv2.waitKey(1)
+    if len(mouse_pts) == 7:
+        cv2.destroyWindow("out1")
+        break
+
+image_SDD(copy, mouse_pts, net, ln, args["confidence"], args["threshold"])
