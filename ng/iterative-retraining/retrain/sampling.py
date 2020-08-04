@@ -97,7 +97,7 @@ def prob_sample(result, desired, prob_func, *func_args, **func_kwargs):
         chosen_this_round = list()
         for row in pool:
             conf = row["conf"]
-            choose = random.random() <= prob_func(conf, *prob_func_args, **func_kwargs)
+            choose = random.random() <= prob_func(conf, *func_args, **func_kwargs)
             if choose:
                 chosen_this_round.append(row)
         chosen += chosen_this_round

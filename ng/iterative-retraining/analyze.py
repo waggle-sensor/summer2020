@@ -4,13 +4,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 from tqdm import tqdm
-import itertools
-from retrain.dataloader import ImageFolder, LabeledSet
+from retrain.dataloader import LabeledSet
 import retrain.utils as utils
 import retrain.benchmark as bench
 
 
-def get_epoch_splits(config, prefix, incl_last_epoch=False):
+def get_epoch_splits(config, prefix, incl_last_epoch=False, avg=False):
     splits = list(
         map(get_epoch, sort_by_epoch(f"{config['output']}/{prefix}*sample*.txt"))
     )
@@ -20,14 +19,15 @@ def get_epoch_splits(config, prefix, incl_last_epoch=False):
     return splits
 
 
-def series_benchmark(config, prefix, delta=2):
+def series_benchmark(config, prefix, delta=2, avg=False):
     # 1. Find the number of batches for the given prefix
     # 2. Find the starting/ending epochs of each split
     # 3. Benchmark that itertion's test set with the average method
     #    (Could plot this, but may not be meaningful due to differing test sets)
     # 4. Benchmark the overall test set with the same average method (and save results)
     #    4a. plot the overall test set performance as a function of epoch number
-    # 5. (optional) serialize results of the overall test set as JSON for improved speed when using averages
+    # 5. (optional) serialize results of the overall test set as JSON for improved speed
+    #    when using averages
 
     out_dir = config["output"]
     num_classes = len(utils.load_classes(config["class_list"]))
@@ -64,7 +64,10 @@ def series_benchmark(config, prefix, delta=2):
     epoch_splits = get_epoch_splits(config, prefix, True)
 
     # Begin benchmarking
-    os.makedirs(f"{out_dir}/{prefix}-series/", exist_ok=True)
+    out_folder = f"{out_dir}/{prefix}-series"
+    if avg:
+        out_folder += "-avg"
+    os.makedirs(out_folder, exist_ok=True)
     for i, split in enumerate(epoch_splits):
         # Get specific iteration set
         if i != 0:
@@ -78,22 +81,30 @@ def series_benchmark(config, prefix, delta=2):
                 if not epoch or (epoch == start and "cur_iter" not in name):
                     continue
 
-                out_name = f"{out_dir}/{prefix}-series/{name}_{epoch}.csv"
+                out_name = f"{out_folder}/{name}_{epoch}.csv"
+
                 if not os.path.exists(out_name):
-                    result_file = bench.benchmark(img_folder, prefix, epoch, config)
+                    if avg:
+                        result_file = bench.benchmark_avg(
+                            img_folder, prefix, 1, epoch, 5, config
+                        )
+                    else:
+                        result_file = bench.benchmark(img_folder, prefix, epoch, config)
                     os.rename(result_file, out_name)
         if i != 0:
             test_sets.pop(f"cur_iter{i}")
 
 
-def aggregate_results(config, prefix, delta=2):
-    names = ["init", "all_iter", "sample", "all"]
+def aggregate_results(config, prefix, delta=2, avg=False):
+    names = ["init", "sample", "all_iter", "all"]
     epoch_splits = get_epoch_splits(config, prefix, True)
-    names += [f"cur_iter{i}" for i in range(len(epoch_splits) - 1)]
+    names = [f"cur_iter{i}" for i in range(len(epoch_splits))]
 
     results = pd.DataFrame(columns=["test_set", "epoch", "prec", "acc", "mean_conf"])
 
     out_folder = f"{config['output']}/{prefix}-series"
+    if avg:
+        out_folder += "-avg"
     for name in names:
         for i in range(0, epoch_splits[-1], delta):
             out_name = f"{out_folder}/{name}_{i}.csv"
@@ -174,13 +185,14 @@ if __name__ == "__main__":
     parser.add_argument("--config", required=True)
     parser.add_argument("--out", default=None)
     parser.add_argument("--in_list", default=None)
+    parser.add_argument("--avg", action="store_true", default=False)
     opt = parser.parse_args()
 
     config = utils.parse_retrain_config(opt.config)
 
-    series_benchmark(config, opt.prefix)
-    aggregate_results(config, opt.prefix)
-    # tabulate_batch_samples(config, opt.prefix)
+    tabulate_batch_samples(config, opt.prefix)
+    series_benchmark(config, opt.prefix, avg=opt.avg)
+    aggregate_results(config, opt.prefix, avg=opt.avg)
 
     # images = utils.get_lines(opt.in_list)
     # img_folder = ImageFolder(images, config["img_size"], prefix=opt.prefix)

@@ -39,8 +39,9 @@ def split_set(labeled_set, output, train_prop, valid_prop, save=True, sample_dir
         # Case where we use load splits from the mixed set of sampled
         # and known images
         if sample_dir is not None:
-            sample_set_imgs = [img for img in labeled_set.imgs if sample_dir in img]
-            train_len = len(sample_set_imgs)
+            train_imgs = (
+                len(labeled_set.valid) + len(labeled_set.train) + len(labeled_set.test)
+            )
 
         if abs(train_len - train_imgs) <= 4:
             print("Previous splits found and validated")
