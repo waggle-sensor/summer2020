@@ -9,12 +9,13 @@ import numpy as np
 from torch.utils.data import DataLoader
 from sklearn.metrics import confusion_matrix
 
-import yolov3.evaluate as evaluate
-import yolov3.models as models
-import retrain.utils as utils
+from yolov3 import evaluate
+from yolov3 import models
+from yolov3 import utils as yoloutils
+from retrain import utils
 
 
-def load_data(output, by_actual=True, add_all=True):
+def load_data(output, by_actual=True, add_all=True, filter=None):
     samples = dict()
     all_data = list()
 
@@ -24,7 +25,12 @@ def load_data(output, by_actual=True, add_all=True):
     with open(output, newline="\n") as csvfile:
         reader = csv.DictReader(csvfile)
 
+        if filter is not None:
+            filter_list = utils.get_lines(filter)
+
         for row in reader:
+            if filter is not None and row["file"] not in filter_list:
+                continue
             actual.append(row["actual"])
             pred.append(row["detected"])
 
@@ -58,6 +64,10 @@ def mean_precision(class_results):
 
 def mean_accuracy(class_results):
     return stats.mean([res.accuracy() for res in class_results])
+
+
+def mean_recall(class_results):
+    return stats.mean([res.recall() for res in class_results])
 
 
 class ClassResults:
@@ -96,6 +106,11 @@ class ClassResults:
         except ZeroDivisionError:
             return 0.0
 
+    def recall(self):
+        return len(self.data["true_pos"]) / (
+            len(self.data["true_pos"]) + len(self.data["false_neg"])
+        )
+
     def accuracy(self):
         return (len(self.data["true_pos"]) + len(self.data["true_neg"])) / self.pop
 
@@ -110,7 +125,7 @@ class ClassResults:
         return all_results
 
     def get_all(self):
-        return list(itertools.chain.from_iterable(self.hits_misses()))
+        return list(itertools.chain.from_iterable(self.data.values()))
 
     def get_confidences(self, thresh=0.0):
         return [result["conf"] for result in self.get_all() if result["conf"] >= thresh]
@@ -147,10 +162,6 @@ class ClassResults:
         out.close()
 
 
-def benchmark(img_folder, prefix, epoch, config):
-    return benchmark_avg(img_folder, prefix, epoch, epoch, 1, config)
-
-
 def get_checkpoint(folder, prefix, epoch):
     ckpts = glob.glob(f"{folder}/{prefix}*_ckpt_{epoch}.pth")
 
@@ -160,13 +171,28 @@ def get_checkpoint(folder, prefix, epoch):
     return ckpts[0]
 
 
+def benchmark(img_folder, prefix, epoch, config):
+    return benchmark_avg(img_folder, prefix, epoch, epoch, 1, config)
+
+
 def benchmark_avg(img_folder, prefix, start, end, total, config):
     loader = DataLoader(
         img_folder, batch_size=1, shuffle=False, num_workers=config["n_cpu"],
     )
 
     results = pd.DataFrame(
-        columns=["file", "confs", "actual", "detected", "conf", "hit"]
+        columns=[
+            "file",
+            "detections",
+            "actual",
+            "detected",
+            "conf",
+            "hit",
+            "cen_x",
+            "cen_y",
+            "w",
+            "h",
+        ]
     )
     results.set_index("file")
 
@@ -177,7 +203,6 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
     )
 
     single = total == 1
-
     if not single:
         print("Benchmarking on epochs", checkpoints_i)
 
@@ -193,38 +218,28 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
                 actual_class = classes[
                     img_folder.get_classes(utils.get_label_path(path))[0]
                 ]
-                results.loc[path] = [path, dict(), actual_class, None, None, None]
+                results.loc[path] = [path, list(), actual_class] + [None] * 7
 
-            detections = evaluate.detect(input_imgs, config["conf_thres"], model)
-
-            confs = results.loc[path]["confs"]
-
-            for detection in detections:
-                if detection is None:
-                    continue
-                (_, _, _, _, _, cls_conf, cls_pred) = detection.numpy()[0]
-
-                if cls_pred not in confs.keys():
-                    confs[cls_pred] = [cls_conf]
-
-                else:
-                    confs[cls_pred].append(cls_conf)
+            results.loc[path]["detections"] += evaluate.detect(
+                input_imgs, config["conf_thres"], model
+            )
 
     for _, row in results.iterrows():
-        best_class = None
-        best_conf = float("-inf")
+        filtered_detections = yoloutils.non_max_suppression(
+            row["detections"], config["conf_thres"], config["nms_thres"]
+        )
+        best_detection = evaluate.get_most_conf(filtered_detections)
 
-        for class_name, confs in row["confs"].items():
-            avg_conf = sum(confs) / len(checkpoints_i)
-
-            if avg_conf > best_conf:
-                best_conf = avg_conf
-                best_class = class_name
-
-        if best_class is not None:
+        if best_detection is not None:
+            # TODO: Adjust this for multiple detections per image
+            (x1, y1, x2, y2, _, best_conf, best_class) = best_detection.numpy()[0]
             row["detected"] = classes[int(best_class)]
             row["conf"] = best_conf
             row["hit"] = row["actual"] == row["detected"]
+            row["w"] = x2 - x1
+            row["h"] = y2 - y1
+            row["cen_x"] = row["w"] / 2 + x1
+            row["cen_y"] = row["h"] / 2 + y1
         else:
             row["detected"] = ""
             row["conf"] = 0.0

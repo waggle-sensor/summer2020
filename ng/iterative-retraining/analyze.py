@@ -143,17 +143,25 @@ def sort_by_epoch(pattern):
     return sorted(files, key=get_epoch)
 
 
-def tabulate_batch_samples(config, prefix):
+def tabulate_batch_samples(config, prefix, silent=False, filter=False):
     """Analyze accuracy/precision relationships and training duration
     for each batched sample using existing testing data."""
 
     benchmarks = sort_by_epoch(f"{config['output']}/{prefix}_bench*.csv")
     checkpoints = sort_by_epoch(f"{config['checkpoints']}/{prefix}*.pth")
 
-    data = pd.DataFrame(columns=["Batch", "Avg. Prec", "Avg. Acc", "Epochs Trained"])
+    data = pd.DataFrame(
+        columns=["Batch", "Prec", "Acc", "Conf", "Recall", "Epochs Trained"]
+    )
 
     for i, benchmark in enumerate(benchmarks):
-        results, _ = bench.load_data(benchmark, by_actual=True, add_all=False)
+        if filter:
+            sampled_imgs = glob.glob(f"{config['output']}/{prefix}{i}_sample*")[0]
+            results, _ = bench.load_data(
+                benchmark, by_actual=True, add_all=False, filter=sampled_imgs
+            )
+        else:
+            results, _ = bench.load_data(benchmark, by_actual=True, add_all=False)
 
         if i == len(benchmarks) - 1:
             train_len = get_epoch(checkpoints[-1]) - get_epoch(benchmark)
@@ -164,10 +172,15 @@ def tabulate_batch_samples(config, prefix):
             i,
             bench.mean_precision(results),
             bench.mean_accuracy(results),
+            bench.mean_conf(results),
+            bench.mean_recall(results),
             train_len,
         ]
 
-    print(data)
+    if not silent:
+        print(data)
+
+    return data
 
 
 if __name__ == "__main__":
@@ -186,13 +199,25 @@ if __name__ == "__main__":
     parser.add_argument("--out", default=None)
     parser.add_argument("--in_list", default=None)
     parser.add_argument("--avg", action="store_true", default=False)
+    parser.add_argument("--tabulate", action="store_true", default=False)
     opt = parser.parse_args()
 
     config = utils.parse_retrain_config(opt.config)
 
-    tabulate_batch_samples(config, opt.prefix)
-    series_benchmark(config, opt.prefix, avg=opt.avg)
-    aggregate_results(config, opt.prefix, avg=opt.avg)
+    if opt.tabulate:
+        prefixes = ["median-below-thresh", "median-thresh", "normal", "iqr"]
+        df = pd.DataFrame()
+        for prefix in prefixes:
+            results = tabulate_batch_samples(config, prefix, silent=True, filter=False)[
+                "Recall"
+            ]
+            df[prefix] = results
+        print(df)
+
+    else:
+        tabulate_batch_samples(config, opt.prefix)
+        series_benchmark(config, opt.prefix, avg=opt.avg)
+        aggregate_results(config, opt.prefix, avg=opt.avg)
 
     # images = utils.get_lines(opt.in_list)
     # img_folder = ImageFolder(images, config["img_size"], prefix=opt.prefix)
