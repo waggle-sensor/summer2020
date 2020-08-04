@@ -556,16 +556,19 @@ Method | Sample Size | Total (Re)Train Set Size | Validation Set Size | Test Set
 ------- | -------- | --------- | --------- | ------- | -------
 (initial) | 4351 | 3048 | 651 | 652 | 48
 median-thresh | 253 | 272 | 33 | 32 | 54, 60, 66, 72, 78, 102, 114
-normal | 154-164 | 176 | 21 | 21 | 54, 60, 66, 72, 78, 84, 90
+median-below-thresh | 254 | 273 | 33 | 32 | 48, 56, 70, 76, 82, 88, 94, 100
+normal | 300 | 325 | 37 | 37 | 54, 60, 70, 76, 82, 98, 112
 iqr | 250 | 269 | 32 | 32 | 54, 60, 74, 82, 88, 94, 108
 
 * Preliminary Notes
   * Due to the 80/10/10 split for retraining and the lack of class balancing (to account for real life situations) when creating batches for sampling, some classes were only represented once or twice in the iteration test/validation sets
   * The iteration rate limit of 500 images and the sampling methods used (using ~50% of the sample batch) makes it unlikely that we will hit our bandwidth limit of 300 images
   * Due to variations in the iterative stratified sampling algorithm, counts for train/validation/test sets may be off by 1-2 images
-  * The normal sampling method had *p*=0.4 for values within one standard deviation of the mean confidence. This should probably be increased (to 0.75) and re-run
+  * The normal sampling method had *p*=0.4 for values within one standard deviation of the mean confidence. This should probably be increased (to 0.75) and re-run (now updated!)
   * The old quartile range (0.25 to 0.5) was replaced with an interquartile range this time for a greater sample size
-  * The normal method was the only one to hit an early stop with the minimum number of epochs (7 batches * 3 strips * 2 epochs/strip = 42)
+  * The median-below-thresh method was the only one to hit an early stop with the minimum number of epochs (7 batches * 3 strips * 2 epochs/strip = 42)
+  * This also occurred in the original run of the normal method, when *p*=0.5
+    * In the re-run, the last iteration was the only one to break this trend
 * Analyzed trends between the precision/accuracy of the sample at the edge in relation to retraining time
   * Note that ground truth is corrected before we retrain images
   * These are the *entire* samples (not just test sets) before we retrain on that batch
@@ -583,17 +586,30 @@ iqr | 250 | 269 | 32 | 32 | 54, 60, 74, 82, 88, 94, 108
 6    6.0   0.983182  0.904097            12.0
 ```
 
-**Normal Sampling**
+**Below Median Threshold**
+
+```
+   Batch  Avg. Prec  Avg. Acc  Epochs Trained
+0    0.0   0.938086  0.855955             8.0
+1    1.0   0.987797  0.906188            14.0
+2    2.0   0.971922  0.879432             6.0
+3    3.0   0.972278  0.924664             6.0
+4    4.0   0.983442  0.925842             6.0
+5    5.0   0.971272  0.852532             6.0
+6    6.0   0.990739  0.883677             6.0
+```
+
+**Normal Sampling (revised for *p*=0.75)**
 
 ```
    Batch  Avg. Prec  Avg. Acc  Epochs Trained
 0    0.0   0.938086  0.855955             6.0
-1    1.0   0.982929  0.905957             6.0
-2    2.0   0.964622  0.890447             6.0
-3    3.0   0.978660  0.898563             6.0
-4    4.0   0.987603  0.883946             6.0
-5    5.0   0.965815  0.866714             6.0
-6    6.0   0.979228  0.888711             6.0
+1    1.0   0.982737  0.902626             6.0
+2    2.0   0.975404  0.892362            10.0
+3    3.0   0.979842  0.917734             6.0
+4    4.0   0.986752  0.895814             6.0
+5    5.0   0.960903  0.881411            16.0
+6    6.0   0.984296  0.900177            14.0
 ```
 
 **IQR Threshold**
@@ -624,3 +640,137 @@ iqr | 250 | 269 | 32 | 32 | 54, 60, 74, 82, 88, 94, 108
   * Testing set from the sample slightly increases
   * Unsure if the additional 25% of data retained is useful
 * Running a model with samples below the median threshold overnight
+
+**Tuesday, August 4**
+
+* Attended AI/ML scrum
+* Analyzed results for the revised normal sampling distribution and below median threshold sampling (updated above)
+* Same general trends show with some individual iterations improving, though others have a downward trend
+  * Might be confirmation bias, re-running analyses with the average confidence method might help smooth these trends and eliminate some noise
+* Realized that the individual images in the batch splits are the main control variable between the different sampling methods
+  * Some sampling methods are pseudo-random (e.g. Normal distribution), as is creating test splits and enforcing the bandwidth limit
+  * Consequently, there's not good baseline, especially with a small sample size on iteration test sets
+    * Some might be filled with "harder" images intrinsically
+    * We also self-select for harder/easier images by the sampling method themselves
+  * Batch splits should be fair, though aren't completely balanced for class (only issue)
+* Here are some results that might establish a trend (measured with confidence based on the average of 10 epochs):
+
+**Avg. Precision by Batch Iteration**
+
+```
+Batch  median-below-thresh  median-thresh    normal       iqr
+0                 0.938086       0.938086  0.938086  0.938086
+1                 0.987797       0.973196  0.982737  0.986422
+2                 0.971922       0.964517  0.975404  0.965950
+3                 0.972278       0.982543  0.979842  0.966728
+4                 0.983442       0.981681  0.986752  0.980250
+5                 0.971272       0.956378  0.960903  0.970522
+6                 0.990739       0.983182  0.984296  0.982247
+```
+
+**Avg. Accuracy by Batch**
+
+```
+   median-below-thresh  median-thresh    normal       iqr
+0             0.855955       0.855955  0.855955  0.855955
+1             0.906188       0.894340  0.902626  0.898950
+2             0.879432       0.874532  0.892362  0.893017
+3             0.924664       0.911128  0.917734  0.910968
+4             0.925842       0.886946  0.895814  0.912477
+5             0.852532       0.856634  0.881411  0.879621
+6             0.883677       0.904097  0.900177  0.897518
+```
+
+(Everything generally increases, and less significant gains here may be due to a good number of false negatives still)
+
+**Avg. Recall**
+
+```
+0             0.900911       0.900911  0.900911  0.900911
+1             0.905850       0.907530  0.909032  0.902838
+2             0.889368       0.888573  0.900356  0.908902
+3             0.943451       0.914940  0.925233  0.929093
+4             0.931831       0.890656  0.896577  0.920041
+5             0.858231       0.874567  0.899269  0.888709
+6             0.878744       0.904750  0.901845  0.902121
+```
+
+**Mean Average Confidence (of Batch)**
+
+```
+   median-below-thresh  median-thresh    normal       iqr
+0             0.770385       0.770385  0.770385  0.770385
+1             0.745363       0.768198  0.766087  0.766286
+2             0.743698       0.750652  0.755300  0.754191
+3             0.763418       0.753936  0.759225  0.769329
+4             0.750285       0.756568  0.741312  0.759916
+5             0.731022       0.736236  0.735920  0.719376
+6             0.736928       0.747115  0.736947  0.754437
+```
+
+(There's a general downward trend here, which could suggest the model being more generalized, but it's hard to draw real conclusions)
+
+* Although this isn't controlled and isn't a "result," it might be interesting to analyze the original precision/accuracy of the images sampled that are used for retraining/testing. This might influence our results later on:
+
+**Avg. Precision of Sample**
+
+```
+   median-below-thresh  median-thresh    normal       iqr
+0             0.870883       0.969004  0.928215  0.940445
+1             0.967234       1.000000  0.983816  0.995328
+2             0.941667       0.986251  0.974888  0.976197
+3             0.942708       1.000000  0.974288  0.981788
+4             0.960960       1.000000  0.982324  0.974700
+5             0.954915       0.979197  0.963586  0.963333
+6             0.973485       0.997024  0.993584  0.975148
+```
+
+**Avg. Accuracy of Sample**
+
+```
+   median-below-thresh  median-thresh    normal       iqr
+0             0.715664       0.918227  0.887453  0.940445
+1             0.816597       1.000000  0.943243  0.995328
+2             0.771624       0.986251  0.918670  0.976197
+3             0.853971       1.000000  0.934677  0.974246
+4             0.844122       1.000000  0.932486  0.965441
+5             0.725523       0.979197  0.914424  0.948592
+6             0.771347       0.997024  0.937082  0.962328
+```
+
+This seems to confirm the large number of false negatives, as does the decreasing recall
+
+**Avg. Recall**
+
+```
+   median-below-thresh  median-thresh    normal       iqr
+0             0.773832       0.946002  0.948857  1.000000
+1             0.794570       1.000000  0.955263  1.000000
+2             0.754249       1.000000  0.937024  1.000000
+3             0.873358       1.000000  0.953326  0.992424
+4             0.837966       1.000000  0.943937  0.990741
+5             0.700562       1.000000  0.944194  0.982077
+6             0.727435       1.000000  0.940697  0.986111
+```
+
+**Mean Avg. Confidence (of Sample)**
+
+```
+   median-below-thresh  median-thresh    normal       iqr
+0             0.644174       0.824698  0.800676  0.825368
+1             0.609246       0.890358  0.799843  0.825076
+2             0.602483       0.892017  0.806026  0.815630
+3             0.639064       0.888963  0.789031  0.829778
+4             0.611176       0.900145  0.781610  0.812777
+5             0.591291       0.881563  0.781250  0.766124
+6             0.588583       0.893725  0.785986  0.824303
+```
+
+* Power went out; no longer analyzing results as they are stored on Lambda
+* Rewrote confidence averaging to perform non-max suppression instead
+  * Not a true average now, but should generalize better for other models
+  * Labels now based on model output bounding boxes as well, not hard coded to be the entire image
+  * **To do**: actually test this thing once I have the (processing) power to do so
+  * **To do**: make a way to have multiple labels per image, perhaps removing reliance on spreadsheet
+  * Need to account for video inputs too
+* Starting to write article on my project for the Sage website
