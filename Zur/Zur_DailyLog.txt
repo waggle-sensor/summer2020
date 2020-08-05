@@ -262,3 +262,10 @@ Tuesday 8/4
 	(runs slow but not terrible, didn't fix violation misidentification problems)
 4. Continue debugging, modeling code closer to https://blog.usejournal.com/social-distancing-ai-using-python-deep-learning-c26b20c9aa4c
 5. Started outlining final presentation slide deck
+
+Wednesday 8/5
+1. NAISE Final Presentation Powerpoint
+2. Started outlining presentation script for Friday's Dry Run
+3. Finished debugging code
+4. NAISE Seminar
+5. Code clean up, comments, personalizing

@@ -1,12 +1,8 @@
 # import packages
 import cv2
 import numpy as np
-from scipy.spatial import distance as dist
 import dlib
 import imutils
-from imutils.video import VideoStream
-from imutils.video import FPS
-from scipy.spatial.distance import pdist, squareform
 from OZ_NMS import non_max_suppression
 
 
@@ -75,7 +71,6 @@ def yolo_detection(frame, yolo_net, layerNames, confid, threshold):
 # function to transform and calculate bottom points of each bounding boxer
 # input: list of boxes, transformation matrix
 # output: list of (x, y) coordinates
-
 def transform_box_points(boxes, matrix):
     bottom_points = []
 
@@ -98,24 +93,16 @@ def violation_detection(boxes, bottom_points, safe_dist):
     distance_pairs = []
     box_pairs = []
 
-    # loop through each pair of bottom points
+    # loop through all combinations of pairs of points
     for i in range(len(bottom_points)):
         for j in range(len(bottom_points)):
             if i < j:
-                # calculate distance
+                # calculate distance between the two points
                 distance = np.sqrt((bottom_points[j][0] - bottom_points[i][0]) ** 2 +
                                    (bottom_points[j][1] - bottom_points[i][1]) ** 2)
 
-                p1 = bottom_points[i]
-                p2 = bottom_points[j]
-                h = abs(p2[1] - p1[1])
-                w = abs(p2[0] - p1[0])
-                dis_w = float((w / safe_dist) * 180)
-                dis_h = float((h / safe_dist) * 180)
-                distance = int(np.sqrt((dis_h ** 2) + (dis_w ** 2)))
-
                 # compare to min safe distance, tag with appropriate safe boolean
-                if distance < 180:
+                if distance < safe_dist:
                     safe = False
                     distance_pairs.append([bottom_points[i], bottom_points[j], safe])
                     box_pairs.append([boxes[i], boxes[j], safe])
@@ -130,54 +117,49 @@ def violation_detection(boxes, bottom_points, safe_dist):
 # input: list of distance pairs tagged with safe boolean
 # output: number of unsafe and safe points
 def get_violation_count(distance_pairs):
-    red = []
-    green = []
+    not_safe = []
+    safe = []
 
     # if not safe, add points to red list
     for i in range(len(distance_pairs)):
         if not distance_pairs[i][2]:
-            if (distance_pairs[i][0] not in red) and (distance_pairs[i][0] not in green):
-                red.append(distance_pairs[i][0])
-            if (distance_pairs[i][1] not in red) and (distance_pairs[i][1] not in green):
-                red.append(distance_pairs[i][1])
+            if (distance_pairs[i][0] not in not_safe) and (distance_pairs[i][0] not in safe):
+                not_safe.append(distance_pairs[i][0])
+            if (distance_pairs[i][1] not in not_safe) and (distance_pairs[i][1] not in safe):
+                not_safe.append(distance_pairs[i][1])
 
     # if safe, add points to green list
     for i in range(len(distance_pairs)):
         if distance_pairs[i][2]:
-            if (distance_pairs[i][0] not in red) and (distance_pairs[i][0] not in green):
-                green.append(distance_pairs[i][0])
-            if (distance_pairs[i][1] not in red) and (distance_pairs[i][1] not in green):
-                green.append(distance_pairs[i][1])
+            if (distance_pairs[i][0] not in not_safe) and (distance_pairs[i][0] not in safe):
+                safe.append(distance_pairs[i][0])
+            if (distance_pairs[i][1] not in not_safe) and (distance_pairs[i][1] not in safe):
+                safe.append(distance_pairs[i][1])
 
-    return len(red), len(green)
+    return len(not_safe), len(safe)
 
 
 # function that draws red and green rectangles around each person depending on safe boolean
 # input: current frame, list of bounding boxes, list of box pairs tagged with safe boolean
-def SDD_output(frame, box_list, box_pairs):
+# output: current frame with rectangles
+def street_output(frame, box_list, box_pairs):
+    # default everyone with a green rectangle
     for i in range(len(box_list)):
         x, y, w, h = box_list[i][:]
         frame = cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-    for i in range(len(box_list)):
-
-        per1 = box_list[i][0]
-        per2 = box_list[i][1]
-        safe = box_list[i][2]
-
-        if not safe:
-            x, y, w, h = per1[:]
-            frame = cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-
-            x1, y1, w1, h1 = per2[:]
+    for i in range(len(box_pairs)):
+        # if a pair of people aren't safe, draw red rectangles
+        if not box_pairs[i][2]:
+            x1, y1, w1, h1 = box_pairs[i][0]
             frame = cv2.rectangle(frame, (x1, y1), (x1 + w1, y1 + h1), (0, 0, 255), 2)
-
-            # frame = cv2.line(frame, (int(x + w / 2), int(y + h / 2)), (int(x1 + w1 / 2), int(y1 + h1 / 2)), red, 2)
+            x2, y2, w2, h2 = box_pairs[i][1]
+            frame = cv2.rectangle(frame, (x2, y2), (x2 + w2, y2 + h2), (0, 0, 255), 2)
 
     return frame
 
 
-def BEV_output(frame, distance_pairs, bottom_points, scale_w, scale_h,):
+def bird_output(frame, distance_pairs, bottom_points, scale_w, scale_h,):
     (H, W) = frame.shape[:2]
 
     blank_image = np.zeros((int(H * scale_h), int(W * scale_w), 3), np.uint8)
@@ -211,60 +193,3 @@ def BEV_output(frame, distance_pairs, bottom_points, scale_w, scale_h,):
         blank_image = cv2.circle(blank_image, (int(i[0] * scale_w), int(i[1] * scale_h)), 5, (0, 0, 255), 10)
 
     return blank_image
-
-
-
-
-
-def transform_plot_points(frame, boundingboxes, matrix, scale_w, scale_h):
-    (H, W) = frame.shape[:2]
-
-    bird_image = np.zeros((int(H * scale_h), int(W * scale_w), 3), np.uint8)
-    bird_image[:] = (0, 0, 0)
-
-    warped_pts = []
-    for box in boundingboxes:
-        (x1, y1, x2, y2) = box
-
-        x = int(x1 + ((x2 - x1) / 2))
-        y = int(y2)
-
-        pts = np.array([[[x, y]]], dtype="float32")
-        warped_pt = cv2.perspectiveTransform(pts, matrix)[0][0]
-        warped_pt_scaled = [int(warped_pt[0] * scale_w), int(warped_pt[1] * scale_h)]
-
-        warped_pts.append(warped_pt_scaled)
-        bird_image = cv2.circle(bird_image, (warped_pt_scaled[0], warped_pt_scaled[1]), 10, (255, 255, 255), -1,)
-
-    return warped_pts, bird_image
-
-
-def draw_pedestrian_boxes(frame, boundingboxes):
-    for box in boundingboxes:
-        (x1, y1, x2, y2) = box
-        frame = cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
-    return frame
-
-
-def plot_lines_between_nodes(warped_points, bird_image, safe_dist):
-    p = np.array(warped_points)
-    dist_condensed = pdist(p)
-    dist = squareform(dist_condensed)
-
-    dd = np.where(dist < safe_dist)
-    six_feet_violations = len(np.where(dist_condensed < safe_dist)[0])
-    total_pairs = len(dist_condensed)
-    danger_p = []
-    for i in range(int(np.ceil(len(dd[0]) / 2))):
-        if dd[0][i] != dd[1][i]:
-            point1 = dd[0][i]
-            point2 = dd[1][i]
-
-            danger_p.append([point1, point2])
-            cv2.line(bird_image, (p[point1][0], p[point1][1]),  (p[point2][0], p[point2][1]), (0, 0, 255), 4)
-
-    # Display Birdeye view
-    cv2.imshow("Bird Eye View", bird_image)
-    cv2.waitKey(1)
-
-    return six_feet_violations, total_pairs

@@ -43,19 +43,20 @@ def get_mouse_points(event, x, y, flags, param):
 
 # **SOCIAL DISTANCE DETECTOR FUNCTION** ###############################################################################
 def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid, threshold):
+    # start video capture
     vs = cv2.VideoCapture(vid_input)
-    global image
 
     # initializing:
-    # writer = None  # video output writer
     (H, W) = (None, None)  # frame dimensions
-    frameCount = 0  # keep track of number of frames so far
+    frameCount = 0  # keep track of number of frames analyzed so far
     points = []  # list of mouse input coordinates
 
-    # Get video height, width and fps
+    # Get video height, width, and fps
     height = int(vs.get(cv2.CAP_PROP_FRAME_HEIGHT))
     width = int(vs.get(cv2.CAP_PROP_FRAME_WIDTH))
     fps = int(vs.get(cv2.CAP_PROP_FPS))
+
+    # scale video dimensions for bird's eye view output
     scale_w, scale_h = float(400 / width), float(600 / height)
 
     # output video writer
@@ -82,6 +83,7 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
 
         # pulling first frame of the video and waiting for mouse click inputs
         if frameCount == 0:
+            global image
             while True:
                 image = frame
                 cv2.imshow("image", image)
@@ -151,35 +153,46 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
                 boundingboxes.append(boxes[i])
 
         # **COORDINATE MAPPING AND DISTANCE CALCULATION** #############################################################
+
+        # no need to do any analysis if no people detected
         if len(boundingboxes) == 0:
             frameCount = frameCount + 1
             continue
 
+        # transform bottom center point of each bounding box
         bottom_points = transform_box_points(boundingboxes, matrix)
 
+        # calculate distances between each pair of points, compare to minimum safe distance
         distance_pairs, box_pairs = violation_detection(boundingboxes, bottom_points, safe_dist)
 
-        risk_count = get_violation_count(distance_pairs)
+        # count number of violations detected
+        violation_count = get_violation_count(distance_pairs)
 
         # **OUTPUT DISPLAY AND CLEAN UP** #############################################################################
 
+        # create blank window for bird's eye view, plot transformed points as green and red circles
         copy = np.copy(frame)
-        bird_view = BEV_output(frame, distance_pairs, bottom_points, scale_w, scale_h)
-        street_view = SDD_output(copy, boundingboxes, box_pairs)
+        bird_view = bird_output(frame, distance_pairs, bottom_points, scale_w, scale_h)
+
+        # draw red or green rectangles on each detected person in frame
+        street_view = street_output(copy, boundingboxes, box_pairs)
 
         if frameCount != 0:
+            # write frame to movies
             street_movie.write(street_view)
             bird_movie.write(bird_view)
-
+            # show frame
             cv2.imshow('Street View', street_view)
             cv2.imshow('Bird Eye View', bird_view)
-            # cv2.imwrite(vid_output + "frame%d.jpg" % frameCount, street_view)
-            # cv2.imwrite(vid_output + "bird_eye_view/frame%d.jpg" % frameCount, bird_view)
 
+        # update frame count
         frameCount = frameCount + 1
+
+        # press 'q' to end program before video ends
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
+    # release video capture and destroy all windows
     vs.release()
     cv2.destroyAllWindows()
 
