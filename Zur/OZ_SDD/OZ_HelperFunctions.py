@@ -1,11 +1,8 @@
 # import packages
 import cv2
 import numpy as np
-from scipy.spatial import distance as dist
 import dlib
 import imutils
-from imutils.video import VideoStream
-from imutils.video import FPS
 from OZ_NMS import non_max_suppression
 
 
@@ -74,18 +71,16 @@ def yolo_detection(frame, yolo_net, layerNames, confid, threshold):
 # function to transform and calculate bottom points of each bounding boxer
 # input: list of boxes, transformation matrix
 # output: list of (x, y) coordinates
-
 def transform_box_points(boxes, matrix):
     bottom_points = []
+
     for box in boxes:
-        x1, y1, x2, y2 = box
+        # calculate coordinate of bottom center point of each box
+        bottom_center = np.array([[[int(box[0] + (box[2] * 0.5)), int(box[1] + box[3])]]], dtype="float32")
 
-        # calculate coordinate of center of bottom of box
-        pnts = np.array([[[int(x1 + ((x2 - x1) / 2)), int(y2)]]], dtype="float32")
-
-        # transform and append transformed coordinate to list
-        bd_pnt = cv2.perspectiveTransform(pnts, matrix)[0][0]
-        pnt = [int(bd_pnt[0]), int(bd_pnt[1])]
+        # transform point coordinates using transformation matrix, append to list
+        warped_pt = cv2.perspectiveTransform(bottom_center, matrix)[0][0]
+        pnt = [int(warped_pt[0]), int(warped_pt[1])]
         bottom_points.append(pnt)
 
     return bottom_points
@@ -98,13 +93,14 @@ def violation_detection(boxes, bottom_points, safe_dist):
     distance_pairs = []
     box_pairs = []
 
-    # loop through each pair of bottom points
+    # loop through all combinations of pairs of points
     for i in range(len(bottom_points)):
         for j in range(len(bottom_points)):
             if i < j:
-                # calculate distance
-                distance = np.sqrt((bottom_points[i][1] - bottom_points[i][0]) ** 2 +
-                                   (bottom_points[j][1] - bottom_points[j][0]) ** 2)
+                # calculate distance between the two points
+                distance = np.sqrt((bottom_points[j][0] - bottom_points[i][0]) ** 2 +
+                                   (bottom_points[j][1] - bottom_points[i][1]) ** 2)
+
                 # compare to min safe distance, tag with appropriate safe boolean
                 if distance < safe_dist:
                     safe = False
@@ -121,57 +117,79 @@ def violation_detection(boxes, bottom_points, safe_dist):
 # input: list of distance pairs tagged with safe boolean
 # output: number of unsafe and safe points
 def get_violation_count(distance_pairs):
-    red = []
-    green = []
+    not_safe = []
+    safe = []
 
     # if not safe, add points to red list
     for i in range(len(distance_pairs)):
         if not distance_pairs[i][2]:
-            if (distance_pairs[i][0] not in red) and (distance_pairs[i][0] not in green):
-                red.append(distance_pairs[i][0])
-            if (distance_pairs[i][1] not in red) and (distance_pairs[i][1] not in green):
-                red.append(distance_pairs[i][1])
+            if (distance_pairs[i][0] not in not_safe) and (distance_pairs[i][0] not in safe):
+                not_safe.append(distance_pairs[i][0])
+            if (distance_pairs[i][1] not in not_safe) and (distance_pairs[i][1] not in safe):
+                not_safe.append(distance_pairs[i][1])
 
     # if safe, add points to green list
     for i in range(len(distance_pairs)):
         if distance_pairs[i][2]:
-            if (distance_pairs[i][0] not in red) and (distance_pairs[i][0] not in green):
-                green.append(distance_pairs[i][0])
-            if (distance_pairs[i][1] not in red) and (distance_pairs[i][1] not in green):
-                green.append(distance_pairs[i][1])
+            if (distance_pairs[i][0] not in not_safe) and (distance_pairs[i][0] not in safe):
+                safe.append(distance_pairs[i][0])
+            if (distance_pairs[i][1] not in not_safe) and (distance_pairs[i][1] not in safe):
+                safe.append(distance_pairs[i][1])
 
-    return len(red), len(green)
+    return len(not_safe), len(safe)
 
 
 # function that draws red and green rectangles around each person depending on safe boolean
 # input: current frame, list of bounding boxes, list of box pairs tagged with safe boolean
-def SDD_output(frame, box_list, box_pairs):
-    black = (0, 0, 0)
-    red = (0, 0, 255)
-    green = (0, 255, 0)
-
-    # default everyone with a black square
-    for bbox in box_list:
-        x1, y1, x2, y2 = bbox
-        cv2.rectangle(frame, (x1, y1), (x2, y2), black, 2)
+# output: current frame with rectangles
+def street_output(frame, box_list, box_pairs):
+    # default everyone with a green rectangle
+    for i in range(len(box_list)):
+        x, y, w, h = box_list[i][:]
+        frame = cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
     for i in range(len(box_pairs)):
-        person1 = box_pairs[i][0]
-        person2 = box_pairs[i][1]
-        safe = box_pairs[i][2]
-
-        if not safe:
-            x1, y1, x2, y2 = person1
-            cv2.rectangle(frame, (x1, y1), (x2, y2), red, 2)
-
-            x1, y1, x2, y2 = person2
-            cv2.rectangle(frame, (x1, y1), (x2, y2), red, 2)
-
-        else:
-            x1, y1, x2, y2 = person1
-            cv2.rectangle(frame, (x1, y1), (x2, y2), green, 2)
-
-            x1, y1, x2, y2 = person2
-            cv2.rectangle(frame, (x1, y1), (x2, y2), green, 2)
+        # if a pair of people aren't safe, draw red rectangles
+        if not box_pairs[i][2]:
+            x1, y1, w1, h1 = box_pairs[i][0]
+            frame = cv2.rectangle(frame, (x1, y1), (x1 + w1, y1 + h1), (0, 0, 255), 2)
+            x2, y2, w2, h2 = box_pairs[i][1]
+            frame = cv2.rectangle(frame, (x2, y2), (x2 + w2, y2 + h2), (0, 0, 255), 2)
 
     return frame
+
+
+def bird_output(frame, distance_pairs, bottom_points, scale_w, scale_h,):
+    (H, W) = frame.shape[:2]
+
+    blank_image = np.zeros((int(H * scale_h), int(W * scale_w), 3), np.uint8)
+    blank_image[:] = (255, 255, 255)
+
+    red = []
+    green = []
+
+    for i in range(len(distance_pairs)):
+        if not distance_pairs[i][2]:
+            if distance_pairs[i][0] not in red and distance_pairs[i][0] not in green:
+                red.append(distance_pairs[i][0])
+            if distance_pairs[i][1] not in red and distance_pairs[i][1] not in green:
+                red.append(distance_pairs[i][1])
+
+            blank_image = cv2.line(blank_image,
+                                   (int(distance_pairs[i][0][0] * scale_w), int(distance_pairs[i][0][1] * scale_h)),
+                                   (int(distance_pairs[i][1][0] * scale_w), int(distance_pairs[i][1][1] * scale_h)),
+                                   (0, 0, 255), 2)
+
+    for i in range(len(distance_pairs)):
+        if distance_pairs[i][2]:
+            if distance_pairs[i][0] not in red and distance_pairs[i][0] not in green:
+                green.append(distance_pairs[i][0])
+            if distance_pairs[i][1] not in red and distance_pairs[i][1] not in green:
+                green.append(distance_pairs[i][1])
+
+    for i in bottom_points:
+        blank_image = cv2.circle(blank_image, (int(i[0] * scale_w), int(i[1] * scale_h)), 5, (0, 255, 0), 10)
+    for i in red:
+        blank_image = cv2.circle(blank_image, (int(i[0] * scale_w), int(i[1] * scale_h)), 5, (0, 0, 255), 10)
+
+    return blank_image
