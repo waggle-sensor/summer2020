@@ -220,9 +220,11 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
                 ]
                 results.loc[path] = [path, list(), actual_class] + [None] * 7
 
-            results.loc[path]["detections"] += evaluate.detect(
-                input_imgs, config["conf_thres"], model
-            )
+            detections = evaluate.detect(input_imgs, config["conf_thres"], model)
+            # TODO fix this
+            if None not in detections:
+                for d in detections:
+                    results.loc[path]["detections"].append(d.numpy())
 
     for _, row in results.iterrows():
         filtered_detections = yoloutils.non_max_suppression(

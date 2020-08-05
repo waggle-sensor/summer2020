@@ -104,13 +104,15 @@ if __name__ == "__main__":
         batched_samples = batched_samples[:-1]
 
     sample_methods = {
-        "median-thresh": sample.median_thresh_sample,
-        # "iqr": sample.iqr_sample,
-        # "normal": sample.normal_sample,
-        # "median-below-thresh": sample.median_below_thresh_sample
+        #"median-thresh": (sample.median_thresh_sample, {"thresh": 0.0}),
+        "mid-thresh": (sample.in_range_sample, {"min_val": 0.5, "max_val": 1.0}),
+        "mid-below-thresh": (sample.in_range_sample, {"min_val": 0.0, "max_val": 0.5}),
+        # "iqr": (sample.iqr_sample, {"thresh": 0.0}),
+        # "normal": (sample.normal_sample, {"thresh": 0.0}),
+        # "median-below-thresh": (sample.median_below_thresh_sample, {"thresh": 0.0}),
     }
 
-    for name, func in sample_methods.items():
+    for name, (func, kwargs) in sample_methods.items():
         last_epoch = init_end_epoch
         for i, sample_folder in enumerate(batched_samples):
 
@@ -140,7 +142,7 @@ if __name__ == "__main__":
                 # Create samples from the benchmark
                 results, _ = bench.load_data(bench_file, by_actual=False)
                 retrain_list = sample.create_sample(
-                    results, name, config["bandwidth"], func, thresh=0.0
+                    results, name, config["bandwidth"], func, **kwargs
                 )
 
                 # At this point, images are "received" in the cloud

@@ -774,3 +774,9 @@ This seems to confirm the large number of false negatives, as does the decreasin
   * **To do**: make a way to have multiple labels per image, perhaps removing reliance on spreadsheet
   * Need to account for video inputs too
 * Starting to write article on my project for the Sage website
+
+**Wednesday, August 5**
+
+* Wrote very rough draft of the article when there was a power outage
+* After power restored, tried to debug code for NMS averaging, unsuccessful
+* Deployed simple sampling method with strict cutoffs above/below 0.5 confidence

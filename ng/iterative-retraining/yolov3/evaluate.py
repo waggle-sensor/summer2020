@@ -16,7 +16,7 @@ from terminaltables import AsciiTable
 import yolov3.utils as utils
 
 
-def detect(input_imgs, conf_thres, model, nms_thres=0.5):
+def detect(input_imgs, conf_thres, model, nms_thres=0.5, nms=True):
     # Configure input
     Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
     input_imgs = Variable(input_imgs.type(Tensor))
@@ -24,7 +24,6 @@ def detect(input_imgs, conf_thres, model, nms_thres=0.5):
     with torch.no_grad():
         detections = model(input_imgs)
         detections = utils.non_max_suppression(detections, conf_thres, nms_thres)
-
     return detections
 
 

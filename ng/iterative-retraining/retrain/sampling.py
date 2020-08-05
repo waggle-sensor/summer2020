@@ -110,6 +110,16 @@ def prob_sample(result, desired, prob_func, *func_args, **func_kwargs):
     return chosen
 
 
+def in_range_sample(result, min_val, max_val):
+    return prob_sample(
+        result,
+        in_range(result, min_val, max_val),
+        const,
+        thresh=min_val,
+        max_val=max_val,
+    )
+
+
 def median_thresh_sample(result, thresh=0.5):
     confidences = result.get_confidences(thresh)
 
