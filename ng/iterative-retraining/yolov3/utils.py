@@ -137,7 +137,73 @@ def get_batch_statistics(outputs, targets, iou_threshold):
     return batch_metrics
 
 
-def non_max_suppression(prediction, conf_thres=0.5, nms_thres=0.4):
+def group_average_bb(detections, num_ckpts, thres=0.1):
+    # Identify overlapping regions and make list of BBs
+    regions = list()
+    for detection in detections.squeeze(0):
+        merged = False
+        for i, region in enumerate(regions):
+            if any(bbox_iou(detection.unsqueeze(0)[:, :4], region[:, :4])) > thres:
+                regions[i] = sort_conf(torch.cat((region, detection.unsqueeze(0)), 0))
+                merged = True
+                break
+        if not merged:
+            regions.append(detection.unsqueeze(0))
+
+    for i, region in enumerate(regions):
+        # For each region, sum the confidences per class
+        num_classes = int(region[:, -1].max()) + 1
+        class_conf = [0.0 for _ in range(num_classes)]
+        count = [0 for _ in range(num_classes)]
+
+        for bbox in region.squeeze(1):
+            class_conf[int(bbox[-1])] += bbox[-2]
+            count[int(bbox[-1])] += 1
+
+        # Retain the class with the greatest confidence
+        best_class = np.argmax(class_conf)
+
+        # Retain the dimensions of the BB of that class with the greatest confidence
+        for bbox in sort_conf(region, asc=False).squeeze(1):
+            if int(bbox[-1]) == best_class:
+                best_bbox = bbox
+
+        # For each final BB (one per region), divide confidence by number of checkpoints
+        best_bbox[-2] = class_conf[best_class] / max(count[best_class], num_ckpts)
+        if best_bbox[-2] > 1.0:
+            print(region)
+
+        regions[i] = best_bbox.unsqueeze(0)
+
+    return torch.cat(regions, 0)
+
+
+def sort_conf(detections, asc=True):
+    # Object confidence times class confidence
+    score = detections[:, 4] * detections[:, 5:].max(1)[0]
+    return detections[(-score).argsort()] if asc else detections[(score).argsort()]
+
+
+def nms_merge(detections, nms_thres):
+
+    keep_boxes = []
+    while detections.size(0):
+        large_overlap = (
+            bbox_iou(detections[0, :4].unsqueeze(0), detections[:, :4]) > nms_thres
+        )
+        label_match = detections[0, -1] == detections[:, -1]
+        # Indices of boxes with lower confidence scores, large IOUs and matching labels
+        invalid = large_overlap & label_match
+        weights = detections[invalid, 4:5]
+        # Merge overlapping bboxes by order of confidence
+        detections[0, :4] = (weights * detections[invalid, :4]).sum(0) / weights.sum()
+        keep_boxes += [detections[0]]
+        detections = detections[~invalid]
+    if keep_boxes:
+        return torch.stack(keep_boxes)
+
+
+def non_max_suppression(prediction, conf_thres=0.5, nms_thres=0.4, convert=True):
     """
     Removes detections with lower object confidence score than 'conf_thres' and performs
     Non-Maximum Suppression to further filter detections.
@@ -148,38 +214,21 @@ def non_max_suppression(prediction, conf_thres=0.5, nms_thres=0.4):
     # From (center x, center y, width, height) to (x1, y1, x2, y2)
     prediction[..., :4] = xywh2xyxy(prediction[..., :4])
     output = [None for _ in range(len(prediction))]
+
     for image_i, image_pred in enumerate(prediction):
         # Filter out confidence scores below threshold
         image_pred = image_pred[image_pred[:, 4] >= conf_thres]
         # If none are remaining => process next image
         if not image_pred.size(0):
             continue
-        # Object confidence times class confidence
-        score = image_pred[:, 4] * image_pred[:, 5:].max(1)[0]
-        # Sort by it
-        image_pred = image_pred[(-score).argsort()]
+
+        image_pred = sort_conf(image_pred)
         class_confs, class_preds = image_pred[:, 5:].max(1, keepdim=True)
         detections = torch.cat(
             (image_pred[:, :5], class_confs.float(), class_preds.float()), 1
         )
-        # Perform non-maximum suppression
-        keep_boxes = []
-        while detections.size(0):
-            large_overlap = (
-                bbox_iou(detections[0, :4].unsqueeze(0), detections[:, :4]) > nms_thres
-            )
-            label_match = detections[0, -1] == detections[:, -1]
-            # Indices of boxes with lower confidence scores, large IOUs and matching labels
-            invalid = large_overlap & label_match
-            weights = detections[invalid, 4:5]
-            # Merge overlapping bboxes by order of confidence
-            detections[0, :4] = (weights * detections[invalid, :4]).sum(
-                0
-            ) / weights.sum()
-            keep_boxes += [detections[0]]
-            detections = detections[~invalid]
-        if keep_boxes:
-            output[image_i] = torch.stack(keep_boxes)
+
+        output[image_i] = nms_merge(detections, nms_thres)
 
     return output
 

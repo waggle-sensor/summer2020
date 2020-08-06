@@ -4,6 +4,7 @@ import itertools
 import glob
 from tqdm import tqdm
 
+import torch
 import pandas as pd
 import numpy as np
 from torch.utils.data import DataLoader
@@ -180,20 +181,20 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
         img_folder, batch_size=1, shuffle=False, num_workers=config["n_cpu"],
     )
 
-    results = pd.DataFrame(
-        columns=[
-            "file",
-            "detections",
-            "actual",
-            "detected",
-            "conf",
-            "hit",
-            "cen_x",
-            "cen_y",
-            "w",
-            "h",
-        ]
-    )
+    metrics = [
+        "file",
+        "detections",
+        "actual",
+        "detected",
+        "conf",
+        "hit",
+        "cen_x",
+        "cen_y",
+        "w",
+        "h",
+    ]
+
+    results = pd.DataFrame(columns=metrics)
     results.set_index("file")
 
     classes = utils.load_classes(config["class_list"])
@@ -218,30 +219,43 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
                 actual_class = classes[
                     img_folder.get_classes(utils.get_label_path(path))[0]
                 ]
-                results.loc[path] = [path, list(), actual_class] + [None] * 7
+                results.loc[path] = [path, None, actual_class] + [None] * 7
 
-            detections = evaluate.detect(input_imgs, config["conf_thres"], model)
-            # TODO fix this
-            if None not in detections:
-                for d in detections:
-                    results.loc[path]["detections"].append(d.numpy())
+            detections = evaluate.detect(
+                input_imgs, config["conf_thres"], model, config["nms_thres"]
+            )
+            detections = [d for d in detections if d is not None]
+
+            if len(detections) != 0:
+                detections = torch.stack(detections)
+                old_detections = results.loc[path]["detections"]
+                if old_detections is None:
+                    results.loc[path]["detections"] = detections
+                else:
+                    results.loc[path]["detections"] = torch.cat(
+                        (old_detections, detections), 1
+                    )
 
     for _, row in results.iterrows():
-        filtered_detections = yoloutils.non_max_suppression(
-            row["detections"], config["conf_thres"], config["nms_thres"]
-        )
-        best_detection = evaluate.get_most_conf(filtered_detections)
+        if row["detections"] is not None:
+            region_detections = yoloutils.group_average_bb(
+                row["detections"], total, config["nms_thres"]
+            )
 
-        if best_detection is not None:
+            # evaluate.save_image(region_detections, row["file"], config, classes)
+
+            best_detection = evaluate.get_most_conf(region_detections)
+
             # TODO: Adjust this for multiple detections per image
-            (x1, y1, x2, y2, _, best_conf, best_class) = best_detection.numpy()[0]
+            (x1, y1, x2, y2, _, best_conf, best_class) = best_detection.numpy()
             row["detected"] = classes[int(best_class)]
             row["conf"] = best_conf
             row["hit"] = row["actual"] == row["detected"]
-            row["w"] = x2 - x1
-            row["h"] = y2 - y1
-            row["cen_x"] = row["w"] / 2 + x1
-            row["cen_y"] = row["h"] / 2 + y1
+            (cen_x, cen_y, w, h) = utils.xyxy_to_darknet(path, x1, y1, x2, y2)
+            row["w"] = w
+            row["h"] = h
+            row["cen_x"] = cen_x
+            row["cen_y"] = cen_y
         else:
             row["detected"] = ""
             row["conf"] = 0.0
@@ -255,9 +269,8 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
     out_path = f"{config['output']}/{filename}"
     output = open(out_path, "w+")
 
-    results.to_csv(
-        output, columns=["file", "actual", "detected", "conf", "hit"], index=False
-    )
+    metrics.remove("detections")
+    results.to_csv(output, columns=metrics, index=False)
     output.close()
 
     return out_path

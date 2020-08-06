@@ -58,7 +58,7 @@ def save_image(detections, path, opt, classes, best_label_only=False):
     ax.imshow(img)
 
     # Rescale boxes to original image
-    detections = utils.rescale_boxes(detections, opt.img_size, img.shape[:2])
+    detections = utils.rescale_boxes(detections, opt["img_size"], img.shape[:2])
     unique_labels = detections[:, -1].cpu().unique()
     n_cls_preds = len(unique_labels)
     bbox_colors = random.sample(colors, n_cls_preds)
@@ -95,7 +95,7 @@ def save_image(detections, path, opt, classes, best_label_only=False):
     plt.gca().xaxis.set_major_locator(NullLocator())
     plt.gca().yaxis.set_major_locator(NullLocator())
     filename = path.split("/")[-1].split(".")[0]
-    plt.savefig(f"output/{filename}.png", bbox_inches="tight", pad_inches=0.0)
+    plt.savefig(f"{opt['output']}/{filename}.png", bbox_inches="tight", pad_inches=0.0)
     plt.close(fig_main)
     plt.close(fig)
 

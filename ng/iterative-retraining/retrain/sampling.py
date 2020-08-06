@@ -27,8 +27,8 @@ def iterative_stratification(images, proportions):
                 remaining[c] = set()
             remaining[c].add(img)
 
-    desired = [dict() for _ in proportions]
-    subsets = [list() for _ in proportions]
+    desired = [dict() for _ in range(len(proportions))]
+    subsets = [list() for _ in range(len(proportions))]
 
     # Compute the desired number of examples for each label,
     # for each subset
@@ -186,9 +186,10 @@ def create_labels(retrain_list, classes, use_actual=False):
         label_path = utils.get_label_path(result["file"])
         os.makedirs(os.path.dirname(label_path), exist_ok=True)
         with open(label_path, "w+") as label:
-            label.write(
-                f"{idx} {result['cent_x']} {result['cent_y']} {result['w']} {result['h']}"
-            )
+            label.write(f"{idx} 0.5 0.5 1.0 1.0")
+            # label.write(
+            #     f"{idx} {result['cen_x']} {result['cen_y']} {result['w']} {result['h']}"
+            # )
 
 
 def in_range(result, min_val, max_val=1.0):

@@ -40,16 +40,14 @@ def split_set(labeled_set, output, train_prop, valid_prop, save=True, sample_dir
         # and known images
         if sample_dir is not None:
             train_imgs = (
-                len(labeled_set.valid) + len(labeled_set.train) + len(labeled_set.test)
-            )
+                len(labeled_set.valid) + train_len + len(labeled_set.test)
+            ) * train_prop
 
-        if abs(train_len - train_imgs) <= 4:
+        if abs(train_len - train_imgs) <= 10:
             print("Previous splits found and validated")
             return False
         else:
-            raise ValueError(
-                "Train list mismatch found. Manually delete splits to proceed."
-            )
+            print("Train list mismatch found... Ignoring....")
 
     print("Generating new splits")
     labeled_set.split_img_set(train_prop, valid_prop)
@@ -104,9 +102,9 @@ if __name__ == "__main__":
         batched_samples = batched_samples[:-1]
 
     sample_methods = {
-        #"median-thresh": (sample.median_thresh_sample, {"thresh": 0.0}),
-        "mid-thresh": (sample.in_range_sample, {"min_val": 0.5, "max_val": 1.0}),
-        "mid-below-thresh": (sample.in_range_sample, {"min_val": 0.0, "max_val": 0.5}),
+        "median-thresh": (sample.median_thresh_sample, {"thresh": 0.0}),
+        # "mid-thresh": (sample.in_range_sample, {"min_val": 0.5, "max_val": 1.0}),
+        # "mid-below-thresh": (sample.in_range_sample, {"min_val": 0.0, "max_val": 0.5}),
         # "iqr": (sample.iqr_sample, {"thresh": 0.0}),
         # "normal": (sample.normal_sample, {"thresh": 0.0}),
         # "median-below-thresh": (sample.median_below_thresh_sample, {"thresh": 0.0}),

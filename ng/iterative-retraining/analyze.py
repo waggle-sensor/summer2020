@@ -98,7 +98,7 @@ def series_benchmark(config, prefix, delta=2, avg=False):
 def aggregate_results(config, prefix, delta=2, avg=False):
     names = ["init", "sample", "all_iter", "all"]
     epoch_splits = get_epoch_splits(config, prefix, True)
-    #names += [f"cur_iter{i}" for i in range(len(epoch_splits))]
+    # names += [f"cur_iter{i}" for i in range(len(epoch_splits))]
 
     results = pd.DataFrame(columns=["test_set", "epoch", "prec", "acc", "mean_conf"])
 
