@@ -9,7 +9,7 @@ The model is built on top of Nanonets_object_tracking repo, which uses DeepSORT 
 
 
 
-![vehicle_tracking_demo](/readmes/demo.gif)
+![vehicle_tracking_demo](../readmes/demo.gif)
 
 
 ## Installation
