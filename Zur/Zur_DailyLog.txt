@@ -269,3 +269,9 @@ Wednesday 8/5
 3. Finished debugging code
 4. NAISE Seminar
 5. Code clean up, comments, personalizing
+
+Thursday 8/6
+1. AI/ML Scrum
+2. Started working on NAISE Blog Post
+3. Continuing to clean up / comment code
+4. Created list of potential code improvements and additions I want to make after Monday's presentation
