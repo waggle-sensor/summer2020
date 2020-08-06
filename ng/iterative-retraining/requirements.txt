@@ -1,0 +1,12 @@
+torchvision
+numpy
+pandas
+tqdm
+albumentations
+scipy
+terminaltables
+matplotlib
+torch
+opencv_python_headless
+Pillow
+scikit_learn

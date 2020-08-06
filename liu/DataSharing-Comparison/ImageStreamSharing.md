@@ -61,3 +61,5 @@ One subscriber case:
 | FFmpeg 	| 30 	| 8.75 	|
 | ROS2 	| 16.0 	| 0.54 	|
 | RabbitMQ 	| 16.0	| 0.103	|
+
+Note from Sean: I think the ffmpeg test may have an issue. When I was recently testing the StarDot camera, I noticed that ffplay lags many seconds behind the live video with my default settings. This may be more of a problem with ffplay than the server itself. I confirmed that the live display the StarDot shows in the admin panel is only has about 200ms delay (which includes the camera + network + laptop display latency).
