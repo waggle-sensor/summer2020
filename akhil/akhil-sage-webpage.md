@@ -25,6 +25,9 @@ Sage-VirtualWaggle-Ubuntu18.04 - This is the standard Chameleon-Sage image that 
 
 Sage-VirtualWaggle-Ubuntu18.04-CUDA - This image is compatible with a CUDA10 driver and with with UBUNUTU 18.04. This image is available at the CHI@TACC and CHI@UC sites
 
-Sage-VirtualWaggle-ARM64 - This iamge is built for arm64 architecture and is built with UBUNUTU 18.04. This image is available at the CHI@TACC site.
+Sage-VirtualWaggle-ARM64 - This imamge is built for arm64 architecture and is built with UBUNUTU 18.04. This image is available at the CHI@TACC site.
 
-Sage users are also able to create their own images customizable to their needs. Detailed steps can be found on the [Chameleon-Sage-Image builder](https://github.com/sagecontinuum/Chameleon-Sage-Image-Builder) repository. 
+Sage users are also able to create their own images customizable to their needs. Detailed steps can be found on the [Chameleon-Sage-Image builder](https://github.com/sagecontinuum/Chameleon-Sage-Image-Builder) repository.
+
+The image can be found on the official Chameleon catalog
+Link: https://www.chameleoncloud.org/appliances/85/
