@@ -5,7 +5,7 @@
 
 ### What is Nowcasting?
 <p>
-Nowcasting is the task of weather forecasting within a horizon period of twenty-four hours.<sup>2</sup> By
+Nowcasting is the task of weather forecasting within a horizon period of twenty-four hours.<sup>3</sup> By
 being able to accurately nowcast, abrupt weather changes can be announced earlier. This could allow
 people to have the needed time to prepare for weather-related dangers such as hail, thunder, or tornados.
 </p>
@@ -31,15 +31,19 @@ I sought out to develop a rudimentary experiment that would provide insight into
 
 ---
 
-### Why Sage?
+### WeatherNet?
 <p>
-To mannage data collection, I employed SAGE, a Cyberinfrastructure for AI at the Edge. SAGE allowed me to access a weather tower and a node with a ground-based camera system, located on the Argonne National Laboritory campus, to harvest data. The weathe tower collected the following metadata: wind speed, wind direction, precipition, heat flux, irrradiation, net radation, vapor preasure, and dew point temperature. The camera system consitted of three cameras: a sky facing RGB camera, a horizon-facing RGB camera, and an infrared (FLIR) camera. Through the weather sensors and the cameras, I was able to collect a dataset for my desired experiment. 
+For my experiment, I employed SAGE, a Cyber infrastructure for AI at the Edge. SAGE allowed me to access a weather tower and a node with a ground-based camera system, located on the Argonne National Laboritory campus, with ease to harvest data. The weathe tower collected the following metadata: wind speed, wind direction, precipition, heat flux, irrradiation, net radation, vapor preasure, and dew point temperature. The camera system consitted of three cameras: a sky facing RGB camera, a horizon-facing RGB camera, and an infrared (FLIR) camera. Through the weather sensors and the cameras (ground-based senors), I was able to collect a dataset for my desired experiment. 
 </p>
 
 #### Sample Images from Camera System 
 Sky facing                 |  FLIR                     | Horizon facing
 :-------------------------:|:-------------------------:|:-------------------------:
 <img src="top_face_example.jpg" width="200" height="200" />  |  <img src="flir_pic_example.jpg" width="200" height="200" />| <img src="ground_pic_example.jpg" width="200" height="200" />
+
+<p>
+Upon collecting the data, I restructured the data into fifteen-minute samples. Then the data was seperated into four element tuples consisting of data samples from an hour at 00, 15, 30, and 45 minutes. For my experiment, I decided to nowcast net radiation. Net radiation is the difference between incoming solar radiation absorbed by the Earth’s surface and the radiation reflected back into space. <sup>2</sup>
+<p/>
 
   
 ---
@@ -58,4 +62,6 @@ Sky facing                 |  FLIR                     | Horizon facing
 
 ## Refrence
 [1] Casper Kaae Sønderby et al.MetNet: A Neural Weather  Model  for  Precipitation  Forecasting.2020. arXiv:2003.12140 [cs.LG]. <br>
-[2] Yong  Wang  et  al.Guidelines  for  Nowcasting Techniques. Nov. 2017.ISBN: 978-92-63-11198-2 <br>
+[2] StoryMapJournal.URL:https://www.arcgis.com/apps/MapJournal/index.html?appid=93ed895dfa3343eb9b821a2933decdd8. <br>
+[3] Yong  Wang  et  al.Guidelines  for  Nowcasting Techniques. Nov. 2017.ISBN: 978-92-63-11198-2 <br>
+
