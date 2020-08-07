@@ -148,12 +148,14 @@ def iqr_sample(result, thresh=0.5):
     return prob_sample(result, in_range(result, q1, q3), const, q1, q3)
 
 
-def normal_sample(result, p=0.75, thresh=0.5):
+def normal_sample(result, avg=None, stdev=None, p=0.75, thresh=0.5):
     """Sample all within one standard deviation of mean."""
     confidences = result.get_confidences(thresh)
 
-    avg = stats.mean(confidences)
-    stdev = stats.stdev(confidences)
+    if avg is None:
+        avg = stats.mean(confidences)
+    if std is None
+        stdev = stats.stdev(confidences)
     print(f"avg: {avg}, stdev: {stdev}")
 
     return prob_sample(
@@ -204,7 +206,9 @@ def create_sample(results, name, max_samp, sample_func, **func_args):
     for result in results:
         if result.name == "All":
             continue
-        retrain_by_class.append(sample_func(result, **func_args))
+        sample = sample_func(result, **func_args)
+        # Remove duplicates due to multple labels per sample
+        retrain_by_class.append(list(set(sample)))
 
     retrain = list()
 
@@ -216,6 +220,7 @@ def create_sample(results, name, max_samp, sample_func, **func_args):
         images_left = max_samp - len(retrain)
         images_per_class = round(images_left / (len(retrain_by_class) - i + 1))
 
+        # Enforce bandwidth limit
         retrain += sample_list[: min(len(sample_list), images_left)]
 
     return retrain
@@ -238,7 +243,5 @@ def sample_histogram(retrain, title):
     plt.hist(hit_miss, bins=10, color=colors, stacked=True)
     plt.xlabel("Confidence")
     plt.ylabel("Count of Chosen")
-    if title == "iqr":
-        title = "Quartile Range"
     plt.title(title + f" (n={len(retrain)})")
     plt.show()
