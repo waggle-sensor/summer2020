@@ -211,10 +211,12 @@ class LabeledSet(ImageFolder):
 
         prop_test = 1 - prop_train - prop_valid
         proportions = [prop_train, prop_valid, prop_test]
+
         img_lists = sampling.iterative_stratification(img_dict, proportions)
 
         split_sets = self.convert_splits(img_lists)
         self.train, self.valid, self.test = split_sets
+
         return split_sets
 
     def convert_splits(self, splits):

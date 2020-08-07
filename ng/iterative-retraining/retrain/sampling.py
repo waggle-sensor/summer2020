@@ -5,6 +5,7 @@ import statistics as stats
 import numpy as np
 import scipy.stats
 import matplotlib.pyplot as plt
+from retrain import utils
 
 
 def sort_list_dict(freq, desc=False):
@@ -26,8 +27,8 @@ def iterative_stratification(images, proportions):
                 remaining[c] = set()
             remaining[c].add(img)
 
-    desired = [dict() for _ in proportions]
-    subsets = [list() for _ in proportions]
+    desired = [dict() for _ in range(len(proportions))]
+    subsets = [list() for _ in range(len(proportions))]
 
     # Compute the desired number of examples for each label,
     # for each subset
@@ -109,6 +110,16 @@ def prob_sample(result, desired, prob_func, *func_args, **func_kwargs):
     return chosen
 
 
+def in_range_sample(result, min_val, max_val):
+    return prob_sample(
+        result,
+        in_range(result, min_val, max_val),
+        const,
+        thresh=min_val,
+        max_val=max_val,
+    )
+
+
 def median_thresh_sample(result, thresh=0.5):
     confidences = result.get_confidences(thresh)
 
@@ -164,9 +175,7 @@ def norm(conf, mean, std):
     return scipy.stats.norm(mean, std).pdf(conf)
 
 
-# TODO generalize this
-def create_labels(retrain_list, use_actual=False):
-    classes = open("config/chars.names").read().split("\n")[:-1]
+def create_labels(retrain_list, classes, use_actual=False):
     for result in retrain_list:
         idx = (
             classes.index(result["actual"])
@@ -174,10 +183,13 @@ def create_labels(retrain_list, use_actual=False):
             else classes.index(result["detected"])
         )
 
-        label_path = result["file"].replace("images", "labels")[:-4] + ".txt"
+        label_path = utils.get_label_path(result["file"])
         os.makedirs(os.path.dirname(label_path), exist_ok=True)
         with open(label_path, "w+") as label:
-            label.write(f"{idx} 0.5 0.5 1 1")
+            label.write(f"{idx} 0.5 0.5 1.0 1.0")
+            # label.write(
+            #     f"{idx} {result['cen_x']} {result['cen_y']} {result['w']} {result['h']}"
+            # )
 
 
 def in_range(result, min_val, max_val=1.0):
@@ -205,10 +217,6 @@ def create_sample(results, name, max_samp, sample_func, **func_args):
         images_per_class = round(images_left / (len(retrain_by_class) - i + 1))
 
         retrain += sample_list[: min(len(sample_list), images_left)]
-
-    # At this point, images are "received" in the cloud
-    # This process simulates manually labeling/verifying all inferences
-    create_labels(retrain, use_actual=True)
 
     return retrain
 

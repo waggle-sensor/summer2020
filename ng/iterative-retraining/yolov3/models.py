@@ -409,4 +409,4 @@ def get_eval_model(model_def, img_size, weights_path):
 
     model.eval()  # Set in evaluation mode
 
-    return model.to(torch.device("cuda"))
+    return model
