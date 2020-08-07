@@ -36,7 +36,7 @@ I sought out to develop a rudimentary experiment that would provide insight into
 To mannage data collection, I employed SAGE, a Cyberinfrastructure for AI at the Edge. SAGE allowed me to access a weather tower and a node with a ground-based camera system, located on the Argonne National Laboritory campus, to harvest data. The weathe tower collected the following metadata: wind speed, wind direction, precipition, heat flux, irrradiation, net radation, vapor preasure, and dew point temperature. The camera system consitted of three cameras: a sky facing RGB camera, a horizon-facing RGB camera, and an infrared (FLIR) camera. Through the weather sensors and the cameras, I was able to collect a dataset for my desired experiment. 
 </p>
 
-<center> <h4>Sample Images from Camera System</h4> </center>
+#### Sample Images from Camera System 
 Sky facing                 |  FLIR                     | Horizon facing
 :-------------------------:|:-------------------------:|:-------------------------:
 <img src="top_face_example.jpg" width="200" height="200" />  |  <img src="flir_pic_example.jpg" width="200" height="200" />| <img src="ground_pic_example.jpg" width="200" height="200" />
