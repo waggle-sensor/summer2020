@@ -25,17 +25,24 @@ for precise locations. To be able to accurately nowcast for a precise location, 
 needed- which is not provided through traditional radar data. 
 </p>
 <p>
-To explore the plausibility of using ground-based sensors to enhance the performance of nowcasting models,
+To explore the plausibility of using ground-based sensor data to enhance the performance of a nowcasting model,
 I sought out to develop a rudimentary experiment that would provide insight into my hypothesis. I desired to construct a Deep Learning model that only used ground-based sensor data to perform nowcasting. The reasoning was that if I was able to perform nowcasting using only ground-based sensor data (which is unique from radar data), then it would be plausible that combining ground-based sensor data with radar data could create a more powerful model. Vice-versa, if a Deep Learning model that only used ground-based sensor data could not perform nowcasting to any degree, it would be unlogical to assume that combining ground-based sensor data and radar data would improve a model's ability to nowcast- thus voiding the plausibility of my hypothesis. 
 </p>
 
 ---
 
 ### Why Sage?
+<p>
+To mannage data collection, I employed SAGE, a Cyberinfrastructure for AI at the Edge. SAGE allowed me to access a weather tower and a node with a ground-based camera system, located on the Argonne National Laboritory campus, to harvest data. The weathe tower collected the following metadata: wind speed, wind direction, precipition, heat flux, irrradiation, net radation, vapor preasure, and dew point temperature. The camera system consitted of three cameras: a sky facing RGB camera, a horizon-facing RGB camera, and an infrared (FLIR) camera. Through the weather sensors and the cameras, I was able to collect a dataset for my desired experiment. 
+</p>
 
+Solarized dark             |  Solarized Ocean          | Solarized Ocean 
+:-------------------------:|:-------------------------:|:-------------------------:
+![](top_face_example.png)  |  ![](flir_pic_example.png)| ![](ground_pic_example.png)
+  
 ---
 
-### WeatherNet?
+### WeatherNet
 
 ---
 
