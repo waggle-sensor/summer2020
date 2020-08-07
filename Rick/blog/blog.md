@@ -33,7 +33,7 @@ I sought out to develop a rudimentary experiment that would provide insight into
 
 ### Data Managment with SAGE
 <p>
-For my experiment, I employed SAGE, a Cyber infrastructure for AI at the Edge. SAGE allowed me to access a weather tower and a node with a ground-based camera system, located on the Argonne National Laboritory campus, with ease to harvest data. The weathe tower collected the following metadata: wind speed, wind direction, precipition, heat flux, irrradiation, net radation, vapor preasure, and dew point temperature. The camera system consitted of three cameras: a sky facing RGB camera, a horizon-facing RGB camera, and an infrared (FLIR) camera. Through the weather sensors and the cameras (ground-based senors), I was able to collect a dataset for my desired experiment. 
+For my experiment, I employed SAGE, a Cyber infrastructure for AI at the Edge. SAGE allowed me to access a weather tower and a node with a ground-based camera system, located on the Argonne National Laboritory campus, with ease to harvest data. The weather tower collected the following metadata: wind speed, wind direction, precipition, heat flux, irrradiation, net radation, vapor preasure, and dew point temperature. The camera system consitted of three cameras: a sky facing RGB camera, a horizon-facing RGB camera, and an infrared (FLIR) camera. Through the weather sensors and the cameras (ground-based senors), I was able to collect a dataset for my desired experiment. 
 </p>
 
 #### Sample Images from Camera System 
@@ -49,17 +49,29 @@ Upon collecting the data, I restructured the data into fifteen-minute samples. T
 
 ### WeatherNet
 <p>
-With the data consisting of images from the camera and tabular data from the weather sensors in the form of a time-series, the Deep Learning model used was a Convolutional LSTM variant, named WeatherNet. Convolutional LSTM's allow as input images in the form of time series and can learn the temporal relationships between the images. This allowed WeatherNet to learn changes in the weather over time.<sup>4</sup> By further modifying the traditional Convolutional LSTM, WeatherNet was also able to take as input, not just images, but also the tabular weather sensor data. WeatherNet was then trained to nowcast net radiation for 15, 30, 60, 75, and 90 minute horizon periods. 
+With the data consisting of images from the camera and tabular data from the weather sensors in the form of a time-series, the Deep Learning model used was a Convolutional LSTM variant, named WeatherNet. Convolutional LSTM's allow images in the form of time series to be used as input and can learn the temporal relationships between the images. This allowed WeatherNet to learn changes in the weather over time from the camera's images.<sup>4</sup> By further modifying the traditional Convolutional LSTM, WeatherNet was also able to take as input, not just images, but also the tabular weather sensor data. WeatherNet was then trained to nowcast net radiation for 15, 30, 60, 75, and 90 minute horizon periods. 
 </p>
 
 #### Diagram of WeatherNet
 <img src="weathernet_banner.png" width="600" height="200" /> 
 
 ### Results
+<p>
+As mentioned, WeatherNet was trained to nowcast net radiation for 15, 30, 60, 75, and 90 minute horizon periods. 
+WeatherNet was able to nowcast net radiation at a high of eighty-percent accuracy for a fifteen-minute horizon and at a
+low was able to nowcast net radiation up to ninety minutes with an accuracy of seventy percent.
+</p>
+
+| Horizon (Minutes) |  15  |  30  |  45  |  60  |  75  |  90  |
+|:-----------------:|:----:|:----:|:----:|:----:|:----:|:----:|
+|      Accuracy     | 0.87 | 0.83 | 0.81 | 0.76 | 0.76 | 0.70 |
 
 ---
 
 ### Conclusion
+Through the positive results obtained from the experiment, my hypothesis of being able to gain useful insight for nowcasting at a precise location
+through ground-based sensors is supported. By being able to use the SAGE Cyber infrastructure for AI at the Edge, I was able to go about collecting the needed data
+for my experiment. 
 
 ---
 
