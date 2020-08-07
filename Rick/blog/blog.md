@@ -44,6 +44,7 @@ Sky facing                 |  FLIR                     | Horizon facing
 <p>
 Upon collecting the data, I restructured the data into fifteen-minute samples. Then the data was separated into four-element tuples consisting of data samples from an hour at 00, 15, 30, and 45 minutes. For my experiment, I decided to nowcast net radiation. Net radiation is the difference between incoming solar radiation absorbed by the Earth's surface and the radiation reflected back into space.<sup>2</sup> Thus, my model's input data was four samples from the previous hour consisting of images from each camera and weather sensor data, while my model's prediction value was a future period's net radiation amount. 
 <p/>
+
 ---
 
 ### WeatherNet
