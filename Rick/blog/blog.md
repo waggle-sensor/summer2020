@@ -29,20 +29,19 @@ To explore the plausibility of using ground-based sensors to enhance the perform
 I sought out to develop a rudimentary experiment that would provide insight into my hypothesis. I desired to construct a Deep Learning model that only used ground-based sensor data to perform nowcasting. The reasoning was that if I was able to perform nowcasting using only ground-based sensor data (which is unique from radar data), then it would be plausible that combining ground-based sensor data with radar data could create a more powerful model. Vice-versa, if a Deep Learning model that only used ground-based sensor data could not perform nowcasting to any degree, it would be unlogical to assume that combining ground-based sensor data and radar data would improve a model's ability to nowcast- thus voiding the plausibility of my hypothesis. 
 </p>
 
-
 ---
 
 ### Why Sage?
 
-
 ---
 
+### WeatherNet?
+
+---
 
 ### Conclusion
 
-
 ---
-
 
 ### About the Author
 
