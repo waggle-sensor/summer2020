@@ -18,7 +18,7 @@ As humans, we draw on numerous visual cues to identify water. In my research, I 
 
 For color identification I researched the use of Gaussian Mixture Models. This classifier was able to, for each pixel in a given image, output a probability value that that pixel was a water pixel. This initial classifier was a naive but efficient method for filtering out areas in an image that the computer was certain could not contain water. Take the following images, for example:
 
-![gaussian_model_for_hg_visualization_small](/home/ljacobs/Argonne/water_pipeline/results/gaussian_model_for_hg_visualization_small.png)
+![gaussian_model_for_hg_visualization_small](blog_images/gaussian_model_for_hg_visualization_small.png)
 
 The bottom row are input images to the color classifier. The top row images are the segmentation results of the classifier where yellow pixels correspond to a high probability of water and the dark blue pixels correspond to a low probability of water. As you can see in the first row, the classifier was quite easily able to distinguish the buoy from the ocean. However, example images like these are trivial for classifiers. Segmenting water by color alone would be highly inaccurate, since water can reflect any color. The main role of the color classifier, then, is to flag areas of an image that *cannot possibly be water*, like the red buoy.
 
