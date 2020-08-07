@@ -795,3 +795,21 @@ This seems to confirm the large number of false negatives, as does the decreasin
 * This algo will allow us to sample on things like car detection, with multiple ground truth labels per image
   * Goal for next week, as work with characters is essentially done, except for binning evenly
 * Also need to analyze (averaged and non-averaged) results for strict cutoffs tomorrow
+
+**Friday, August 7**
+
+* Checked progress on strict cutoff retraining
+  * Still ongoing, last iteration seems to never hit the stop criteria
+  * A sign that we have constructed a poor validation set?
+* Rewrote part of the analysis script to easily tabulate data via the command line
+  * Can cross-compare (mean) precision, accuracy, recall, and confidence, filtered for samples as an option
+  * We might be able to correlate sample accuracy/precision and subsequent improvements
+* Documented config usage
+  * Still need to document implementing sampling and custom models
+* Attended demo presentations
+* Beginning work on binning algorithm for sampling
+* Also working on matching multi-region detections for hits/misses
+  * Need a way to pair up detections and ground truth
+* Deployed training using a Normal PDF centered at 0.5, with standard deviation of 0.25
+* Aside from this, a binning with undersampling and even distribution across confidence quintiles will likely be the last method I try
+* Might move onto testing these methods on preexisting models
