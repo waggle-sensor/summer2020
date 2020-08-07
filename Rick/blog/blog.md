@@ -37,7 +37,7 @@ For my experiment, I employed SAGE, a Cyber infrastructure for AI at the Edge. S
 </p>
 
 #### Sample Images from Camera System 
-Sky facing                 |  FLIR                     | Horizon facing
+|Sky facing                 |  FLIR                     | Horizon facing
 :-------------------------:|:-------------------------:|:-------------------------:
 <img src="top_face_example.jpg" width="200" height="200" />  |  <img src="flir_pic_example.jpg" width="200" height="200" />| <img src="ground_pic_example.jpg" width="200" height="200" />
 
