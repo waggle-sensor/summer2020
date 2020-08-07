@@ -61,7 +61,7 @@ With the data consisting of images from the camera and tabular data from the wea
 <p>
 As mentioned, WeatherNet was trained to nowcast net radiation for 15, 30, 60, 75, and 90 minute horizon periods. 
 WeatherNet was able to nowcast net radiation at a high of eighty-percent accuracy for a fifteen-minute horizon and at a
-low was able to nowcast net radiation up to ninety minutes with an accuracy of seventy percent.
+low of seventy percent accuracy for a ninety minute horizon.
 </p>
 
 | Horizon (Minutes) |  15  |  30  |  45  |  60  |  75  |  90  |
@@ -71,13 +71,17 @@ low was able to nowcast net radiation up to ninety minutes with an accuracy of s
 ---
 
 ### Conclusion
-Through the positive results obtained from the experiment, my hypothesis of being able to gain useful insight for nowcasting at a precise location
-through ground-based sensors is supported. By being able to use the SAGE Cyber infrastructure for AI at the Edge, I was able to go about collecting the needed data
-for my experiment. 
+<p>
+Through the positive results obtained from the experiment, my hypothesis of being possible to gain useful insight data from ground-based sensors to perform
+nowcasting is supported. By being able to use the SAGE, I was able to collect the needed data for my experiment. 
+</p>
 
 ---
 
 ### About the Author
+<p>
+Hello, my name is Rick (Enrique) Nueve. I was a summer intern for the SAGE project in 2020. This post was a high-level overview of the research that I performed over summer. Sometime soon, this work is going to be sent out for review in the form of a poster and a short paper for a conference- thereby showing the full details of this project. To follow the progression of this work, please refer to my blog (https://realestrick-c137.github.io/EnriqueNueve.github.io/index.html#) where I will be posting updates as they occur.
+</p>
 
 ---
 
