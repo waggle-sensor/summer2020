@@ -406,7 +406,6 @@ def get_eval_model(model_def, img_size, weights_path):
     # Set up model
     model = Darknet(model_def, img_size=img_size).to(device)
     model.load_state_dict(torch.load(weights_path, map_location=device))
-
     model.eval()  # Set in evaluation mode
 
     return model

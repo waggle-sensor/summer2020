@@ -102,8 +102,12 @@ if __name__ == "__main__":
         batched_samples = batched_samples[:-1]
 
     sample_methods = {
-        "mid-normal": (sample.normal_sample, {"thresh": 0.0, "avg": 0.5, "stdev": 0.25}),
-        #"median-thresh": (sample.median_thresh_sample, {"thresh": 0.0}),
+        "bin-sample": (
+            sample.bin_sample,
+            {"desired": config["bandwidth"], "num_bins": 5, "curve": sample.const},
+        ),
+        # "mid-normal": (sample.normal_sample, {"thresh": 0.0, "avg": 0.5, "stdev": 0.25}),
+        # "median-thresh": (sample.median_thresh_sample, {"thresh": 0.0}),
         # "mid-thresh": (sample.in_range_sample, {"min_val": 0.5, "max_val": 1.0}),
         # "mid-below-thresh": (sample.in_range_sample, {"min_val": 0.0, "max_val": 0.5}),
         # "iqr": (sample.iqr_sample, {"thresh": 0.0}),

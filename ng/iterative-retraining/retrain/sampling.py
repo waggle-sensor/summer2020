@@ -80,6 +80,14 @@ def iterative_stratification(images, proportions):
     return subsets
 
 
+def bin_sample(result, desired, num_bins, curve, start=0.0, end=1.0):
+    delta = (end - start) / num_bins
+    print(delta)
+    bins = [in_range_sample(result, i * delta, (i + 1) * delta) for i in range(num_bins)]
+    print(bins)
+    # TODO finish this
+
+
 def prob_sample(result, desired, prob_func, *func_args, **func_kwargs):
     """Generate a list of files for sampling.
     result:     a ClassResult holding a list of images
@@ -154,7 +162,7 @@ def normal_sample(result, avg=None, stdev=None, p=0.75, thresh=0.5):
 
     if avg is None:
         avg = stats.mean(confidences)
-    if std is None
+    if stdev is None:
         stdev = stats.stdev(confidences)
     print(f"avg: {avg}, stdev: {stdev}")
 
@@ -207,8 +215,8 @@ def create_sample(results, name, max_samp, sample_func, **func_args):
         if result.name == "All":
             continue
         sample = sample_func(result, **func_args)
-        # Remove duplicates due to multple labels per sample
-        retrain_by_class.append(list(set(sample)))
+
+        retrain_by_class.append(sample)
 
     retrain = list()
 
@@ -216,6 +224,8 @@ def create_sample(results, name, max_samp, sample_func, **func_args):
     # to distribute samples among all (inferred) classes
     retrain_by_class = sorted(retrain_by_class, key=len)
     for i, sample_list in enumerate(retrain_by_class):
+        # Remove duplicates due to multple labels per sample
+        sample_list = [img for img in sample_list if img not in retrain]
         random.shuffle(sample_list)
         images_left = max_samp - len(retrain)
         images_per_class = round(images_left / (len(retrain_by_class) - i + 1))

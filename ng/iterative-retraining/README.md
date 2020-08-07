@@ -22,25 +22,49 @@ User-defined parts of this process (formalized in the parameters section) are bo
 
 ## Configuration (Hyper)Parameters
 
+**Overall Parameters**
+
+These are high-level parameters affecting both initial training and retraining
+
 * `class_list`: list of classes, terminated with a blank line
 * `model_config`: YOLOv3 model definition file with hyperparameters
-* `initial_set`: labeled directory of images for initial model training
-* `sample_set`: labeled directory of images for sampling
-* `train_init`: proportion of images in initial set used for training
-* `valid_init`: as above, but for validation. The test set will consist of all remaining images
 * `images_per_class`: target number of images per class for executing augmentation and retraining
 * `aug_compose`: boolean value (0 or 1) for using major transformations alongside minor ones
 * `early_stop`: boolean value to determine if early stopping will be used
 * `max_epochs`: maximum number of (re)training epochs, if the early stop criteria is not reached
-* `sampling_batch`: batch size for sampling. In the SAGE implementation, this is analogous to a video stream providing a specific number of frames for a certain time interval (e.g. 1000 frames per hour)
 * `conf_check_num`: (maximum) number of checkpoints to use when determining confidence score
+* `logs_per_epoch`: number of times loss and its associated parameters are logged per epoch, between batches. This is linearly distributed throughout an epoch.
+
+**Initial Training**
+
+* `initial_set`: labeled directory of images for initial model training
+* `train_init`: proportion of images in initial set used for training
+* `valid_init`: as above, but for validation. The test set will consist of all remaining images
+
+**Sampling and Retraining**
+
+* `sample_set`: labeled directory of images for sampling
+* `sampling_batch`: batch size for sampling. In the SAGE implementation, this is analogous to a video stream providing a specific number of frames for a certain time interval (e.g. 1000 frames per hour)
 * `bandwidth`: maximum images to sample per sampling batch, across all classes
-* `train_samp`: propotion of images in sample batch set to use for training.
-* `valid_samp`: as above, but for validation. The rest will be used for testing.
+* `train_sample`: propotion of images in sample batch set to use for training.
+* `valid_sample`: as above, but for validation. The rest will be used for testing.
 * `retrain_new`: proportion of images in the revised training/test sets that will be from the sampling batch. The rest will be randomly selected from old training/test data
+
+**Output Folders**
+
+* `log`: directory for logs created during training
+* `output`: directory for sample splits, benchmarks, and other files for analysis
+* `checkpoints`: directory for output models
+
+**UP stopping criteria**
+
+* `strip_len`: range of epochs to check the validation loss on
+* `successions`: number of successive strips with strict increase of loss before training is stopped
 
 ## Sampling algorithm
 
 To be completed
 
 ## Output files
+
+* Checkpoints: These are 
