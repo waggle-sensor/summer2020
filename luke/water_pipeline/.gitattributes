@@ -1,0 +1,5 @@
+many_framerates_tt_classifiers.model filter=lfs diff=lfs merge=lfs -text
+tt_classifier_1-rate.model filter=lfs diff=lfs merge=lfs -text
+tt_classifier_10-rate.model filter=lfs diff=lfs merge=lfs -text
+tt_classifier_2-rate.model filter=lfs diff=lfs merge=lfs -text
+tt_classifier_50-rate.model filter=lfs diff=lfs merge=lfs -text
