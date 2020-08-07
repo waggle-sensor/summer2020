@@ -17,7 +17,6 @@ import os
 datagen_list = [ImageDataGenerator(rotation_range=90), 
                 ImageDataGenerator(brightness_range=[0.2,1.0]), 
                 ImageDataGenerator(zoom_range=[0.5,1.0]), 
-                ImageDataGenerator(rotation_range=90),
                 ImageDataGenerator(width_shift_range=0.2, height_shift_range=0.2),
                 ImageDataGenerator(horizontal_flip=True, vertical_flip=True)]
 
@@ -67,7 +66,6 @@ for filename in os.listdir('.'):
 #########
 
 #### following are included in the datagen list
-# datagen = ImageDataGenerator(rotation_range=90)
 # datagen = ImageDataGenerator(brightness_range=[0.2,1.0])
 # datagen = ImageDataGenerator(zoom_range=[0.5,1.0])
 # datagen = ImageDataGenerator(rotation_range=90)
