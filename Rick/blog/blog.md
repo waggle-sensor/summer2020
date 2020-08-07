@@ -49,6 +49,9 @@ Upon collecting the data, I restructured the data into fifteen-minute samples. T
 ### WeatherNet
 Due to the data consisting of images from the camera and tabular data from the weather sensors in the form of a time-series, the Deep Learning model used was a Convolutional LSTM variant. Convolutional LSTM's allow as input images in the form of time series and can learn the temporal relationships between the images. This allows the model to learn and predict changes in the weather over time.<sup>4</sup> By further modifying the Convolutional LSTM, the model was also able to take as input, not just images, but also the tabular weather sensor data. 
 
+#### Diagram of WeatherNet
+<img src="weathernet_banner.png" width="600" height="200" /> 
+
 ---
 
 ### Conclusion
