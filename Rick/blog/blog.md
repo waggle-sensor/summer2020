@@ -53,7 +53,9 @@ With the data consisting of images from the camera and tabular data from the wea
 </p>
 
 #### Diagram of WeatherNet
+<p>
 <img src="weathernet_banner.png" width="600" height="200" /> 
+</p>
 
 ### Results
 <p>
