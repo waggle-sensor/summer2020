@@ -72,7 +72,7 @@ low of seventy percent accuracy for a ninety minute horizon.
 
 ### Conclusion
 <p>
-Through the positive results obtained from the experiment, my hypothesis of being possible to gain useful insight data from ground-based sensors to perform
+Through the positive results obtained from the experiment, my hypothesis of being able to gain useful insight data from ground-based sensors to perform
 nowcasting is supported. By being able to use the SAGE, I was able to collect the needed data for my experiment. 
 </p>
 
