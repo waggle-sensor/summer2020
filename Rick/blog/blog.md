@@ -33,7 +33,7 @@ I sought out to develop a rudimentary experiment that would provide insight into
 
 ### Data Managment with SAGE
 <p>
-For my experiment, I employed SAGE, a Cyber infrastructure for AI at the Edge. SAGE allowed me to access a weather tower and a node with a ground-based camera system, located on the Argonne National Laboritory campus, with ease to harvest data. The weather tower collected the following metadata: wind speed, wind direction, precipition, heat flux, irrradiation, net radation, vapor preasure, and dew point temperature. The camera system consitted of three cameras: a sky facing RGB camera, a horizon-facing RGB camera, and an infrared (FLIR) camera. Through the weather sensors and the cameras (ground-based senors), I was able to collect a dataset for my desired experiment. 
+For my experiment, I employed SAGE, a Cyber infrastructure for AI at the Edge. SAGE allowed me to access a weather tower and a node with a ground-based camera system, located on the Argonne National Laboratory campus, with ease to harvest data. The weather tower collected the following metadata: wind speed, wind direction, precipitation, heat flux, irrradiation, net radation, vapor pressure, and dew point temperature. The camera system consisted of three cameras: a sky facing RGB camera, a horizon-facing RGB camera, and an infrared (FLIR) camera. Through the ground-based weather sensors and cameras, I was able to collect a dataset for my desired experiment. 
 </p>
 
 #### Sample Images from Camera System 
@@ -72,8 +72,8 @@ low of seventy percent accuracy for a ninety minute horizon.
 
 ### Conclusion
 <p>
-Through the positive results obtained from the experiment, my hypothesis of being possible to gain useful insight data from ground-based sensors to perform
-nowcasting is supported. By being able to use the SAGE, I was able to collect the needed data for my experiment. 
+Through the positive results obtained from the experiment, my hypothesis of being able to gain useful data from ground-based sensors to perform
+nowcasting is supported. By being able to use SAGE, I was able to collect the needed data for my experiment. 
 </p>
 
 ---
