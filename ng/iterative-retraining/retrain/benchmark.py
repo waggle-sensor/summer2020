@@ -99,6 +99,12 @@ class ClassResults:
             self.data[result].append(row)
             self.pop += 1
 
+    def __len__(self):
+        files = set()
+        for row in self.get_all():
+            files.add(row["file"])
+        return len(files)
+
     def precision(self):
         predicted_cond_pos = (
             len(self.data["true_pos"]) + len(self.data["false_pos"]) + 1e-16

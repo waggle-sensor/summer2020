@@ -23,8 +23,39 @@ def get_epoch_num(check_file):
 
 
 def label_sample_set(img_path):
-    """Sample function of labeling an image given ground truth."""
-    return img_path.split("-")[1].split("/")[0]
+    """Sample function to label an image path with its ground truth with a list of labels.
+
+    This function is customizable (e.g. including a GUI to annotate) depending on your needs.
+    """
+    class_letter = img_path.split("-")[1].split("/")[0]
+    label = (class_letter, 0.5, 0.5, 1.0, 1.0)
+    return [label]
+
+
+def get_sample_methods():
+    return {
+        "bin-quintile": (
+            sample.bin_sample,
+            {"stratify": False, "num_bins": 5, "curve": sample.const, "thresh": 0.0,},
+        ),
+        "bin-normal": (
+            sample.bin_sample,
+            {
+                "stratify": False,
+                "num_bins": 5,
+                "curve": sample.norm,
+                "mean": 0.5,
+                "std": 0.25,
+            },
+        ),
+        # "mid-normal": (sample.normal_sample, {"thresh": 0.0, "avg": 0.5, "stdev": 0.25}),
+        # "median-thresh": (sample.median_thresh_sample, {"thresh": 0.0}),
+        # "mid-thresh": (sample.in_range_sample, {"min_val": 0.5, "max_val": 1.0}),
+        # "mid-below-thresh": (sample.in_range_sample, {"min_val": 0.0, "max_val": 0.5}),
+        # "iqr": (sample.iqr_sample, {"thresh": 0.0}),
+        # "normal": (sample.normal_sample, {"thresh": 0.0}),
+        # "median-below-thresh": (sample.median_below_thresh_sample, {"thresh": 0.0}),
+    }
 
 
 def split_set(labeled_set, output, train_prop, valid_prop, save=True, sample_dir=None):
@@ -101,30 +132,15 @@ if __name__ == "__main__":
     if len(batched_samples[-1]) != len(batched_samples[0]):
         batched_samples = batched_samples[:-1]
 
-    sample_methods = {
-        "bin-sample": (
-            sample.bin_sample,
-            {"desired": config["bandwidth"], "num_bins": 5, "curve": sample.const},
-        ),
-        # "mid-normal": (sample.normal_sample, {"thresh": 0.0, "avg": 0.5, "stdev": 0.25}),
-        # "median-thresh": (sample.median_thresh_sample, {"thresh": 0.0}),
-        # "mid-thresh": (sample.in_range_sample, {"min_val": 0.5, "max_val": 1.0}),
-        # "mid-below-thresh": (sample.in_range_sample, {"min_val": 0.0, "max_val": 0.5}),
-        # "iqr": (sample.iqr_sample, {"thresh": 0.0}),
-        # "normal": (sample.normal_sample, {"thresh": 0.0}),
-        # "median-below-thresh": (sample.median_below_thresh_sample, {"thresh": 0.0}),
-    }
+    sample_methods = get_sample_methods()
 
     for name, (func, kwargs) in sample_methods.items():
         last_epoch = init_end_epoch
         for i, sample_folder in enumerate(batched_samples):
-
-            # TODO make this applicable for multiple labels
-            sample_folder.label(classes, label_sample_set)
-
             sample_labeled = LabeledSet(
                 sample_folder.imgs, num_classes, img_size=config["img_size"],
             )
+            sample_labeled.label(classes, label_sample_set)
 
             sample_filename = f"{config['output']}/{name}{i}_sample_{last_epoch}.txt"
             if os.path.exists(sample_filename):
@@ -133,36 +149,35 @@ if __name__ == "__main__":
 
             else:
                 # Benchmark data at the edge
-                results_df = bench.benchmark_avg(
-                    sample_labeled,
-                    name,
-                    1,
-                    last_epoch,
-                    config["conf_check_num"],
-                    config,
-                )
-
                 bench_file = (
                     f"{config['output']}/{name}_benchmark_avg_1_{last_epoch}.csv"
                 )
 
-                bench.save_results(results_df, bench_file)
+                if not os.path.exists(bench_file):
+                    results_df = bench.benchmark_avg(
+                        sample_labeled,
+                        name,
+                        1,
+                        last_epoch,
+                        config["conf_check_num"],
+                        config,
+                    )
+
+                    bench.save_results(results_df, bench_file)
 
                 # Create samples from the benchmark
                 results, _ = bench.load_data(bench_file, by_actual=False)
-                retrain_list = sample.create_sample(
-                    results, name, config["bandwidth"], func, **kwargs
+
+                print(f"===== {name} ======")
+                retrain_files = sample.create_sample(
+                    results, config["bandwidth"], func, **kwargs
                 )
 
-                # At this point, images are "received" in the cloud
-                # This process simulates manually labeling/verifying all inferences
-                sample.create_labels(retrain_list, classes, use_actual=True)
-
-                retrain_files = [data["file"] for data in retrain_list]
                 with open(sample_filename, "w+") as out:
                     out.write("\n".join(retrain_files))
 
-            # Receive raw sampled data in the cloud, with ground truth annotations
+            # Receive raw sampled data in the cloud
+            # This process simulates manually labeling/verifying all inferences
             retrain_obj = LabeledSet(retrain_files, num_classes, prefix=f"{name}{i}")
 
             new_splits = split_set(

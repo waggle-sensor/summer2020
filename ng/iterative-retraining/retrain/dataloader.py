@@ -111,11 +111,16 @@ class ImageFolder(Dataset):
             splits.append(set(list(self.imgs)[i:upper_bound]))
         return splits
 
-    def label(self, classes, ground_truth_func, x_cent=0.5, y_cent=0.5, w=1.0, h=1.0):
+    def label(self, classes, ground_truth_func):
         for img in self.imgs:
-            class_num = classes.index(ground_truth_func(img))
-            with open(get_label_path(img), "w+") as label:
-                label.write(f"{class_num} {x_cent} {y_cent} {w} {h}")
+            labels = ground_truth_func(img)
+            text_label = open(get_label_path(img), "w+")
+            for i, (class_display_name, x_cent, y_cent, w, h) in enumerate(labels):
+                class_num = classes.index(class_display_name)
+                if i > 0:
+                    text_label.write("\n")
+                text_label.write(f"{class_num} {x_cent} {y_cent} {w} {h}")
+            text_label.close()
 
 
 class LabeledSet(ImageFolder):

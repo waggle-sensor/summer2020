@@ -4,6 +4,7 @@ import os
 import statistics as stats
 import numpy as np
 import scipy.stats
+import scipy.integrate as integrate
 import matplotlib.pyplot as plt
 from retrain import utils
 
@@ -80,14 +81,36 @@ def iterative_stratification(images, proportions):
     return subsets
 
 
-def bin_sample(result, desired, num_bins, curve, start=0.0, end=1.0):
-    delta = (end - start) / num_bins
-    print(delta)
-    bins = [
-        in_range_sample(result, i * delta, (i + 1) * delta) for i in range(num_bins)
-    ]
-    print(bins)
-    # TODO finish this
+def create_sample(results, max_samp, sample_func, stratify=True, **func_args):
+    # The first part of this function simulates decisions made at the edge
+    retrain_by_class = list()
+
+    if stratify:
+        for result in results:
+            if result.name == "All":
+                continue
+            sample = sample_func(result, **func_args)
+
+            retrain_by_class.append(sample)
+    else:
+        retrain_by_class = [sample_func(results[-1], **func_args)]
+
+    retrain = list()
+
+    # Evaluate the numbers that may be under the quota first
+    # to distribute samples among all (inferred) classes
+    retrain_by_class = sorted(retrain_by_class, key=len)
+    for i, sample_list in enumerate(retrain_by_class):
+        # Remove duplicates due to multple labels per sample
+        sample_list = [img for img in sample_list if img not in retrain]
+        random.shuffle(sample_list)
+        images_left = max_samp - len(retrain)
+        images_per_class = round(images_left / (len(retrain_by_class) - i))
+
+        # Enforce bandwidth limit
+        retrain += sample_list[: min(len(sample_list), images_per_class)]
+
+    return retrain
 
 
 def prob_sample(result, desired, prob_func, *func_args, **func_kwargs):
@@ -101,23 +124,58 @@ def prob_sample(result, desired, prob_func, *func_args, **func_kwargs):
     Consequently, the probability function should be well-chosen to prevent long runtimes.
     """
     pool = result.get_all()
-    random.shuffle(pool)
-    chosen = list()
+    chosen = set()
 
     while len(chosen) < desired:
         chosen_this_round = list()
+        random.shuffle(pool)
         for row in pool:
             conf = row["conf"]
             choose = random.random() <= prob_func(conf, *func_args, **func_kwargs)
             if choose:
                 chosen_this_round.append(row)
-        chosen += chosen_this_round
         for row in chosen_this_round:
             pool.remove(row)
+            chosen.add(row["file"])
 
-    chosen = chosen[:desired]
-
+    chosen = list(chosen)[:desired]
     return chosen
+
+
+def const(conf, thresh=0.5, max_val=1.0, below=False):
+    if not below:
+        if max_val >= conf >= thresh:
+            return 1.0
+    else:
+        if thresh >= conf:
+            return 1.0
+    return 0.0
+
+
+def norm(conf, mean, std):
+    return scipy.stats.norm(mean, std).pdf(conf)
+
+
+def bin_sample(result, num_bins, curve, start=0.0, end=1.0, **func_kwargs):
+    delta = (end - start) / num_bins
+    bins = [
+        in_range_sample(result, i * delta, (i + 1) * delta) for i in range(num_bins)
+    ]
+
+    total_area = integrate.quad(lambda x: curve(x, **func_kwargs), start, end)[0]
+
+    chosen = list()
+    for i, bin_imgs in enumerate(bins):
+        bin_area = integrate.quad(
+            lambda x: curve(x, **func_kwargs), i * delta, (i + 1) * delta
+        )[0]
+        bin_desired = round(bin_area / total_area * len(result))
+        if bin_desired >= len(bin_imgs):
+            chosen += bin_imgs
+        else:
+            random.shuffle(bin_imgs)
+            chosen += bin_imgs[:bin_desired]
+    return list(set(chosen))
 
 
 def in_range_sample(result, min_val, max_val):
@@ -173,69 +231,9 @@ def normal_sample(result, avg=None, stdev=None, p=0.75, thresh=0.5):
     )
 
 
-def const(conf, thresh=0.5, max_val=1.0, below=False):
-    if not below:
-        if max_val >= conf >= thresh:
-            return 1.0
-    else:
-        if thresh >= conf:
-            return 1.0
-    return 0.0
-
-
-def norm(conf, mean, std):
-    return scipy.stats.norm(mean, std).pdf(conf)
-
-
-def create_labels(retrain_list, classes, use_actual=False):
-    for result in retrain_list:
-        idx = (
-            classes.index(result["actual"])
-            if use_actual
-            else classes.index(result["detected"])
-        )
-
-        label_path = utils.get_label_path(result["file"])
-        os.makedirs(os.path.dirname(label_path), exist_ok=True)
-        with open(label_path, "w+") as label:
-            label.write(f"{idx} 0.5 0.5 1.0 1.0")
-            # label.write(
-            #     f"{idx} {result['cen_x']} {result['cen_y']} {result['w']} {result['h']}"
-            # )
-
-
 def in_range(result, min_val, max_val=1.0):
     """Get the number of elements in a ClassResult above a threshold."""
     return len([res for res in result.get_all() if max_val >= res["conf"] >= min_val])
-
-
-def create_sample(results, name, max_samp, sample_func, **func_args):
-    # The first part of this function simulates decisions made at the edge
-    retrain_by_class = list()
-    print(f"===== {name} ======")
-    for result in results:
-        if result.name == "All":
-            continue
-        sample = sample_func(result, **func_args)
-
-        retrain_by_class.append(sample)
-
-    retrain = list()
-
-    # Evaluate the numbers that may be under the quota first
-    # to distribute samples among all (inferred) classes
-    retrain_by_class = sorted(retrain_by_class, key=len)
-    for i, sample_list in enumerate(retrain_by_class):
-        # Remove duplicates due to multple labels per sample
-        sample_list = [img for img in sample_list if img not in retrain]
-        random.shuffle(sample_list)
-        images_left = max_samp - len(retrain)
-        images_per_class = round(images_left / (len(retrain_by_class) - i + 1))
-
-        # Enforce bandwidth limit
-        retrain += sample_list[: min(len(sample_list), images_left)]
-
-    return retrain
 
 
 def sample_histogram(retrain, title):
