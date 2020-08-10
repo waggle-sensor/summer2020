@@ -179,23 +179,6 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, roll=False):
         img_folder, batch_size=1, shuffle=False, num_workers=config["n_cpu"],
     )
 
-    metrics = [
-        "file",
-        "detections",
-        "actual",
-        "detected",
-        "conf",
-        "hit",
-        # "cen_x",
-        # "cen_y",
-        # "w",
-        # "h",
-    ]
-
-    results = pd.DataFrame(columns=metrics).set_index("file")
-
-    classes = utils.load_classes(config["class_list"])
-
     if roll:
         checkpoints_i = [i for i in range(max(1, end - total + 1), end + 1)]
     else:
@@ -207,6 +190,8 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, roll=False):
     if not single:
         print("Benchmarking on epochs", checkpoints_i)
 
+    detections_by_img = dict()
+
     for n in tqdm(checkpoints_i, "Benchmarking epochs", disable=single):
         ckpt = get_checkpoint(config["checkpoints"], prefix, n)
 
@@ -215,53 +200,95 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, roll=False):
 
         for (img_paths, input_imgs) in loader:
             path = img_paths[0]
-            if path not in results.file:
-                actual_class = classes[
-                    img_folder.get_classes(utils.get_label_path(path))[0]
-                ]
-                results.loc[path] = [path, None, actual_class] + [None] * 3
+            if path not in detections_by_img.keys():
+                detections_by_img[path] = None
 
             detections = evaluate.detect(
                 input_imgs, config["conf_thres"], model, config["nms_thres"]
             )
             detections = [d for d in detections if d is not None]
 
-            if len(detections) != 0:
-                detections = torch.stack(detections)
-                old_detections = results.loc[path]["detections"]
-                if old_detections is None:
-                    results.loc[path]["detections"] = detections
-                else:
-                    results.loc[path]["detections"] = torch.cat(
-                        (old_detections, detections), 1
-                    )
+            if len(detections) == 0:
+                continue
 
-    for _, row in results.iterrows():
-        if row["detections"] is not None:
+            detections = torch.stack(detections)
+            if detections_by_img[path] is None:
+                detections_by_img[path] = detections
+            else:
+                detections_by_img[path] = torch.cat(
+                    (detections_by_img[path], detections), 1
+                )
+
+    metrics = [
+        "file",
+        "actual",
+        "detected",
+        "conf",
+        "hit",
+        # "cen_x",
+        # "cen_y",
+        # "w",
+        # "h",
+    ]
+
+    results = pd.DataFrame(columns=metrics)
+    classes = utils.load_classes(config["class_list"])
+
+    for path, detections in detections_by_img.items():
+        ground_truths = img_folder.get_classes(utils.get_label_path(path))
+        detection_pairs = list()
+        if detections is not None:
             region_detections = yoloutils.group_average_bb(
-                row["detections"], total, config["nms_thres"]
+                detections, total, config["nms_thres"]
             )
 
-            # evaluate.save_image(region_detections, row["file"], config, classes)
+            # evaluate.save_image(region_detections, path, config, classes)
             if len(region_detections) == 1:
-                best_detection = evaluate.get_most_conf(region_detections)
-
-                # TODO: Adjust this for multiple detections per image
-                (x1, y1, x2, y2, _, best_conf, best_class) = best_detection.numpy()
-                row["detected"] = classes[int(best_class)]
-                row["conf"] = best_conf
-                row["hit"] = row["actual"] == row["detected"]
+                detected_class = int(region_detections.numpy()[0][-1])
+                if detected_class in ground_truths:
+                    label = detected_class
+                elif len(ground_truths) == 1:
+                    label = ground_truths[0]
+                else:
+                    label = None
+                detection_pairs = [(label, region_detections[0])]
             else:
-                test_img = LabeledSet([row["file"]], len(classes))
-                matches = evaluate.match_detections(
+                test_img = LabeledSet([path], len(classes))
+                detection_pairs = evaluate.match_detections(
                     model, test_img, region_detections.unsqueeze(0), config
                 )
-                # TODO - finish this and solve the indexing problem with filename
-        else:
-            row["detected"] = ""
-            row["conf"] = 0.0
-            row["hit"] = False
 
+        for (truth, box) in detection_pairs:
+            if box is None:
+                continue
+            (x1, y1, x2, y2, _, conf, pred_class) = box.numpy()
+
+            row = {
+                "file": path,
+                "detected": classes[int(pred_class)],
+                "actual": classes[int(truth)] if truth is not None else "",
+                "conf": conf,
+            }
+            row["hit"] = row["actual"] == row["detected"]
+
+            results = results.append(row, ignore_index=True)
+
+            if truth is not None:
+                ground_truths.remove(int(truth))
+
+        # Add rows for those missing detections
+        for truth in ground_truths:
+            row = {
+                "file": path,
+                "detected": "",
+                "actual": classes[int(truth)],
+                "conf": 0.0,
+                "hit": False,
+            }
+
+            results = results.append(row, ignore_index=True)
+
+    results.sort_values(by="file", inplace=True)
     return results
 
 
@@ -269,7 +296,6 @@ def save_results(results, filename):
     output = open(filename, "w+")
 
     metrics = results.columns.tolist()
-    metrics.remove("detections")
     results.to_csv(output, columns=metrics, index=False)
     output.close()
 

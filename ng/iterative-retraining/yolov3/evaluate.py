@@ -78,12 +78,10 @@ def match_detections(model, img_folder, detections, config):
         overlaps = utils.get_batch_statistics(
             detections, targets, iou_threshold=config["iou_thres"]
         )[0]
-        print(labels)
 
         detections = detections.squeeze(0)
         for i in range(len(overlaps[0])):
             for detection in detections:
-
                 if detection[-1] == overlaps[2][i] and detection[-2] == overlaps[1][i]:
                     boxes.append((overlaps[0][i], detection))
                     break
@@ -98,7 +96,7 @@ def match_detections(model, img_folder, detections, config):
             pairs.append((label, correct_box))
         for (hit, detection) in boxes:
             pairs.append((None, detection))
-    print(pairs)
+
     return pairs
 
 

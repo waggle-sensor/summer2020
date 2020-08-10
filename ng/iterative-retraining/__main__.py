@@ -142,7 +142,9 @@ if __name__ == "__main__":
                     config,
                 )
 
-                bench_file = f"{config['output']}/{name}_benchmark_1_{last_epoch}.csv"
+                bench_file = (
+                    f"{config['output']}/{name}_benchmark_avg_1_{last_epoch}.csv"
+                )
 
                 bench.save_results(results_df, bench_file)
 
