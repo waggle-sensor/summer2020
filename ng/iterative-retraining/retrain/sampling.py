@@ -83,7 +83,9 @@ def iterative_stratification(images, proportions):
 def bin_sample(result, desired, num_bins, curve, start=0.0, end=1.0):
     delta = (end - start) / num_bins
     print(delta)
-    bins = [in_range_sample(result, i * delta, (i + 1) * delta) for i in range(num_bins)]
+    bins = [
+        in_range_sample(result, i * delta, (i + 1) * delta) for i in range(num_bins)
+    ]
     print(bins)
     # TODO finish this
 

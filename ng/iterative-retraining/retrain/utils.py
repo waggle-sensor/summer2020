@@ -69,7 +69,7 @@ def save_stdout(filename, func, *pos_args, **var_args):
 
 
 def xyxy_to_darknet(img_path, x0, y0, x1, y1):
-    
+
     img = cv2.imread(img_path)
     h, w, _ = img.shape
 
@@ -82,6 +82,5 @@ def xyxy_to_darknet(img_path, x0, y0, x1, y1):
     rect_w = x1 - x0
     x_center = rect_w / 2 + x0
     y_center = rect_h / 2 + y0
-
 
     return x_center / w, y_center / h, rect_w / w, rect_h / h

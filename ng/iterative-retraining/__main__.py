@@ -133,7 +133,7 @@ if __name__ == "__main__":
 
             else:
                 # Benchmark data at the edge
-                bench_file = bench.benchmark_avg(
+                results_df = bench.benchmark_avg(
                     sample_labeled,
                     name,
                     1,
@@ -141,6 +141,10 @@ if __name__ == "__main__":
                     config["conf_check_num"],
                     config,
                 )
+
+                bench_file = f"{config['output']}/{name}_benchmark_1_{last_epoch}.csv"
+
+                bench.save_results(results_df, bench_file)
 
                 # Create samples from the benchmark
                 results, _ = bench.load_data(bench_file, by_actual=False)

@@ -72,14 +72,14 @@ def match_detections(model, img_folder, detections, config):
         targets[:, 2:] *= config["img_size"]
 
         labels = targets[:, 1].tolist()
-        
+
         # We wish to return a list of pairs (actual label, detection),
         # where either actual label or detection may be None
         overlaps = utils.get_batch_statistics(
             detections, targets, iou_threshold=config["iou_thres"]
         )[0]
         print(labels)
-        
+
         detections = detections.squeeze(0)
         for i in range(len(overlaps[0])):
             for detection in detections:
@@ -100,7 +100,6 @@ def match_detections(model, img_folder, detections, config):
             pairs.append((None, detection))
     print(pairs)
     return pairs
-
 
 
 def save_image(detections, path, opt, classes, best_label_only=False):

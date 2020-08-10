@@ -174,7 +174,7 @@ def benchmark(img_folder, prefix, epoch, config):
     return benchmark_avg(img_folder, prefix, epoch, epoch, 1, config)
 
 
-def benchmark_avg(img_folder, prefix, start, end, total, config):
+def benchmark_avg(img_folder, prefix, start, end, total, config, roll=False):
     loader = DataLoader(
         img_folder, batch_size=1, shuffle=False, num_workers=config["n_cpu"],
     )
@@ -192,14 +192,16 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
         # "h",
     ]
 
-    results = pd.DataFrame(columns=metrics)
-    results.set_index("file")
+    results = pd.DataFrame(columns=metrics).set_index("file")
 
     classes = utils.load_classes(config["class_list"])
 
-    checkpoints_i = list(
-        sorted(set(np.linspace(start, end, total, dtype=np.dtype(np.int16))))
-    )
+    if roll:
+        checkpoints_i = [i for i in range(max(1, end - total + 1), end + 1)]
+    else:
+        checkpoints_i = list(
+            sorted(set(np.linspace(start, end, total, dtype=np.dtype(np.int16))))
+        )
 
     single = total == 1
     if not single:
@@ -239,7 +241,7 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
             region_detections = yoloutils.group_average_bb(
                 row["detections"], total, config["nms_thres"]
             )
-            
+
             # evaluate.save_image(region_detections, row["file"], config, classes)
             if len(region_detections) == 1:
                 best_detection = evaluate.get_most_conf(region_detections)
@@ -260,19 +262,16 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
             row["conf"] = 0.0
             row["hit"] = False
 
-    filename = (
-        f"{prefix}_benchmark_{start}.csv"
-        if single
-        else f"{prefix}_benchmark_avg_{start}_{end}.csv"
-    )
-    out_path = f"{config['output']}/{filename}"
-    output = open(out_path, "w+")
+    return results
 
+
+def save_results(results, filename):
+    output = open(filename, "w+")
+
+    metrics = results.columns.tolist()
     metrics.remove("detections")
     results.to_csv(output, columns=metrics, index=False)
     output.close()
-
-    return out_path
 
 
 def series_benchmark_loss(img_folder, prefix, start, end, delta, config, filename=None):
