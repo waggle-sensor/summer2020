@@ -9,14 +9,14 @@ What's the best way to do this? Well, to make an all encompassing image sounds l
 
 That's where the Chameleon platform comes in. Chameleon is a testbed of hardware available for the scientific community to run experiments on. Chameleon has hardware available for Sage users at three different locations. The CHI@UC and CHI@TACC site are both bare-metal sites meaning that only physical hardware is available. While the KVM@TACC site, is a virtual machine site. Users simply have to, create a reservation on the Chameleon Cloud, launch an instance, and attach an ip address to their instance. After doing these three steps, users are ready to start using there very own Chameleon machine.
 
-![Overview of Chameleon instance website](images/chameleon.png=1000x)
+![Overview of Chameleon instance website](images/chameleon.png)
 
 Combined with the all encompassing image, users can easily access and use Sage software and hardware. A list of hardware can be seen on the [Sage GitHub repository](https://github.com/sagecontinuum/sage/blob/master/architecture_overview.md). Alternatively, a list of Sage software resources can also be found the [Sage GitHub repository](https://github.com/sagecontinuum/sage/blob/master/architecture_overview.md). Included in with the Chameleon-Sage image is a developer environment where users can create and test their machine learning algorithms in an environment that mimics Waggle edge processors and nodes. Sage users will also have access to a local server endpoint that they can deploy. This server endpoint can be used as an entry point to facilitate the process of to pushing and pulling data for their experiments already running on Sage nodes. Many more features will be made available on this image.
 
 ### My Work
 In order to create a streamline Sage services with Chameleon hardware, the all encompassing Sage image should include all of Sage's software and services and be compatible with Sage and Chameleon hardware. That's where my work comes in. I am working on creating this Chameleon-Sage image that includes all of Sage's sofware and services which, is, in turn, compatible with Chameleon and Sage hardware. The rest of this post is dedicated to explaining all of the Sage resources I am including in the Chameleon-Sage image, as well as their purposes, and significance.
 
-##### Features included in Image
+#### Features included in Image
 [Virutal-Waggle](https://github.com/waggle-sensor/waggle-node) is one of the services that Sage provides its users. Virtual-Waggle is a programming environment where users can build and test edge-processing code in an environment that mimics Sage and Waggle nodes. User can also use Virtual-Waggle to test their Machine learning algorithms in an environment that mimics a waggle node, so users can know what to expect before deploying it.
 After seeing its usefulness, its almost no brainer to why it should be included into this all inclusive Chameleon-Sage image. Included within the Chameleon-Sage image is all the software necessary to run Virtual-Waggle. The Chameleon-Sage image pulls the most recent version of virtual-waggle from the Sage repository for use. When a user runs `Virutal-waggle up`, after booting into the Chameleon-Sage image, they will be able to pull the most up-to-date version of virtual-waggle from Dockerhub. That way, if there are any updates made to virtual-waggle, a user will not be inconvenienced, and updates can be rolled out smoothly.
 
@@ -24,7 +24,7 @@ In order to stream line the launching of virtual-waggle, the feature of running 
 
 One feature that I worked on extensively is a feature to deploy and scale virtual-waggle. Lets say, for instance, an instructor, wanted launch multiple instance of virtual-waggle for their students. The instructor should be able to easily manage this. To solve this problem, I worked on a prototype Kubernetes deployment where a person specify the amount of instances they wanted of virtual-waggle, and pods running the necessary docker containers containers (pulled from Dockerhub) will be deployed and managed. Though more work is required to make this feature a reality, when implemented, it will allow AI at the edge to be deployed in a classroom setting.
 
-##### Versions of Image
+#### Versions of Image
 Sage recognizes that users have all sort of needs when running neural networks. That's why users will have the option of different specialized versions of the Chameon-Sage image. They are currently three different types of Chameleon-Sage images all available on the Chameleon catalog.
 
 Sage-VirtualWaggle-Ubuntu18.04 - This is the standard Chameleon-Sage image that is available at all three Chameleon sites. This image includes all of the previously stated features and runs with Ubuntu 18.04
