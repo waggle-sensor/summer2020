@@ -813,3 +813,17 @@ This seems to confirm the large number of false negatives, as does the decreasin
 * Deployed training using a Normal PDF centered at 0.5, with standard deviation of 0.25
 * Aside from this, a binning with undersampling and even distribution across confidence quintiles will likely be the last method I try
 * Might move onto testing these methods on preexisting models
+
+## Week 9
+
+**Monday, August 10**
+
+* Wrote rolling average functions for benchmarking
+* Wrote analyses functions for correlation between two variables (e.g. sample confidence and resulting precision on next batch iteration)
+* Finished multilabel benchmarking options
+* Created confidence visualization function of sampled images and those used for retraining
+* Finished binning sampling algorithm
+* Added support for non-stratified sampling
+* Ran rolling average analysis on previous sampling methods
+  * Todo: look into other methods for judging sample batch precision/accuracy, aside from the "built-in" (already generated) average of 10 checkpoints
+* Running binning of quintiles and normal curve overnight
