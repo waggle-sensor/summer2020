@@ -159,8 +159,47 @@ def sort_by_epoch(pattern):
     files = glob.glob(pattern)
     return sorted(files, key=get_epoch)
 
-def visualize_conf(prefix, benchmark, filter=False):
-    pass
+
+def visualize_conf(prefix, benchmark, sample_filter=False):
+    if sample_filter:
+        folder = "/".join(benchmark.split("/")[:-1])
+        epoch = get_epoch(benchmark)
+        sampled_imgs = glob.glob(f"{folder}/{prefix}*_sample_{epoch}.txt")[0]
+        results, _ = bench.load_data(benchmark, by_actual=True, filter=sampled_imgs)
+    else:
+        results, _ = bench.load_data(benchmark, by_actual=True)
+
+    num_rows = len(results)
+    fig, axs = plt.subplots(num_rows, 3)
+    plt.subplots_adjust(hspace=0.35)
+
+    graphs = ["hit", "miss", "all"]
+    all_data = dict()
+    for name in graphs:
+        all_data[name] = list()
+
+    colors = ["lightgreen", "red"]
+    for i, res in enumerate(results):
+        hit_miss = [[row["conf"] for row in data] for data in res.hits_misses()]
+
+        axs[i][0].hist(hit_miss[0], bins=15, color=colors[0], range=(0, 1))
+        axs[i][1].hist(hit_miss[1], bins=15, color=colors[1], range=(0, 1))
+        axs[i][2].hist(hit_miss, bins=15, color=colors, stacked=True, range=(0, 1))
+
+        if res.name == "All":
+            acc = round(bench.mean_accuracy(results[:-1]), 3)
+            prec = round(bench.mean_precision(results[:-1]), 3)
+        else:
+            acc = round(res.accuracy(), 3)
+            prec = round(res.precision(), 3)
+
+        title = f"Class: {res.name} (acc={acc}, " + f"prec={prec}, n={res.pop})"
+        axs[i][1].set_title(title)
+
+    fig.set_figheight(2.5 * num_rows)
+    fig.set_figwidth(10)
+    fig.savefig(benchmark[:-4] + "_viz.pdf", bbox_inches="tight")
+
 
 def tabulate_batch_samples(config, prefix, silent=False, filter=False):
     """Analyze accuracy/precision relationships and training duration
@@ -205,9 +244,7 @@ def tabulate_batch_samples(config, prefix, silent=False, filter=False):
 
 def linear_regression(df):
     x = df.iloc[:, 0].values.reshape(-1, 1)
-    y = df.iloc[:, 1].values.reshape(
-        -1, 1
-    )
+    y = df.iloc[:, 1].values.reshape(-1, 1)
     linear_regressor = LinearRegression()
     linear_regressor.fit(x, y)
     print("R^2:", linear_regressor.score(x, y))
@@ -219,6 +256,7 @@ def linear_regression(df):
     x_sm = sm.add_constant(x)
     est = sm.OLS(y, x_sm).fit()
     print(est.summary())
+
 
 def compare_benchmarks(prefixes, metric, metric2=None):
     """Compares benchmarks on sample sets (before retraining) for sample methods."""
@@ -232,11 +270,7 @@ def compare_benchmarks(prefixes, metric, metric2=None):
 
     if metric2:
         df = pd.DataFrame(
-            columns=[
-                "Method",
-                f"avg. {opt.metric} (IV)",
-                f"avg. {opt.metric2} (DV)",
-            ]
+            columns=["Method", f"avg. {opt.metric} (IV)", f"avg. {opt.metric2} (DV)",]
         ).set_index("Method")
 
         for prefix in prefixes:
@@ -244,12 +278,12 @@ def compare_benchmarks(prefixes, metric, metric2=None):
                 config, prefix, silent=True, filter=True
             )[metric]
 
-            dep_var = tabulate_batch_samples(
-                config, prefix, silent=True, filter=False
-            )[metric2]
+            dep_var = tabulate_batch_samples(config, prefix, silent=True, filter=False)[
+                metric2
+            ]
 
             df.loc[prefix] = [indep_var[:-1].mean(), dep_var[1:].mean()]
-        
+
         print(df)
         linear_regression(df)
 
@@ -263,13 +297,13 @@ if __name__ == "__main__":
     parser.add_argument("--avg", action="store_true", default=False)
     parser.add_argument("--roll_avg", type=int, default=None)
     parser.add_argument("--tabulate", action="store_true", default=False)
+    parser.add_argument("--visualize_conf", default=None)
     parser.add_argument("--filter_sample", action="store_true", default=False)
     parser.add_argument("--metric", default="prec")
     parser.add_argument("--metric2", default=None)
     opt = parser.parse_args()
 
     config = utils.parse_retrain_config(opt.config)
-
 
     if opt.tabulate:
         if opt.prefix != "init":
@@ -286,7 +320,10 @@ if __name__ == "__main__":
             ]
 
             compare_benchmarks(prefixes, opt.metric, opt.metric2)
-            
+
+    elif opt.visualize_conf:
+        visualize_conf(opt.prefix, opt.visualize_conf, opt.filter_sample)
+
     elif opt.prefix != "init":
         tabulate_batch_samples(config, opt.prefix)
         series_benchmark(config, opt.prefix, avg=opt.avg, roll=opt.roll_avg)
