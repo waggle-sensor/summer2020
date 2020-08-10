@@ -13,7 +13,7 @@ from matplotlib.ticker import NullLocator
 
 from terminaltables import AsciiTable
 
-import yolov3.utils as utils
+from yolov3 import utils
 
 
 def detect(input_imgs, conf_thres, model, nms_thres=0.5, nms=True):
@@ -44,6 +44,63 @@ def get_most_conf(detections):
         if most_conf is None or d[5] > most_conf[5]:
             most_conf = d
     return most_conf
+
+
+def match_detections(model, img_folder, detections, config):
+    """Match the labels for an image with its bounding box"""
+    dataset = img_folder.to_dataset()
+
+    dataloader = torch.utils.data.DataLoader(
+        dataset,
+        batch_size=1,
+        shuffle=False,
+        num_workers=1,
+        collate_fn=dataset.collate_fn,
+    )
+
+    device = utils.get_device()
+    Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
+    boxes = list()
+    for (_, imgs, targets) in dataloader:
+
+        imgs = Variable(imgs.to(device).type(Tensor), requires_grad=False)
+
+        _, outputs = model(imgs, Variable(targets.to(device)))
+
+        # Rescale target
+        targets[:, 2:] = utils.xywh2xyxy(targets[:, 2:])
+        targets[:, 2:] *= config["img_size"]
+
+        labels = targets[:, 1].tolist()
+        
+        # We wish to return a list of pairs (actual label, detection),
+        # where either actual label or detection may be None
+        overlaps = utils.get_batch_statistics(
+            detections, targets, iou_threshold=config["iou_thres"]
+        )[0]
+        print(labels)
+        
+        detections = detections.squeeze(0)
+        for i in range(len(overlaps[0])):
+            for detection in detections:
+
+                if detection[-1] == overlaps[2][i] and detection[-2] == overlaps[1][i]:
+                    boxes.append((overlaps[0][i], detection))
+                    break
+        pairs = list()
+        for label in labels:
+            correct_box = None
+            for i, (hit, detection) in enumerate(boxes):
+                if hit and detection[-1] == label:
+                    correct_box = detection
+                    break
+            del boxes[i]
+            pairs.append((label, correct_box))
+        for (hit, detection) in boxes:
+            pairs.append((None, detection))
+    print(pairs)
+    return pairs
+
 
 
 def save_image(detections, path, opt, classes, best_label_only=False):

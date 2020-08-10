@@ -80,6 +80,14 @@ def iterative_stratification(images, proportions):
     return subsets
 
 
+def bin_sample(result, desired, num_bins, curve, start=0.0, end=1.0):
+    delta = (end - start) / num_bins
+    print(delta)
+    bins = [in_range_sample(result, i * delta, (i + 1) * delta) for i in range(num_bins)]
+    print(bins)
+    # TODO finish this
+
+
 def prob_sample(result, desired, prob_func, *func_args, **func_kwargs):
     """Generate a list of files for sampling.
     result:     a ClassResult holding a list of images
@@ -148,12 +156,14 @@ def iqr_sample(result, thresh=0.5):
     return prob_sample(result, in_range(result, q1, q3), const, q1, q3)
 
 
-def normal_sample(result, p=0.75, thresh=0.5):
+def normal_sample(result, avg=None, stdev=None, p=0.75, thresh=0.5):
     """Sample all within one standard deviation of mean."""
     confidences = result.get_confidences(thresh)
 
-    avg = stats.mean(confidences)
-    stdev = stats.stdev(confidences)
+    if avg is None:
+        avg = stats.mean(confidences)
+    if stdev is None:
+        stdev = stats.stdev(confidences)
     print(f"avg: {avg}, stdev: {stdev}")
 
     return prob_sample(
@@ -204,7 +214,9 @@ def create_sample(results, name, max_samp, sample_func, **func_args):
     for result in results:
         if result.name == "All":
             continue
-        retrain_by_class.append(sample_func(result, **func_args))
+        sample = sample_func(result, **func_args)
+
+        retrain_by_class.append(sample)
 
     retrain = list()
 
@@ -212,10 +224,13 @@ def create_sample(results, name, max_samp, sample_func, **func_args):
     # to distribute samples among all (inferred) classes
     retrain_by_class = sorted(retrain_by_class, key=len)
     for i, sample_list in enumerate(retrain_by_class):
+        # Remove duplicates due to multple labels per sample
+        sample_list = [img for img in sample_list if img not in retrain]
         random.shuffle(sample_list)
         images_left = max_samp - len(retrain)
         images_per_class = round(images_left / (len(retrain_by_class) - i + 1))
 
+        # Enforce bandwidth limit
         retrain += sample_list[: min(len(sample_list), images_left)]
 
     return retrain
@@ -238,7 +253,5 @@ def sample_histogram(retrain, title):
     plt.hist(hit_miss, bins=10, color=colors, stacked=True)
     plt.xlabel("Confidence")
     plt.ylabel("Count of Chosen")
-    if title == "iqr":
-        title = "Quartile Range"
     plt.title(title + f" (n={len(retrain)})")
     plt.show()

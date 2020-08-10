@@ -14,6 +14,7 @@ from yolov3 import evaluate
 from yolov3 import models
 from yolov3 import utils as yoloutils
 from retrain import utils
+from retrain.dataloader import LabeledSet
 
 
 def load_data(output, by_actual=True, add_all=True, filter=None):
@@ -99,17 +100,14 @@ class ClassResults:
             self.pop += 1
 
     def precision(self):
-        try:
-            predicted_cond_pos = len(self.data["true_pos"]) + len(
-                self.data["false_pos"]
-            )
-            return len(self.data["true_pos"]) / predicted_cond_pos
-        except ZeroDivisionError:
-            return 0.0
+        predicted_cond_pos = (
+            len(self.data["true_pos"]) + len(self.data["false_pos"]) + 1e-16
+        )
+        return len(self.data["true_pos"]) / predicted_cond_pos
 
     def recall(self):
         return len(self.data["true_pos"]) / (
-            len(self.data["true_pos"]) + len(self.data["false_neg"])
+            (len(self.data["true_pos"]) + len(self.data["false_neg"]) + 1e-16)
         )
 
     def accuracy(self):
@@ -188,10 +186,10 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
         "detected",
         "conf",
         "hit",
-        "cen_x",
-        "cen_y",
-        "w",
-        "h",
+        # "cen_x",
+        # "cen_y",
+        # "w",
+        # "h",
     ]
 
     results = pd.DataFrame(columns=metrics)
@@ -219,7 +217,7 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
                 actual_class = classes[
                     img_folder.get_classes(utils.get_label_path(path))[0]
                 ]
-                results.loc[path] = [path, None, actual_class] + [None] * 7
+                results.loc[path] = [path, None, actual_class] + [None] * 3
 
             detections = evaluate.detect(
                 input_imgs, config["conf_thres"], model, config["nms_thres"]
@@ -241,21 +239,22 @@ def benchmark_avg(img_folder, prefix, start, end, total, config):
             region_detections = yoloutils.group_average_bb(
                 row["detections"], total, config["nms_thres"]
             )
-
+            
             # evaluate.save_image(region_detections, row["file"], config, classes)
+            if len(region_detections) == 1:
+                best_detection = evaluate.get_most_conf(region_detections)
 
-            best_detection = evaluate.get_most_conf(region_detections)
-
-            # TODO: Adjust this for multiple detections per image
-            (x1, y1, x2, y2, _, best_conf, best_class) = best_detection.numpy()
-            row["detected"] = classes[int(best_class)]
-            row["conf"] = best_conf
-            row["hit"] = row["actual"] == row["detected"]
-            (cen_x, cen_y, w, h) = utils.xyxy_to_darknet(path, x1, y1, x2, y2)
-            row["w"] = w
-            row["h"] = h
-            row["cen_x"] = cen_x
-            row["cen_y"] = cen_y
+                # TODO: Adjust this for multiple detections per image
+                (x1, y1, x2, y2, _, best_conf, best_class) = best_detection.numpy()
+                row["detected"] = classes[int(best_class)]
+                row["conf"] = best_conf
+                row["hit"] = row["actual"] == row["detected"]
+            else:
+                test_img = LabeledSet([row["file"]], len(classes))
+                matches = evaluate.match_detections(
+                    model, test_img, region_detections.unsqueeze(0), config
+                )
+                # TODO - finish this and solve the indexing problem with filename
         else:
             row["detected"] = ""
             row["conf"] = 0.0

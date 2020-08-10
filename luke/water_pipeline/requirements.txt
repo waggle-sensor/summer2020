@@ -1,0 +1,6 @@
+scikit-learn
+scikit-image
+joblib
+mydia
+numpy
+matplotlib

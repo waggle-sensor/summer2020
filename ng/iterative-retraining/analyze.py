@@ -10,9 +10,10 @@ import retrain.benchmark as bench
 
 
 def get_epoch_splits(config, prefix, incl_last_epoch=False, avg=False):
-    splits = list(
-        map(get_epoch, sort_by_epoch(f"{config['output']}/{prefix}*sample*.txt"))
-    )
+    splits = [
+        get_epoch(file)
+        for file in sort_by_epoch(f"{config['output']}/{prefix}*sample*.txt")
+    ]
     if incl_last_epoch:
         last_checkpoint = sort_by_epoch(f"{config['checkpoints']}/{prefix}*.pth")[-1]
         splits.append(get_epoch(last_checkpoint))
@@ -95,12 +96,19 @@ def series_benchmark(config, prefix, delta=2, avg=False):
             test_sets.pop(f"cur_iter{i}")
 
 
-def aggregate_results(config, prefix, delta=2, avg=False):
-    names = ["init", "sample", "all_iter", "all"]
+def aggregate_results(config, prefix, metric, delta=2, avg=False):
+    names = [
+        "init",
+        "sample",
+        "all_iter",
+        "all",
+    ]
     epoch_splits = get_epoch_splits(config, prefix, True)
-    # names += [f"cur_iter{i}" for i in range(len(epoch_splits))]
+    names += [f"cur_iter{i}" for i in range(len(epoch_splits))]
 
-    results = pd.DataFrame(columns=["test_set", "epoch", "prec", "acc", "mean_conf"])
+    results = pd.DataFrame(
+        columns=["test_set", "epoch", "prec", "acc", "conf", "recall"]
+    )
 
     out_folder = f"{config['output']}/{prefix}-series"
     if avg:
@@ -117,17 +125,18 @@ def aggregate_results(config, prefix, delta=2, avg=False):
                 "epoch": i,
                 "prec": bench.mean_precision(epoch_res),
                 "acc": bench.mean_accuracy(epoch_res),
-                "mean_conf": bench.mean_conf(epoch_res),
+                "conf": bench.mean_conf(epoch_res),
+                "recall": bench.mean_recall(epoch_res),
             }
             results = results.append(new_row, ignore_index=True)
 
     results.to_csv(f"{out_folder}/{prefix}-series-stats.csv")
 
     plt.xlabel("Epoch")
-    plt.ylabel("Avg. Precision")
+    plt.ylabel(f"Avg. {metric}")
     for name in names:
         filtered_data = results[results["test_set"] == name]
-        plt.plot(filtered_data["epoch"], filtered_data["prec"], label=name)
+        plt.plot(filtered_data["epoch"], filtered_data[metric], label=name)
     plt.legend()
     for split in epoch_splits:
         plt.axvline(x=split, color="black", linestyle="dashed")
@@ -151,7 +160,7 @@ def tabulate_batch_samples(config, prefix, silent=False, filter=False):
     checkpoints = sort_by_epoch(f"{config['checkpoints']}/{prefix}*.pth")
 
     data = pd.DataFrame(
-        columns=["Batch", "Prec", "Acc", "Conf", "Recall", "Epochs Trained"]
+        columns=["batch", "prec", "acc", "conf", "recall", "epochs trained"]
     )
 
     for i, benchmark in enumerate(benchmarks):
@@ -160,6 +169,7 @@ def tabulate_batch_samples(config, prefix, silent=False, filter=False):
             results, _ = bench.load_data(
                 benchmark, by_actual=True, add_all=False, filter=sampled_imgs
             )
+
         else:
             results, _ = bench.load_data(benchmark, by_actual=True, add_all=False)
 
@@ -185,43 +195,39 @@ def tabulate_batch_samples(config, prefix, silent=False, filter=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    # parser.add_argument(
-    #     "--start", required=True, type=int, help="starting benchmark epoch",
-    # )
-    # parser.add_argument(
-    #     "--end", required=True, type=int, help="ending benchmark epoch",
-    # )
-    # parser.add_argument(
-    #     "--delta", type=int, help="interval to plot", default=3, required=False
-    # )
     parser.add_argument("--prefix", default="init", help="prefix of model to test")
     parser.add_argument("--config", required=True)
     parser.add_argument("--out", default=None)
     parser.add_argument("--in_list", default=None)
     parser.add_argument("--avg", action="store_true", default=False)
     parser.add_argument("--tabulate", action="store_true", default=False)
+    parser.add_argument("--filter_sample", action="store_true", default=False)
+    parser.add_argument("--metric", default="prec")
     opt = parser.parse_args()
 
     config = utils.parse_retrain_config(opt.config)
 
     if opt.tabulate:
-        prefixes = ["median-below-thresh", "median-thresh", "normal", "iqr"]
-        df = pd.DataFrame()
-        for prefix in prefixes:
-            results = tabulate_batch_samples(config, prefix, silent=True, filter=False)[
-                "Recall"
+        if opt.prefix != "init":
+            tabulate_batch_samples(config, opt.prefix, filter=opt.filter_sample)
+        else:
+            prefixes = [
+                "median-below-thresh",
+                "median-thresh",
+                "normal",
+                "iqr",
+                "mid-thresh",
+                "mid-below-thresh",
             ]
-            df[prefix] = results
-        print(df)
+            df = pd.DataFrame()
+            for prefix in prefixes:
+                results = tabulate_batch_samples(
+                    config, prefix, silent=True, filter=opt.filter_sample
+                )[opt.metric]
+                df[prefix] = results
+            print(df)
 
     else:
         tabulate_batch_samples(config, opt.prefix)
         series_benchmark(config, opt.prefix, avg=opt.avg)
-        aggregate_results(config, opt.prefix, avg=opt.avg)
-
-    # images = utils.get_lines(opt.in_list)
-    # img_folder = ImageFolder(images, config["img_size"], prefix=opt.prefix)
-
-    # bench.series_benchmark_loss(
-    #     img_folder, opt.prefix, opt.start, opt.end, opt.delta, config, opt.out
-    # )
+        aggregate_results(config, opt.prefix, opt.metric, avg=opt.avg)
