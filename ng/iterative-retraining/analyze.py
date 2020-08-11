@@ -156,7 +156,7 @@ def get_epoch(filename):
 
 
 def sort_by_epoch(pattern):
-    files = glob.glob(pattern)
+    files = sorted(glob.glob(pattern))
     return sorted(files, key=get_epoch)
 
 
@@ -201,10 +201,13 @@ def visualize_conf(prefix, benchmark, sample_filter=False):
     fig.savefig(benchmark[:-4] + "_viz.pdf", bbox_inches="tight")
 
 
-def tabulate_batch_samples(config, prefix, silent=False, filter=False):
+def tabulate_batch_samples(config, prefix, silent=False, filter=False, roll=False):
     """Analyze accuracy/precision relationships and training duration
     for each batched sample using existing testing data."""
-    benchmarks = sort_by_epoch(f"{config['output']}/{prefix}_bench*.csv")
+    bench_str = f"{config['output']}/{prefix}*_benchmark"
+    bench_str += "_roll*.csv" if roll else "_avg*.csv"
+
+    benchmarks = sort_by_epoch(bench_str)
     checkpoints = sort_by_epoch(f"{config['checkpoints']}/{prefix}*.pth")
 
     data = pd.DataFrame(
@@ -212,7 +215,7 @@ def tabulate_batch_samples(config, prefix, silent=False, filter=False):
     )
 
     for i, benchmark in enumerate(benchmarks):
-        if filter:
+        if filter and prefix != "init":
             sampled_imgs = glob.glob(f"{config['output']}/{prefix}{i}_sample*")[0]
             results, _ = bench.load_data(
                 benchmark, by_actual=True, add_all=False, filter=sampled_imgs
@@ -250,6 +253,8 @@ def linear_regression(df):
     print("R^2:", linear_regressor.score(x, y))
     y_pred = linear_regressor.predict(x)
     plt.scatter(x, y)
+    plt.xlabel(f"sample {df.columns[0]}")
+    plt.ylabel(f"next iteration benchmark {df.columns[1]}")
     plt.plot(x, y_pred, color="r")
     plt.show()
 
@@ -258,34 +263,69 @@ def linear_regression(df):
     print(est.summary())
 
 
-def compare_benchmarks(prefixes, metric, metric2=None):
+def compare_benchmarks(prefixes, metric, metric2=None, roll=False):
     """Compares benchmarks on sample sets (before retraining) for sample methods."""
     df = pd.DataFrame()
     for prefix in prefixes:
         results = tabulate_batch_samples(
-            config, prefix, silent=True, filter=opt.filter_sample
+            config, prefix, silent=True, filter=opt.filter_sample, roll=roll
         )[metric]
         df[prefix] = results
-    print(df)
+    print(df.transpose())
 
     if metric2:
+        if "init" in prefixes:
+            prefixes.remove("init")
         df = pd.DataFrame(
-            columns=["Method", f"avg. {opt.metric} (IV)", f"avg. {opt.metric2} (DV)",]
+            columns=["Method", f"avg. {opt.metric}", f"avg. {opt.metric2}",]
         ).set_index("Method")
 
         for prefix in prefixes:
-            indep_var = tabulate_batch_samples(
-                config, prefix, silent=True, filter=True
-            )[metric]
+            indep_var = tabulate_batch_samples(config, prefix, silent=True, filter=True)
+            dep_var = tabulate_batch_samples(config, prefix, silent=True, filter=False)
 
-            dep_var = tabulate_batch_samples(config, prefix, silent=True, filter=False)[
-                metric2
+            df.loc[prefix] = [
+                indep_var[metric][:-1].mean(),
+                dep_var[metric2][1:].mean(),
             ]
-
-            df.loc[prefix] = [indep_var[:-1].mean(), dep_var[1:].mean()]
 
         print(df)
         linear_regression(df)
+
+
+def benchmark_batch_set(prefix, config, roll=None):
+    """See initial training performance on batch splits."""
+    out_dir = config["output"]
+    num_classes = len(utils.load_classes(config["class_list"]))
+    batch_sets = sorted(glob.glob(f"{out_dir}/sample*.txt"))
+
+    epoch_splits = get_epoch_splits(config, prefix, True)
+    if prefix == "init":
+        epoch_splits *= len(batch_sets)
+
+    for i, batch_set in enumerate(batch_sets):
+        batch_folder = LabeledSet(batch_set, num_classes)
+        if len(batch_folder) < config["sampling_batch"]:
+            break
+
+        end_epoch = epoch_splits[i]
+        num_ckpts = roll if roll is not None else config["conf_check_num"]
+        filename = f"{out_dir}/{prefix}{i}_benchmark_"
+        filename += "roll_" if roll else "avg_"
+        filename += f"{end_epoch}.csv"
+
+        if os.path.exists(filename):
+            continue
+        if roll is not None:
+            results = bench.simple_benchmark_avg(
+                batch_folder, prefix, 1, end_epoch, num_ckpts, config, roll=True
+            )
+        else:
+            results = bench.simple_benchmark_avg(
+                batch_folder, prefix, 1, end_epoch, num_ckpts, config,
+            )
+
+        bench.save_results(results, filename)
 
 
 if __name__ == "__main__":
@@ -297,6 +337,7 @@ if __name__ == "__main__":
     parser.add_argument("--avg", action="store_true", default=False)
     parser.add_argument("--roll_avg", type=int, default=None)
     parser.add_argument("--tabulate", action="store_true", default=False)
+    parser.add_argument("--benchmark", action="store_true", default=False)
     parser.add_argument("--visualize_conf", default=None)
     parser.add_argument("--filter_sample", action="store_true", default=False)
     parser.add_argument("--metric", default="prec")
@@ -305,27 +346,35 @@ if __name__ == "__main__":
 
     config = utils.parse_retrain_config(opt.config)
 
+    prefixes = [
+        "median-below-thresh",
+        "median-thresh",
+        "normal",
+        "iqr",
+        "mid-thresh",
+        "mid-below-thresh",
+        "mid-normal",
+        "bin-quintile",
+        "bin-normal",
+        "init",
+    ]
+
+    if opt.benchmark:
+        for prefix in prefixes:
+            benchmark_batch_set(prefix, config, opt.roll_avg)
     if opt.tabulate:
         if opt.prefix != "init":
-            tabulate_batch_samples(config, opt.prefix, filter=opt.filter_sample)
+            tabulate_batch_samples(
+                config, opt.prefix, filter=opt.filter_sample, roll=opt.roll_avg
+            )
         else:
-            prefixes = [
-                "median-below-thresh",
-                "median-thresh",
-                "normal",
-                "iqr",
-                "mid-thresh",
-                "mid-below-thresh",
-                "mid-normal",
-            ]
-
-            compare_benchmarks(prefixes, opt.metric, opt.metric2)
+            compare_benchmarks(prefixes, opt.metric, opt.metric2, roll=opt.roll_avg)
 
     elif opt.visualize_conf:
         visualize_conf(opt.prefix, opt.visualize_conf, opt.filter_sample)
 
     elif opt.prefix != "init":
-        tabulate_batch_samples(config, opt.prefix)
+        tabulate_batch_samples(config, opt.prefix, roll=opt.roll)
         series_benchmark(config, opt.prefix, avg=opt.avg, roll=opt.roll_avg)
         aggregate_results(
             config, opt.prefix, opt.metric, avg=opt.avg, roll=opt.roll_avg

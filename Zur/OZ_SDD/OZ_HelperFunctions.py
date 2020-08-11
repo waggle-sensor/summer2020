@@ -1,71 +1,43 @@
 # import packages
 import cv2
 import numpy as np
-import dlib
-import imutils
-from OZ_NMS import non_max_suppression
+from scipy.spatial import distance as dist
 
 
-# yolo detection function
-# input: current frame, yolo detector, confidence threshold, NMS threshold
-# output: list of dlib trackers used in tracking phase in main function
-def yolo_detection(frame, yolo_net, layerNames, confid, threshold):
-    # updating status and initializing list of trackers
-    trackers = []
-    (H, W) = frame.shape[:2]
+def order_points(pts):
+    """
+    # sort 4 points based on their x-coordinate
+    xSorted = pts[np.argsort(pts[:, 0]), :]
 
-    # convert color from BGR to RGB, used for dlib trackers
-    rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    # grab left 2 points and right 2 points
+    tlbl = xSorted[:2, :]
+    trbr = xSorted[2:, :]
 
-    # passing frame through YOLO detector
-    blob = cv2.dnn.blobFromImage(frame, 1 / 255.0, (416, 416), swapRB=True, crop=False)
-    yolo_net.setInput(blob)
-    layerOutputs = yolo_net.forward(layerNames)
+    # sort left points by y-coordinate to separate tl and bl
+    tlbl = tlbl[np.argsort(tlbl[:, 1]), :]
+    (tl, bl) = tlbl
 
-    # initializing lists of detected bounding boxes
-    boxes = []
+    # calculate distance between tl and 2 right points
+    # larger distance will be br, smaller distance will be tr
+    D = dist.cdist(tl[np.newaxis], trbr, "euclidean")[0]
+    (br, tr) = trbr[np.argsort(D)[::-1], :]
 
-    # loop over each of the layer outputs
-    for output in layerOutputs:
-        # loop over each of the detections
-        for detection in output:
-            # extract the class ID and confidence of the current object detection
-            scores = detection[5:]
-            classID = np.argmax(scores)
-            confidence = scores[classID]
+    # return the coordinates in
+    return np.float32(np.array([bl, br, tr, tl]))
+    """
 
-            # filtering detections to just people
-            if classID == 0 and confidence > confid:
-                # scale the bounding box coordinates back relative to the size of the image
-                # *Note: YOLO  returns the center (x, y)-coordinates of bbox, then width and height
-                box = detection[0:4] * np.array([W, H, W, H])
-                (centerX, centerY, width, height) = box.astype("int")
+    xSorted = pts.sort(key=lambda x: x[0])
+    leftpts = xSorted[:2]
+    rightpts = xSorted[2:]
 
-                # using center, width, and height to calculate top-left and bottom-right points
-                startX = int(centerX - (width / 2))
-                startY = int(centerY - (height / 2))
-                endX = int(centerX + (width / 2))
-                endY = int(centerY + (height / 2))
+    if leftpts[0][1] < leftpts[1][1]:
+        tl = leftpts[0]
+        bl = leftpts[1]
+    else:
+        tl = leftpts[1]
+        bl = leftpts[0]
 
-                # update our list of bounding box coordinates
-                box = (startX, startY, endX, endY)
-                boxes.append(box)
-
-    # apply non-maximum suppression algorithm
-    bboxes = np.array(boxes).astype(int)
-    boxes = non_max_suppression(bboxes, threshold)
-
-    if len(boxes) > 0:
-        for box in boxes:
-            # construct a dlib rectangle object from the bounding box coordinates
-            tracker = dlib.correlation_tracker()
-            rect = dlib.rectangle(box[0], box[1], box[2], box[3])
-
-            # start the dlib correlation tracker and add to list of trackers
-            tracker.start_track(rgb, rect)
-            trackers.append(tracker)
-
-    return trackers
+    return pts
 
 
 # function to transform and calculate bottom points of each bounding boxer
@@ -159,15 +131,20 @@ def street_output(frame, box_list, box_pairs):
     return frame
 
 
+# function that creates the bird's eye view output for current frame
+# input: current frame, list of distance pairs, list of warped box points, bird's eye view window scale
+# output: bird's eye view representation for current frame
 def bird_output(frame, distance_pairs, bottom_points, scale_w, scale_h,):
     (H, W) = frame.shape[:2]
 
+    # creating white window that is the size of the bird's eye view image
     blank_image = np.zeros((int(H * scale_h), int(W * scale_w), 3), np.uint8)
     blank_image[:] = (255, 255, 255)
 
     red = []
     green = []
 
+    # if distance is less than minimum safe distance, append coordinate to red list
     for i in range(len(distance_pairs)):
         if not distance_pairs[i][2]:
             if distance_pairs[i][0] not in red and distance_pairs[i][0] not in green:
@@ -180,6 +157,7 @@ def bird_output(frame, distance_pairs, bottom_points, scale_w, scale_h,):
                                    (int(distance_pairs[i][1][0] * scale_w), int(distance_pairs[i][1][1] * scale_h)),
                                    (0, 0, 255), 2)
 
+    # if distance is greater than minimum safe distance, append coordinate to green list
     for i in range(len(distance_pairs)):
         if distance_pairs[i][2]:
             if distance_pairs[i][0] not in red and distance_pairs[i][0] not in green:
@@ -187,9 +165,12 @@ def bird_output(frame, distance_pairs, bottom_points, scale_w, scale_h,):
             if distance_pairs[i][1] not in red and distance_pairs[i][1] not in green:
                 green.append(distance_pairs[i][1])
 
-    for i in bottom_points:
-        blank_image = cv2.circle(blank_image, (int(i[0] * scale_w), int(i[1] * scale_h)), 5, (0, 255, 0), 10)
+    # plot green circles for each coordinate in green list
+    for i in green:
+        blank_image = cv2.circle(blank_image, (int(i[0] * scale_w), int(i[1] * scale_h)), 7, (0, 255, 0), -1)
+
+    # plot red circles for each coordinate in red list
     for i in red:
-        blank_image = cv2.circle(blank_image, (int(i[0] * scale_w), int(i[1] * scale_h)), 5, (0, 0, 255), 10)
+        blank_image = cv2.circle(blank_image, (int(i[0] * scale_w), int(i[1] * scale_h)), 7, (0, 0, 255), -1)
 
     return blank_image

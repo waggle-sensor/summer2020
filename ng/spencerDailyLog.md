@@ -827,3 +827,18 @@ This seems to confirm the large number of false negatives, as does the decreasin
 * Ran rolling average analysis on previous sampling methods
   * Todo: look into other methods for judging sample batch precision/accuracy, aside from the "built-in" (already generated) average of 10 checkpoints
 * Running binning of quintiles and normal curve overnight
+
+**Tuesday, August 11**
+
+* Attended AI/ML scrum meeting
+* Converted confidence metric to account for object score in addition to confidence score
+* Benchmarked initial checkpoints against all test sets for a fair standard of comparison
+  * Oddly, performance on the first batch set is worse than others (0.938 vs. ~0.96 precision)
+  * It's possible we randomly generated a "harder" set, as the checkpoints used in this case don't change
+* Added feature to benchmark sampling methods on batch sets via a rolling average instead of the linearly-spaced average
+  * Using 5 epochs, this led to far worse results when looking for improvement gains
+  * Likely going to stick with the linear average - an option when running inference under real-world conditions
+* Some correlation trends, particularly in confidence of sample vs. accuracy in next iteration
+  * Need further analysis - do we use the outlier of median-below-thresh?
+* Cleaned up maingate dataset, in preparation for model training
+  * Might use a simple object detector for cars, as we don't have enough labels for each class for retraining

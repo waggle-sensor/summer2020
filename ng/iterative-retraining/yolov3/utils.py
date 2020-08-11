@@ -106,8 +106,6 @@ def get_batch_statistics(outputs, targets, iou_threshold):
 
         output = outputs[sample_i]
         pred_boxes = output[:, :4]
-
-        # We use class confidence instead of object confidence
         pred_scores = output[:, 4]
         pred_labels = output[:, -1]
 

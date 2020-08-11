@@ -128,7 +128,55 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
         # Yolo Detection
         if frameCount % skip == 0:
             status = "Detecting"
-            trackers = yolo_detection(frame, yolo_net, layerNames, confid, threshold)
+            trackers = []
+
+            # passing frame through YOLO detector
+            blob = cv2.dnn.blobFromImage(frame, 1 / 255.0, (416, 416), swapRB=True, crop=False)
+            yolo_net.setInput(blob)
+            layerOutputs = yolo_net.forward(layerNames)
+
+            # initializing lists of detected bounding boxes
+            boxes = []
+
+            # loop over each of the layer outputs
+            for output in layerOutputs:
+                # loop over each of the detections
+                for detection in output:
+                    # extract the class ID and confidence of the current object detection
+                    scores = detection[5:]
+                    classID = np.argmax(scores)
+                    confidence = scores[classID]
+
+                    # filtering detections to just people
+                    if classID == 0 and confidence > confid:
+                        # scale the bounding box coordinates back relative to the size of the image
+                        # *Note: YOLO  returns the center (x, y)-coordinates of bbox, then width and height
+                        box = detection[0:4] * np.array([W, H, W, H])
+                        (centerX, centerY, width, height) = box.astype("int")
+
+                        # using center, width, and height to calculate top-left and bottom-right points
+                        startX = int(centerX - (width / 2))
+                        startY = int(centerY - (height / 2))
+                        endX = int(centerX + (width / 2))
+                        endY = int(centerY + (height / 2))
+
+                        # update our list of bounding box coordinates
+                        box = (startX, startY, endX, endY)
+                        boxes.append(box)
+
+            # apply non-maximum suppression algorithm
+            bboxes = np.array(boxes).astype(int)
+            boxes = non_max_suppression(bboxes, threshold)
+
+            if len(boxes) > 0:
+                for box in boxes:
+                    # construct a dlib rectangle object from the bounding box coordinates
+                    tracker = dlib.correlation_tracker()
+                    rect = dlib.rectangle(box[0], box[1], box[2], box[3])
+
+                    # start the dlib correlation tracker and add to list of trackers
+                    tracker.start_track(rgb, rect)
+                    trackers.append(tracker)
 
         # Object Tracking
         else:
