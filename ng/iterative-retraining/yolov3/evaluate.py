@@ -82,7 +82,9 @@ def match_detections(model, img_folder, detections, config):
         detections = detections.squeeze(0)
         for i in range(len(overlaps[0])):
             for detection in detections:
-                if detection[-1] == overlaps[2][i] and detection[-2] == overlaps[1][i]:
+                # Find the boxes that correspond with those generated from
+                # batch statistics
+                if detection[-1] == overlaps[2][i] and detection[4] == overlaps[1][i]:
                     boxes.append((overlaps[0][i], detection))
                     break
         pairs = list()

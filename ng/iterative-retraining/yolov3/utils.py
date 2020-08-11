@@ -108,7 +108,7 @@ def get_batch_statistics(outputs, targets, iou_threshold):
         pred_boxes = output[:, :4]
 
         # We use class confidence instead of object confidence
-        pred_scores = output[:, 5]
+        pred_scores = output[:, 4]
         pred_labels = output[:, -1]
 
         true_positives = np.zeros(pred_boxes.shape[0])
@@ -139,13 +139,13 @@ def get_batch_statistics(outputs, targets, iou_threshold):
     return batch_metrics
 
 
-def group_average_bb(detections, num_ckpts, thres=0.1):
+def group_average_bb(detections, num_ckpts, iou_thres=0.1):
     # Identify overlapping regions and make list of BBs
     regions = list()
     for detection in detections.squeeze(0):
         merged = False
         for i, region in enumerate(regions):
-            if any(bbox_iou(detection.unsqueeze(0)[:, :4], region[:, :4])) > thres:
+            if any(bbox_iou(detection.unsqueeze(0)[:, :4], region[:, :4])) > iou_thres:
                 regions[i] = sort_conf(torch.cat((region, detection.unsqueeze(0)), 0))
                 merged = True
                 break
@@ -155,15 +155,21 @@ def group_average_bb(detections, num_ckpts, thres=0.1):
     for i, region in enumerate(regions):
         # For each region, sum the confidences per class
         num_classes = int(region[:, -1].max()) + 1
+        obj_conf = [0.0 for _ in range(num_classes)]
         class_conf = [0.0 for _ in range(num_classes)]
         count = [0 for _ in range(num_classes)]
 
         for bbox in region.squeeze(1):
-            class_conf[int(bbox[-1])] += bbox[-2]
-            count[int(bbox[-1])] += 1
+            class_i = int(bbox[-1])
+            obj_conf[class_i] += bbox[4]
+            class_conf[class_i] += bbox[5]
+            count[class_i] += 1
+
+        obj_conf = np.divide(obj_conf, max(num_ckpts, np.amax(count)))
+        class_conf = np.divide(class_conf, max(num_ckpts, np.amax(count)))
 
         # Retain the class with the greatest confidence
-        best_class = np.argmax(class_conf)
+        best_class = np.argmax(np.multiply(class_conf, obj_conf))
 
         # Retain the dimensions of the BB of that class with the greatest confidence
         for bbox in sort_conf(region, asc=False).squeeze(1):
@@ -171,7 +177,11 @@ def group_average_bb(detections, num_ckpts, thres=0.1):
                 best_bbox = bbox
 
         # For each final BB (one per region), divide confidence by number of checkpoints
-        best_bbox[-2] = class_conf[best_class] / max(count[best_class], num_ckpts)
+        best_bbox = best_bbox.squeeze(0)
+
+        best_bbox[4] = np.float64(obj_conf[best_class])
+        best_bbox[5] = np.float64(class_conf[best_class])
+
         if best_bbox[-2] > 1.0:
             print(region)
 

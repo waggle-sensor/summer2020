@@ -267,13 +267,13 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, roll=False):
         for (truth, box) in detection_pairs:
             if box is None:
                 continue
-            (x1, y1, x2, y2, _, conf, pred_class) = box.numpy()
+            (x1, y1, x2, y2, obj_conf, class_conf, pred_class) = box.numpy()
 
             row = {
                 "file": path,
                 "detected": classes[int(pred_class)],
                 "actual": classes[int(truth)] if truth is not None else "",
-                "conf": conf,
+                "conf": obj_conf * class_conf,
             }
             row["hit"] = row["actual"] == row["detected"]
 
