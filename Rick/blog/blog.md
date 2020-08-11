@@ -31,9 +31,9 @@ I sought out to develop a rudimentary experiment that would provide insight into
 
 ---
 
-### Data Managment with SAGE
+### Data Management with SAGE
 <p>
-For my experiment, I employed SAGE, a Cyber infrastructure for AI at the Edge. SAGE allowed me to access a weather tower and a node with a ground-based camera system, located on the Argonne National Laboratory campus, with ease to harvest data. The weather tower collected the following metadata: wind speed, wind direction, precipitation, heat flux, irrradiation, net radation, vapor pressure, and dew point temperature. The camera system consisted of three cameras: a sky facing RGB camera, a horizon-facing RGB camera, and an infrared (FLIR) camera. Through the ground-based weather sensors and cameras, I was able to collect a dataset for my desired experiment. 
+For my experiment, I employed SAGE, a Cyber infrastructure for AI at the Edge. SAGE allowed me to access a weather tower and a node with a ground-based camera system, located on the Argonne National Laboratory campus, with ease to harvest data. The weather tower collected the following metadata: wind speed, wind direction, precipitation, heat flux, irradiation, net radiation, vapor pressure, and dew point temperature. The camera system consisted of three cameras: a sky facing RGB camera, a horizon-facing RGB camera, and an infrared (FLIR) camera. Through the ground-based weather sensors and cameras, I was able to collect a dataset for my desired experiment. 
 </p>
 
 #### Sample Images from Camera System 
@@ -85,7 +85,7 @@ Hello, my name is Rick (Enrique) Nueve. I was a summer intern for the SAGE proje
 
 ---
 
-## Refrence
+## Reference
 [1] Casper Kaae Sønderby et al.MetNet: A Neural Weather  Model  for  Precipitation  Forecasting.2020. arXiv:2003.12140 [cs.LG]. <br>
 [2] StoryMapJournal.URL:https://www.arcgis.com/apps/MapJournal/index.html?appid=93ed895dfa3343eb9b821a2933decdd8. <br>
 [3] Yong  Wang  et  al.Guidelines  for  Nowcasting Techniques. Nov. 2017.ISBN: 978-92-63-11198-2 <br>
