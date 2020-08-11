@@ -425,3 +425,45 @@ I received feedback for the documentation I am working on for publishing the Cha
 I finished the backdating script and worked on testing it with edge cases. I continued to debug the `sage-gpu` image build. I also worked on squashing the commit for the Image-build-action pull request.
 #### Errors/Issues
 - error with sage-gpu image build
+
+### Monday August 3, 2020
+#### Meetings/Out of work
+10am-11am -> Daily cohort meeting
+11am-12:30pm -> Backlog refinement meeting
+#### Work done/Things learned
+I continued to debug the sage-gpu image, and squashed the commits in the pull request with my image building work. This way Jake can easily merge my branch to master. I also continued to review the Chameleon-Sage documentation.
+#### Errors/Issues
+- error with sage-gpu image build
+
+### Tuesday August 4, 2020
+#### Meetings/Out of work
+11am-11:30pm -> Daily Scrum meeting
+#### Work done/Things learned
+I worked on changing the format of images being uploaded to KVM@TACC. Zhuo mentioned that they should be in raw format so I changed `create-image.sh` to create raw images at the KVM site. Jake also reviewed the scripts I made and provided changes that I should incorportate.
+#### Errors/Issues
+- error with sage-gpu image build
+
+### Wednesday August 5, 2020
+#### Meetings/Out of work
+10:30am-11am -> Daily Scrum meeting
+11am - 12pm -> Weekly speaker series
+#### Work done/Things learned
+I continued to review and refine my code. I also worked on debugging the errors in the sage-gpu build.
+#### Errors/Issues
+- error with sage-gpu image build
+
+### Thursday August 6, 2020
+#### Meetings/Out of work
+11am - 11:30am -> Weekly speaker series
+#### Work done/Things learned
+I continued to review and refine my code. I also worked on debugging the errors in the sage-gpu build.
+#### Errors/Issues
+- error with sage-gpu image build
+
+### Friday August 7, 2020
+#### Meetings/Out of work
+11am - 11:30am -> Weekly speaker series
+#### Work done/Things learned
+I continued to review and refine my code. I also worked on debugging the errors in the sage-gpu build.
+#### Errors/Issues
+- error with sage-gpu image build
