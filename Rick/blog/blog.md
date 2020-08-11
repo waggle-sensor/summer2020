@@ -85,7 +85,7 @@ Hello, my name is Rick (Enrique) Nueve. I was a summer intern for the SAGE proje
 
 ---
 
-## Refrence
+## Reference
 [1] Casper Kaae Sønderby et al.MetNet: A Neural Weather  Model  for  Precipitation  Forecasting.2020. arXiv:2003.12140 [cs.LG]. <br>
 [2] StoryMapJournal.URL:https://www.arcgis.com/apps/MapJournal/index.html?appid=93ed895dfa3343eb9b821a2933decdd8. <br>
 [3] Yong  Wang  et  al.Guidelines  for  Nowcasting Techniques. Nov. 2017.ISBN: 978-92-63-11198-2 <br>
