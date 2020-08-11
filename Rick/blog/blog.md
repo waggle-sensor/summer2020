@@ -31,7 +31,7 @@ I sought out to develop a rudimentary experiment that would provide insight into
 
 ---
 
-### Data Managment with SAGE
+### Data Management with SAGE
 <p>
 For my experiment, I employed SAGE, a Cyber infrastructure for AI at the Edge. SAGE allowed me to access a weather tower and a node with a ground-based camera system, located on the Argonne National Laboratory campus, with ease to harvest data. The weather tower collected the following metadata: wind speed, wind direction, precipitation, heat flux, irrradiation, net radation, vapor pressure, and dew point temperature. The camera system consisted of three cameras: a sky facing RGB camera, a horizon-facing RGB camera, and an infrared (FLIR) camera. Through the ground-based weather sensors and cameras, I was able to collect a dataset for my desired experiment. 
 </p>
