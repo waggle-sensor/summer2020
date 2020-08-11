@@ -34,6 +34,16 @@ def label_sample_set(img_path):
 
 def get_sample_methods():
     return {
+        "median-thresh": (sample.median_thresh_sample, {"thresh": 0.0}),
+        "median-below-thresh": (sample.median_below_thresh_sample, {"thresh": 0.0}),
+        "iqr": (sample.iqr_sample, {"thresh": 0.0}),
+        "normal": (sample.normal_sample, {"thresh": 0.0}),
+        "mid-normal": (
+            sample.normal_sample,
+            {"thresh": 0.0, "avg": 0.5, "stdev": 0.25},
+        ),
+        "mid-thresh": (sample.in_range_sample, {"min_val": 0.5, "max_val": 1.0}),
+        "mid-below-thresh": (sample.in_range_sample, {"min_val": 0.0, "max_val": 0.5}),
         "bin-quintile": (
             sample.bin_sample,
             {"stratify": False, "num_bins": 5, "curve": sample.const, "thresh": 0.0,},
@@ -48,13 +58,6 @@ def get_sample_methods():
                 "std": 0.25,
             },
         ),
-        # "mid-normal": (sample.normal_sample, {"thresh": 0.0, "avg": 0.5, "stdev": 0.25}),
-        # "median-thresh": (sample.median_thresh_sample, {"thresh": 0.0}),
-        # "mid-thresh": (sample.in_range_sample, {"min_val": 0.5, "max_val": 1.0}),
-        # "mid-below-thresh": (sample.in_range_sample, {"min_val": 0.0, "max_val": 0.5}),
-        # "iqr": (sample.iqr_sample, {"thresh": 0.0}),
-        # "normal": (sample.normal_sample, {"thresh": 0.0}),
-        # "median-below-thresh": (sample.median_below_thresh_sample, {"thresh": 0.0}),
     }
 
 
@@ -137,10 +140,10 @@ if __name__ == "__main__":
     for name, (func, kwargs) in sample_methods.items():
         last_epoch = init_end_epoch
         for i, sample_folder in enumerate(batched_samples):
+            sample_folder.label(classes, label_sample_set)
             sample_labeled = LabeledSet(
                 sample_folder.imgs, num_classes, img_size=config["img_size"],
             )
-            sample_labeled.label(classes, label_sample_set)
 
             sample_filename = f"{config['output']}/{name}{i}_sample_{last_epoch}.txt"
             if os.path.exists(sample_filename):
@@ -150,7 +153,7 @@ if __name__ == "__main__":
             else:
                 # Benchmark data at the edge
                 bench_file = (
-                    f"{config['output']}/{name}_benchmark_avg_1_{last_epoch}.csv"
+                    f"{config['output']}/{name}{i}_benchmark_avg_1_{last_epoch}.csv"
                 )
 
                 if not os.path.exists(bench_file):

@@ -10,9 +10,11 @@ import tqdm
 DATA = "./data/"
 OUTPUT = "./output/"
 
+
 def get_root(xml_file):
     tree = ET.parse(xml_file)
     return tree.getroot()
+
 
 def get_attr_dict(obj_xml, fields=None):
     attr_str = obj_xml.find(".//attributes").text
@@ -46,6 +48,7 @@ def get_attr_dict(obj_xml, fields=None):
                     pass
     return attr_dict
 
+
 def annot_parser(xml):
     labels = list()
     try:
@@ -54,7 +57,6 @@ def annot_parser(xml):
         return labels
 
     valid_names = open("valid_names.txt", "r").read().split("\n")
-
 
     fields = [
         "file",
@@ -78,13 +80,13 @@ def annot_parser(xml):
             name = name_obj.text
             if "vehicle" in name or name in valid_names:
                 useless = False
-        
+
         attr_dict = get_attr_dict(obj, fields)
 
         if attr_dict is None:
             continue
         label = dict()
-        if "make" in attr_dict.keys() and "model" in attr_dict.keys():            
+        if "make" in attr_dict.keys() and "model" in attr_dict.keys():
             label["class"] = attr_dict["make"] + " " + attr_dict["model"]
         else:
             continue

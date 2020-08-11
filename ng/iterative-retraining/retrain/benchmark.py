@@ -321,3 +321,83 @@ def series_benchmark_loss(img_folder, prefix, start, end, delta, config, filenam
         results = evaluate.get_results(model, img_folder, config, list(), silent=True)
         out.write(f"{epoch},{results['val_loss']},{results['val_mAP']}\n")
     out.close()
+
+
+def simple_benchmark_avg(img_folder, prefix, start, end, total, config, roll=False):
+    """Deprecated version of benchmark averaging, meant for single object
+    detection within an image. Used for a fair comparison baseline on old models
+    """
+
+    loader = DataLoader(
+        img_folder, batch_size=1, shuffle=False, num_workers=config["n_cpu"],
+    )
+
+    results = pd.DataFrame(
+        columns=["file", "confs", "actual", "detected", "conf", "hit"]
+    )
+    results.set_index("file")
+
+    classes = utils.load_classes(config["class_list"])
+
+    if roll:
+        checkpoints_i = [i for i in range(max(1, end - total + 1), end + 1)]
+    else:
+        checkpoints_i = list(
+            sorted(set(np.linspace(start, end, total, dtype=np.dtype(np.int16))))
+        )
+
+    single = total == 1
+
+    if not single:
+        print("Benchmarking on epochs", checkpoints_i)
+
+    for n in tqdm(checkpoints_i, "Benchmarking epochs", disable=single):
+        ckpt = get_checkpoint(config["checkpoints"], prefix, n)
+
+        model_def = utils.parse_model_config(config["model_config"])
+        model = models.get_eval_model(model_def, config["img_size"], ckpt)
+
+        for (img_paths, input_imgs) in loader:
+            path = img_paths[0]
+            if path not in results.file:
+                actual_class = classes[
+                    img_folder.get_classes(utils.get_label_path(path))[0]
+                ]
+                results.loc[path] = [path, dict(), actual_class, None, None, None]
+
+            detections = evaluate.detect(input_imgs, config["conf_thres"], model)
+
+            confs = results.loc[path]["confs"]
+
+            for detection in detections:
+                if detection is None:
+                    continue
+                (_, _, _, _, _, cls_conf, cls_pred) = detection.numpy()[0]
+
+                if cls_pred not in confs.keys():
+                    confs[cls_pred] = [cls_conf]
+
+                else:
+                    confs[cls_pred].append(cls_conf)
+
+    for _, row in results.iterrows():
+        best_class = None
+        best_conf = float("-inf")
+
+        for class_name, confs in row["confs"].items():
+            avg_conf = sum(confs) / len(checkpoints_i)
+
+            if avg_conf > best_conf:
+                best_conf = avg_conf
+                best_class = class_name
+
+        if best_class is not None:
+            row["detected"] = classes[int(best_class)]
+            row["conf"] = best_conf
+            row["hit"] = row["actual"] == row["detected"]
+        else:
+            row["detected"] = ""
+            row["conf"] = 0.0
+            row["hit"] = False
+
+    return results
