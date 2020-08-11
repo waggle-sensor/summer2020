@@ -1,17 +1,17 @@
 # Usage
 # python OZ_SDD_2.py --input videos/test_video2.mp4
 # python OZ_SDD_2.py --input videos/pedestrians.mp4
+# python OZ_SDD_2.py --input videos/test_video4.mp4
 
 # import packages
 import cv2
 import numpy as np
 import argparse
-import datetime
-import time
 import os
 import imutils
 from imutils.video import VideoStream
 from imutils.video import FPS
+import time
 from OZ_HelperFunctions import *
 
 # **MOUSE CALLBACK FUNCTION** #########################################################################################
@@ -42,7 +42,10 @@ def get_mouse_points(event, x, y, flags, param):
 
 
 # **SOCIAL DISTANCE DETECTOR FUNCTION** ###############################################################################
-def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid, threshold):
+def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold):
+    # start timer
+    start = time.time()
+
     # start video capture
     vs = cv2.VideoCapture(vid_input)
 
@@ -54,18 +57,11 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
     # Get video height, width, and fps
     height = int(vs.get(cv2.CAP_PROP_FRAME_HEIGHT))
     width = int(vs.get(cv2.CAP_PROP_FRAME_WIDTH))
-    fps = int(vs.get(cv2.CAP_PROP_FPS))
 
     # scale video dimensions for bird's eye view output
     scale_w, scale_h = float(400 / width), float(600 / height)
 
-    # output video writer
-    fourcc = cv2.VideoWriter_fourcc(*"MJPG")
-    street_movie = cv2.VideoWriter("output/SDD_Street_Output.avi", fourcc, fps, (width, height))
-    bird_movie = cv2.VideoWriter("output/SDD_Bird_Output.avi", fourcc, fps,
-                                 (int(width * scale_w), int(height * scale_h)))
-
-    # looping over each frame of video input
+    # **LOOP OVER EVERY FRAME OF THE VIDEO** ##########################################################################
     while True:
         (grabbed, frame) = vs.read()
 
@@ -75,7 +71,7 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
             break
 
         # resizing frames for consistency, regardless of size of input video
-        # frame = imutils.resize(frame, width=750)
+        frame = imutils.resize(frame, width=1250)
 
         # grabbing frame dimensions
         if W is None or H is None:
@@ -96,6 +92,7 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
         # **IMAGE TRANSFORMATION** ####################################################################################
 
         # creating transformation matrix from first four mouse input points
+        # src = order_points(points[:4])
         src = np.float32(np.array(points[:4]))
         dst = np.float32([[0, H], [W, H], [W, 0], [0, 0]])
         matrix = cv2.getPerspectiveTransform(src, dst)
@@ -166,21 +163,24 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
         distance_pairs, box_pairs = violation_detection(boundingboxes, bottom_points, safe_dist)
 
         # count number of violations detected
-        violation_count = get_violation_count(distance_pairs)
+        violation_count, safe_count = get_violation_count(distance_pairs)
+
+        # print results every 5 frames
+        if frameCount % 5 == 0:
+            print("Pedestrians Detected: " + str(len(boundingboxes)))
+            print("Safe Pedestrians: " + str(safe_count))
+            print("Violator Pedestrians: " + str(violation_count))
 
         # **OUTPUT DISPLAY AND CLEAN UP** #############################################################################
 
         # create blank window for bird's eye view, plot transformed points as green and red circles
-        copy = np.copy(frame)
         bird_view = bird_output(frame, distance_pairs, bottom_points, scale_w, scale_h)
 
         # draw red or green rectangles on each detected person in frame
+        copy = np.copy(frame)
         street_view = street_output(copy, boundingboxes, box_pairs)
 
         if frameCount != 0:
-            # write frame to movies
-            street_movie.write(street_view)
-            bird_movie.write(bird_view)
             # show frame
             cv2.imshow('Street View', street_view)
             cv2.imshow('Bird Eye View', bird_view)
@@ -196,15 +196,19 @@ def social_distance_detector(vid_input, vid_output, yolo_net, layerNames, confid
     vs.release()
     cv2.destroyAllWindows()
 
+    # end time, print elapsed time
+    end = time.time()
+    hours, rem = divmod(end - start, 3600)
+    minutes, seconds = divmod(rem, 60)
+    print("Total Time Elapsed: {:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds))
 
-# **ARGUMENT PARSER, LOAD YOLO, CALL SDD** ############################################################################
+
+# **ARGUMENT PARSER, LOAD YOLO, CALL SDD FUNCTION** ###################################################################
 
 # constructing argument parser and parsing arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--input", type=str, default="videos/test_video4.mp4",
                 help="path to input video")
-ap.add_argument("-o", "--output", type=str,
-                help="path to optional output video")
 ap.add_argument("-y", "--yolo", default="yolo-coco",
                 help="base path to YOLO directory")
 ap.add_argument("-c", "--confidence", type=float, default=0.5,
@@ -223,9 +227,9 @@ net = cv2.dnn.readNetFromDarknet(configPath, weightsPath)
 ln = net.getLayerNames()
 ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 
-# calling mouse callback
+# calling mouse callback function
 cv2.namedWindow("image")
 cv2.setMouseCallback("image", get_mouse_points)
 
 # calling SDD function
-social_distance_detector(args["input"], args["output"], net, ln, args["confidence"], args["threshold"])
+social_distance_detector(args["input"], net, ln, args["confidence"], args["threshold"])
