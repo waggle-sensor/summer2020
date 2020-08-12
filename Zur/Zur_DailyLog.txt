@@ -275,3 +275,26 @@ Thursday 8/6
 2. Started working on NAISE Blog Post
 3. Continuing to clean up / comment code
 4. Created list of potential code improvements and additions I want to make after Monday's presentation
+
+Friday 8/7
+1. Finished NAISE Blog Post
+2. AI/ML Demo Meeting
+3. Rehearsing NAISE Presentation
+4. NAISE Presentation Dry Run
+
+Week 9 (8/10 - 8/14)
+
+Monday 8/10
+1. NAISE Presentation
+2. Edited and republished NAISE blog post
+3. Started revisiting centroid tracking algorithm for tracking across frames
+
+Tuesday 8/11
+1. AI/ML Scrum
+2. Continuing to clean up and comment helper function code
+3, NAISE Seminar
+4. Uploaded NAISE blog post to SAGE website
+5. Added feature: prints and displays text on image every frame total number of detected people, number of safe people, and number of violators
+6. Added imutils.resize for consistent dimensions for each video input used
+7. Created requirements.txt file
+
