@@ -298,3 +298,11 @@ Tuesday 8/11
 6. Added imutils.resize for consistent dimensions for each video input used
 7. Created requirements.txt file
 
+Wednesday 8/12
+1. Tried to write helper function to correctly order ROI points, unsuccessful for now
+2. Displayed text on first frame image, instructions on which points to click and in what order
+3. CELS Hang
+4. Added option to use live webcam instead of input video, analyzes continuous video stream
+5. Display pedestrians detected, safe pedestrians, and violator pedestrian values on street view output
+6. Started reviewing matplotlib, going to output time series data as graph of (violators / total people) vs. time
+

@@ -1,43 +1,6 @@
 # import packages
 import cv2
 import numpy as np
-from scipy.spatial import distance as dist
-
-
-def order_points(pts):
-    """
-    # sort 4 points based on their x-coordinate
-    xSorted = pts[np.argsort(pts[:, 0]), :]
-
-    # grab left 2 points and right 2 points
-    tlbl = xSorted[:2, :]
-    trbr = xSorted[2:, :]
-
-    # sort left points by y-coordinate to separate tl and bl
-    tlbl = tlbl[np.argsort(tlbl[:, 1]), :]
-    (tl, bl) = tlbl
-
-    # calculate distance between tl and 2 right points
-    # larger distance will be br, smaller distance will be tr
-    D = dist.cdist(tl[np.newaxis], trbr, "euclidean")[0]
-    (br, tr) = trbr[np.argsort(D)[::-1], :]
-
-    # return the coordinates in
-    return np.float32(np.array([bl, br, tr, tl]))
-    """
-
-    xSorted = pts.sort(key=lambda x: x[0])
-    leftpts = xSorted[:2]
-    rightpts = xSorted[2:]
-
-    if leftpts[0][1] < leftpts[1][1]:
-        tl = leftpts[0]
-        bl = leftpts[1]
-    else:
-        tl = leftpts[1]
-        bl = leftpts[0]
-
-    return pts
 
 
 # function to transform and calculate bottom points of each bounding boxer
@@ -114,7 +77,7 @@ def get_violation_count(distance_pairs):
 # function that draws red and green rectangles around each person depending on safe boolean
 # input: current frame, list of bounding boxes, list of box pairs tagged with safe boolean
 # output: current frame with rectangles
-def street_output(frame, box_list, box_pairs):
+def street_output(frame, box_list, box_pairs, violation_count, safe_count):
     # default everyone with a green rectangle
     for i in range(len(box_list)):
         x, y, w, h = box_list[i][:]
@@ -127,6 +90,16 @@ def street_output(frame, box_list, box_pairs):
             frame = cv2.rectangle(frame, (x1, y1), (x1 + w1, y1 + h1), (0, 0, 255), 2)
             x2, y2, w2, h2 = box_pairs[i][1]
             frame = cv2.rectangle(frame, (x2, y2), (x2 + w2, y2 + h2), (0, 0, 255), 2)
+
+    text1 = "Pedestrians Detected: " + str(len(box_list))
+    text2 = "Safe Pedestrians: " + str(safe_count)
+    text3 = "Violator Pedestrians: " + str(violation_count)
+
+    cv2.rectangle(frame, (7, 30), (225, 100), (255, 255, 255), -1)
+
+    cv2.putText(frame, text1, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+    cv2.putText(frame, text2, (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+    cv2.putText(frame, text3, (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
 
     return frame
 

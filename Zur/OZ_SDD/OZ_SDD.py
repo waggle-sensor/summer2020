@@ -1,7 +1,7 @@
 # Usage
-# python OZ_SDD_2.py --input videos/test_video2.mp4
-# python OZ_SDD_2.py --input videos/pedestrians.mp4
-# python OZ_SDD_2.py --input videos/test_video4.mp4
+# python OZ_SDD.py --input videos/test_video2.mp4
+# python OZ_SDD.py --input videos/pedestrians.mp4
+# python OZ_SDD.py --input videos/test_video4.mp4
 
 # import packages
 import cv2
@@ -9,8 +9,6 @@ import numpy as np
 import argparse
 import os
 import imutils
-from imutils.video import VideoStream
-from imutils.video import FPS
 import time
 from OZ_HelperFunctions import *
 
@@ -46,8 +44,13 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
     # start timer
     start = time.time()
 
-    # start video capture
-    vs = cv2.VideoCapture(vid_input)
+    if vid_input is None:
+        print("Loading Webcam...")
+        vs = cv2.VideoCapture(0)
+        time.sleep(2.0)
+    else:
+        print("Loading Video...")
+        vs = cv2.VideoCapture(vid_input)
 
     # initializing:
     (H, W) = (None, None)  # frame dimensions
@@ -64,10 +67,11 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
     # **LOOP OVER EVERY FRAME OF THE VIDEO** ##########################################################################
     while True:
         (grabbed, frame) = vs.read()
+        # frame = frame[1] if vid_input is None else frame
 
         # break if no frame left to grab
-        if not grabbed:
-            print("INFO: END OF VIDEO FILE")
+        if args["input"] is not None and frame is None:
+            print("End of Video File")
             break
 
         # resizing frames for consistency, regardless of size of input video
@@ -82,8 +86,16 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
             global image
             while True:
                 image = frame
+                text1 = "Click on 4 ROI points, counter-clockwise starting bottom-left"
+                text2 = "Now click on 2 points for 6-foot approximation"
+                text3 = "Click anywhere to start the video"
+                cv2.putText(image, text1, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
                 cv2.imshow("image", image)
                 cv2.waitKey(1)
+                if len(mouse_pts) >= 4:
+                    cv2.putText(image, text2, (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
+                if len(mouse_pts) == 6:
+                    cv2.putText(image, text3, (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
                 if len(mouse_pts) == 7:
                     cv2.destroyWindow("image")
                     break
@@ -108,9 +120,8 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
         pnts = np.array(points[:4], np.int32)
         cv2.polylines(frame, [pnts], True, (0, 0, 0), thickness=2)
 
-        # **PERSON DETECTION** ########################################################################################
+        # **YOLO DETECTION** ##########################################################################################
 
-        # YOLO DETECTION
         blob = cv2.dnn.blobFromImage(frame, 1 / 255.0, (416, 416), swapRB=True, crop=False)
         yolo_net.setInput(blob)
         layerOutputs = yolo_net.forward(layerNames)
@@ -165,12 +176,6 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
         # count number of violations detected
         violation_count, safe_count = get_violation_count(distance_pairs)
 
-        # print results every 5 frames
-        if frameCount % 5 == 0:
-            print("Pedestrians Detected: " + str(len(boundingboxes)))
-            print("Safe Pedestrians: " + str(safe_count))
-            print("Violator Pedestrians: " + str(violation_count))
-
         # **OUTPUT DISPLAY AND CLEAN UP** #############################################################################
 
         # create blank window for bird's eye view, plot transformed points as green and red circles
@@ -178,7 +183,7 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
 
         # draw red or green rectangles on each detected person in frame
         copy = np.copy(frame)
-        street_view = street_output(copy, boundingboxes, box_pairs)
+        street_view = street_output(copy, boundingboxes, box_pairs, violation_count, safe_count)
 
         if frameCount != 0:
             # show frame
@@ -187,6 +192,12 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
 
         # update frame count
         frameCount = frameCount + 1
+
+        # print results every 5 frames
+        if frameCount % 5 == 0:
+            print("Pedestrians Detected: " + str(len(boundingboxes)))
+            print("Safe Pedestrians: " + str(safe_count))
+            print("Violator Pedestrians: " + str(violation_count))
 
         # press 'q' to end program before video ends
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -207,7 +218,7 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
 
 # constructing argument parser and parsing arguments
 ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--input", type=str, default="videos/test_video4.mp4",
+ap.add_argument("-i", "--input", type=str,
                 help="path to input video")
 ap.add_argument("-y", "--yolo", default="yolo-coco",
                 help="base path to YOLO directory")
@@ -222,7 +233,7 @@ weightsPath = os.path.sep.join([args["yolo"], "yolov3.weights"])
 configPath = os.path.sep.join([args["yolo"], "yolov3.cfg"])
 
 # loading YOLO object detector
-print("INFO: LOADING YOLO FROM DISK...")
+print("Loading YOLO From Disk...")
 net = cv2.dnn.readNetFromDarknet(configPath, weightsPath)
 ln = net.getLayerNames()
 ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
