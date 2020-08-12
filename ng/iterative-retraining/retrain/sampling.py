@@ -7,78 +7,6 @@ import scipy.integrate as integrate
 import matplotlib.pyplot as plt
 
 
-def sort_list_dict(freq, desc=False):
-    return dict(sorted(freq.items(), key=lambda item: len(item[1]), reverse=desc))
-
-
-def multi_argmax(arr):
-    return [i for i, x in enumerate(arr) if x == np.max(arr)]
-
-
-def iterative_stratification(images, proportions):
-    remaining = dict()
-
-    # Build the list of images per label that have not
-    # been allocated to a subset yet
-    for img, class_list in images.items():
-        for c in class_list:
-            if c not in remaining.keys():
-                remaining[c] = set()
-            remaining[c].add(img)
-
-    desired = [dict() for _ in range(len(proportions))]
-    subsets = [list() for _ in range(len(proportions))]
-
-    # Compute the desired number of examples for each label,
-    # for each subset
-    for c, imgs in remaining.items():
-        for i, weight in enumerate(proportions):
-            desired[i][c] = round(len(imgs) * weight)
-
-    while len(images.keys()) > 0:
-        # Allocate the least frequent label (with at least
-        # 1 example remaining) first
-        remaining = sort_list_dict(remaining)
-        least_freq_label = list(remaining.keys())[0]
-
-        label_imgs = list(remaining[least_freq_label])
-        random.shuffle(label_imgs)
-
-        for img in label_imgs:
-            # Allocate image to subset that needs the most of that label
-            label_counts = [lab[least_freq_label] for lab in desired]
-            subset_indexes = multi_argmax(label_counts)
-
-            if len(subset_indexes) > 1:
-                # Break ties by subset that needs the most overall examples
-                all_label_counts = [sum(desired[i].values()) for i in subset_indexes]
-
-                subset_indexes = [
-                    subset_indexes[x] for x in multi_argmax(all_label_counts)
-                ]
-                if len(subset_indexes) > 1:
-                    # Break further ties randomly
-                    random.shuffle(subset_indexes)
-
-            # Add image to the chosen subset and remove the image
-            idx = subset_indexes[0]
-            subset = subsets[idx]
-            subset.append(img)
-
-            for img_set in remaining.values():
-                if img in img_set:
-                    img_set.remove(img)
-
-            # Decrease the desired number, based on all labels in that example
-            for c in images[img]:
-                desired[idx][c] -= 1
-
-            images.pop(img)
-        remaining.pop(least_freq_label)
-
-    return subsets
-
-
 def create_sample(results, max_samp, sample_func, stratify=True, **func_args):
     # The first part of this function simulates decisions made at the edge
     retrain_by_class = list()
@@ -192,7 +120,7 @@ def median_thresh_sample(result, thresh=0.5):
     median = stats.median(confidences)
     print(f"median: {median}")
 
-    return prob_sample(result, in_range(result, median), const, median)
+    return in_range_sample(result, median, 1.0)
 
 
 def median_below_thresh_sample(result, thresh=0.5):
@@ -201,7 +129,7 @@ def median_below_thresh_sample(result, thresh=0.5):
     median = stats.median(confidences)
     print(f"median: {median}")
 
-    return prob_sample(result, in_range(result, median), const, median, below=True)
+    return in_range_sample(result, 0.0, median)
 
 
 def iqr_sample(result, thresh=0.5):
@@ -210,8 +138,7 @@ def iqr_sample(result, thresh=0.5):
     q3 = np.quantile(confidences, 0.75, interpolation="midpoint")
 
     print(f"q1: {q1}, q3: {q3}")
-
-    return prob_sample(result, in_range(result, q1, q3), const, q1, q3)
+    return in_range_sample(result, q1, q3)
 
 
 def normal_sample(result, avg=None, stdev=None, p=0.75, thresh=0.5):
@@ -253,3 +180,74 @@ def sample_histogram(retrain, title):
     plt.ylabel("Count of Chosen")
     plt.title(title + f" (n={len(retrain)})")
     plt.show()
+
+def sort_list_dict(freq, desc=False):
+    return dict(sorted(freq.items(), key=lambda item: len(item[1]), reverse=desc))
+
+
+def multi_argmax(arr):
+    return [i for i, x in enumerate(arr) if x == np.max(arr)]
+
+
+def iterative_stratification(images, proportions):
+    remaining = dict()
+
+    # Build the list of images per label that have not
+    # been allocated to a subset yet
+    for img, class_list in images.items():
+        for c in class_list:
+            if c not in remaining.keys():
+                remaining[c] = set()
+            remaining[c].add(img)
+
+    desired = [dict() for _ in range(len(proportions))]
+    subsets = [list() for _ in range(len(proportions))]
+
+    # Compute the desired number of examples for each label,
+    # for each subset
+    for c, imgs in remaining.items():
+        for i, weight in enumerate(proportions):
+            desired[i][c] = round(len(imgs) * weight)
+
+    while len(images.keys()) > 0:
+        # Allocate the least frequent label (with at least
+        # 1 example remaining) first
+        remaining = sort_list_dict(remaining)
+        least_freq_label = list(remaining.keys())[0]
+
+        label_imgs = list(remaining[least_freq_label])
+        random.shuffle(label_imgs)
+
+        for img in label_imgs:
+            # Allocate image to subset that needs the most of that label
+            label_counts = [lab[least_freq_label] for lab in desired]
+            subset_indexes = multi_argmax(label_counts)
+
+            if len(subset_indexes) > 1:
+                # Break ties by subset that needs the most overall examples
+                all_label_counts = [sum(desired[i].values()) for i in subset_indexes]
+
+                subset_indexes = [
+                    subset_indexes[x] for x in multi_argmax(all_label_counts)
+                ]
+                if len(subset_indexes) > 1:
+                    # Break further ties randomly
+                    random.shuffle(subset_indexes)
+
+            # Add image to the chosen subset and remove the image
+            idx = subset_indexes[0]
+            subset = subsets[idx]
+            subset.append(img)
+
+            for img_set in remaining.values():
+                if img in img_set:
+                    img_set.remove(img)
+
+            # Decrease the desired number, based on all labels in that example
+            for c in images[img]:
+                desired[idx][c] -= 1
+
+            images.pop(img)
+        remaining.pop(least_freq_label)
+
+    return subsets

@@ -11,17 +11,6 @@ import analysis.benchmark as bench
 from analysis import charts
 
 
-def get_epoch_splits(config, prefix, incl_last_epoch=False):
-    splits = [
-        get_epoch(file)
-        for file in sort_by_epoch(f"{config['output']}/{prefix}*sample*.txt")
-    ]
-    if incl_last_epoch:
-        last_checkpoint = sort_by_epoch(f"{config['checkpoints']}/{prefix}*.pth")[-1]
-        splits.append(get_epoch(last_checkpoint))
-    return splits
-
-
 def series_benchmark(config, prefix, delta=2, avg=False, roll=None):
     # 1. Find the number of batches for the given prefix
     # 2. Find the starting/ending epochs of each split
@@ -34,7 +23,7 @@ def series_benchmark(config, prefix, delta=2, avg=False, roll=None):
 
     out_dir = config["output"]
     num_classes = len(utils.load_classes(config["class_list"]))
-    epoch_splits = get_epoch_splits(config, prefix)
+    epoch_splits = utils.get_epoch_splits(config, prefix)
 
     # Initial test set
     init_test_set = f"{out_dir}/init_test.txt"
@@ -64,7 +53,7 @@ def series_benchmark(config, prefix, delta=2, avg=False, roll=None):
         "all": all_test,
     }
 
-    epoch_splits = get_epoch_splits(config, prefix, True)
+    epoch_splits = utils.get_epoch_splits(config, prefix, True)
 
     # Begin benchmarking
     out_folder = f"{out_dir}/{prefix}-series"
@@ -109,7 +98,7 @@ def aggregate_results(config, prefix, metric, delta=2, avg=False, roll=None):
         "all_iter",
         "all",
     ]
-    epoch_splits = get_epoch_splits(config, prefix, True)
+    epoch_splits = utils.get_epoch_splits(config, prefix, True)
     names += [f"cur_iter{i}" for i in range(len(epoch_splits))]
 
     results = pd.DataFrame(
@@ -148,19 +137,10 @@ def aggregate_results(config, prefix, metric, delta=2, avg=False, roll=None):
     )
 
 
-def get_epoch(filename):
-    return int(filename.split("_")[-1].split(".")[0])
-
-
-def sort_by_epoch(pattern):
-    files = sorted(glob.glob(pattern))
-    return sorted(files, key=get_epoch)
-
-
 def visualize_conf(prefix, benchmark, sample_filter=False):
     if sample_filter:
         folder = "/".join(benchmark.split("/")[:-1])
-        epoch = get_epoch(benchmark)
+        epoch = utils.get_epoch(benchmark)
         sampled_imgs = glob.glob(f"{folder}/{prefix}*_sample_{epoch}.txt")[0]
         results, _ = bench.load_data(benchmark, by_actual=True, filter=sampled_imgs)
     else:
@@ -176,8 +156,8 @@ def tabulate_batch_samples(config, prefix, silent=False, filter=False, roll=Fals
     bench_str = f"{config['output']}/{prefix}*_benchmark"
     bench_str += "_roll*.csv" if roll else "_avg*.csv"
 
-    benchmarks = sort_by_epoch(bench_str)
-    checkpoints = sort_by_epoch(f"{config['checkpoints']}/{prefix}*.pth")
+    benchmarks = utils.sort_by_epoch(bench_str)
+    checkpoints = utils.sort_by_epoch(f"{config['checkpoints']}/{prefix}*.pth")
 
     data = pd.DataFrame(
         columns=["batch", "prec", "acc", "conf", "recall", "epochs trained"]
@@ -194,9 +174,9 @@ def tabulate_batch_samples(config, prefix, silent=False, filter=False, roll=Fals
             results, _ = bench.load_data(benchmark, by_actual=True, add_all=False)
 
         if i == len(benchmarks) - 1:
-            train_len = get_epoch(checkpoints[-1]) - get_epoch(benchmark)
+            train_len = utils.get_epoch(checkpoints[-1]) - utils.get_epoch(benchmark)
         else:
-            train_len = get_epoch(benchmarks[i + 1]) - get_epoch(benchmark)
+            train_len = utils.get_epoch(benchmarks[i + 1]) - utils.get_epoch(benchmark)
 
         data.loc[i] = [
             i,
@@ -250,7 +230,7 @@ def benchmark_batch_set(prefix, config, roll=None):
     num_classes = len(utils.load_classes(config["class_list"]))
     batch_sets = sorted(glob.glob(f"{out_dir}/sample*.txt"))
 
-    epoch_splits = get_epoch_splits(config, prefix, True)
+    epoch_splits = utils.get_epoch_splits(config, prefix, True)
     if prefix == "init":
         epoch_splits *= len(batch_sets)
 

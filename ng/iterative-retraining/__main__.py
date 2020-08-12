@@ -1,6 +1,7 @@
 import argparse
 import random
 import os
+import copy
 
 import retrain.utils as utils
 from retrain.train import train
@@ -9,23 +10,13 @@ import analysis.benchmark as bench
 import retrain.sampling as sample
 
 
-def train_initial(init_folder, config):
-    config["start_epoch"] = 1
-
-    init_folder.train.augment(config["images_per_class"])
-
-    end_epoch = train(init_folder, config)
-    return end_epoch
-
-
-def get_epoch_num(check_file):
-    return int(check_file.split("_")[-1][:-4])
-
-
 def label_sample_set(img_path):
     """Sample function to label an image path with its ground truth with a list of labels.
 
     This function is customizable (e.g. including a GUI to annotate) depending on your needs.
+    It should return a list of tuples, with each tuple representing a label with the values
+    (class_label, bounding_box_x_center, bb_y_center, bb_width, bb_height)
+    These coordinates should also be normalized according to the image's width and height.
     """
     class_letter = img_path.split("-")[1].split("/")[0]
     label = (class_letter, 0.5, 0.5, 1.0, 1.0)
@@ -91,36 +82,120 @@ def split_set(labeled_set, output, train_prop, valid_prop, save=True, sample_dir
     return True
 
 
+def train_initial(init_folder, config):
+    config["start_epoch"] = 1
+
+    init_folder.train.augment(config["images_per_class"])
+    end_epoch = train(init_folder, config)
+    return end_epoch
+
+
+def sample_retrain(name, batches, config, last_epoch, seen_images, sample_func, kwargs):
+    classes = utils.load_classes(config["class_list"])
+    seen_images = copy.deepcopy(seen_images)
+    for i, sample_folder in enumerate(batches):
+        sample_folder.label(classes, label_sample_set)
+        sample_labeled = LabeledSet(
+            sample_folder.imgs, len(classes), img_size=config["img_size"],
+        )
+
+        sample_filename = f"{config['output']}/{name}{i}_sample_{last_epoch}.txt"
+        if os.path.exists(sample_filename):
+            print("Loading existing samples")
+            retrain_files = open(sample_filename, "r").read().split("\n")
+
+        else:
+            # Benchmark data at the edge
+            bench_file = (
+                f"{config['output']}/{name}{i}_benchmark_avg_1_{last_epoch}.csv"
+            )
+
+            if not os.path.exists(bench_file):
+                results_df = bench.benchmark_avg(
+                    sample_labeled,
+                    name,
+                    1,
+                    last_epoch,
+                    config["conf_check_num"],
+                    config,
+                )
+
+                bench.save_results(results_df, bench_file)
+
+            # Create samples from the benchmark
+            results, _ = bench.load_data(bench_file, by_actual=False)
+
+            print(f"===== {name} ======")
+            retrain_files = sample.create_sample(
+                results, config["bandwidth"], func, **kwargs
+            )
+
+            with open(sample_filename, "w+") as out:
+                out.write("\n".join(retrain_files))
+
+        # Receive raw sampled data in the cloud
+        # This process simulates manually labeling/verifying all inferences
+        retrain_obj = LabeledSet(retrain_files, len(classes), prefix=f"{name}{i}")
+
+        new_splits = split_set(
+            retrain_obj,
+            config["output"],
+            config["train_sample"],
+            config["valid_sample"],
+            save=False,
+            sample_dir=config["sample_set"],
+        )
+
+        if new_splits:
+            # If reloaded, splits have old images already incorporated
+            for set_name in retrain_obj.sets:
+                # Calculate proportion of old examples needed
+                number_desired = (1 / config["retrain_new"] - 1) * len(
+                    getattr(retrain_obj, set_name)
+                )
+                if round(number_desired) == 0:
+                    continue
+                print(set_name, number_desired)
+                extra_images = getattr(seen_images, set_name).split_batch(
+                    round(number_desired)
+                )[0]
+                orig_set = getattr(retrain_obj, set_name)
+                orig_set += extra_images
+
+        seen_images += retrain_obj
+
+        retrain_obj.save_splits(config["output"])
+        retrain_obj.train.augment(config["images_per_class"])
+
+        config["start_epoch"] = last_epoch + 1
+        checkpoint = utils.find_checkpoint(config, name, last_epoch)
+        last_epoch = train(retrain_obj, config, checkpoint)
+
+
 if __name__ == "__main__":
     random.seed("sage")
 
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--retrain_config", required=True, help="configuration for retraining"
-    )
+    parser.add_argument("--config", required=True, help="configuration for retraining")
     parser.add_argument(
         "--reload_baseline",
         default=None,
         help="bypass initial training with a checkpoint",
     )
     opt = parser.parse_args()
-    config = utils.parse_retrain_config(opt.retrain_config)
+    config = utils.parse_retrain_config(opt.config)
 
     classes = utils.load_classes(config["class_list"])
-    num_classes = len(classes)
 
-    init_images = LabeledSet(config["initial_set"], num_classes, prefix="init")
+    init_images = LabeledSet(config["initial_set"], len(classes), prefix="init")
     split_set(init_images, config["output"], config["train_init"], config["valid_init"])
-
-    seen_images = init_images
 
     # Run initial training
     if opt.reload_baseline is None:
         init_end_epoch = train_initial(init_images, config)
         print(f"Initial training ended on epoch {init_end_epoch}")
-        opt.reload_baseline = f"{config['checkpoints']}/init_ckpt_{init_end_epoch}.pth"
     else:
-        init_end_epoch = get_epoch_num(opt.reload_baseline)
+        init_end_epoch = utils.get_epoch(opt.reload_baseline)
 
     # Sample
     all_samples = ImageFolder(
@@ -139,81 +214,6 @@ if __name__ == "__main__":
     sample_methods = get_sample_methods()
 
     for name, (func, kwargs) in sample_methods.items():
-        last_epoch = init_end_epoch
-        for i, sample_folder in enumerate(batched_samples):
-            sample_folder.label(classes, label_sample_set)
-            sample_labeled = LabeledSet(
-                sample_folder.imgs, num_classes, img_size=config["img_size"],
-            )
-
-            sample_filename = f"{config['output']}/{name}{i}_sample_{last_epoch}.txt"
-            if os.path.exists(sample_filename):
-                print("Loading existing samples")
-                retrain_files = open(sample_filename, "r").read().split("\n")
-
-            else:
-                # Benchmark data at the edge
-                bench_file = (
-                    f"{config['output']}/{name}{i}_benchmark_avg_1_{last_epoch}.csv"
-                )
-
-                if not os.path.exists(bench_file):
-                    results_df = bench.benchmark_avg(
-                        sample_labeled,
-                        name,
-                        1,
-                        last_epoch,
-                        config["conf_check_num"],
-                        config,
-                    )
-
-                    bench.save_results(results_df, bench_file)
-
-                # Create samples from the benchmark
-                results, _ = bench.load_data(bench_file, by_actual=False)
-
-                print(f"===== {name} ======")
-                retrain_files = sample.create_sample(
-                    results, config["bandwidth"], func, **kwargs
-                )
-
-                with open(sample_filename, "w+") as out:
-                    out.write("\n".join(retrain_files))
-
-            # Receive raw sampled data in the cloud
-            # This process simulates manually labeling/verifying all inferences
-            retrain_obj = LabeledSet(retrain_files, num_classes, prefix=f"{name}{i}")
-
-            new_splits = split_set(
-                retrain_obj,
-                config["output"],
-                config["train_sample"],
-                config["valid_sample"],
-                save=False,
-                sample_dir=config["sample_set"],
-            )
-
-            if new_splits:
-                # If reloaded, splits have old images already incorporated
-                for set_name in retrain_obj.sets:
-                    # Calculate proportion of old examples needed
-                    number_desired = (1 / config["retrain_new"] - 1) * len(
-                        getattr(retrain_obj, set_name)
-                    )
-                    if round(number_desired) == 0:
-                        continue
-                    print(set_name, number_desired)
-                    extra_images = getattr(seen_images, set_name).split_batch(
-                        round(number_desired)
-                    )[0]
-                    orig_set = getattr(retrain_obj, set_name)
-                    orig_set += extra_images
-
-            seen_images += retrain_obj
-
-            retrain_obj.save_splits(config["output"])
-            retrain_obj.train.augment(config["images_per_class"])
-
-            config["start_epoch"] = last_epoch + 1
-            checkpoint = utils.find_checkpoint(config, name, last_epoch)
-            last_epoch = train(retrain_obj, config, checkpoint)
+        sample_retrain(
+            name, batched_samples, config, init_end_epoch, init_images, func, kwargs
+        )

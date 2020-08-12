@@ -20,11 +20,13 @@ User-defined parts of this process (formalized in the parameters section) are bo
 12. Retrain using the mixture of old and new data, benchmarking performance separately on the old test set and new test set. Use the combined test set as the stopping criteria.
 13. Repeat steps 6-12 for the remainder of the batches from the large sample set.
 
-## Configuration (Hyper)Parameters
+## Configuration Parameters
+
+These are stored in [`retrain.cfg`](./config/retrain.cfg) and should remain consistent for a given training and sample set
 
 **Overall Parameters**
 
-These are high-level parameters affecting both initial training and retraining
+High-level parameters affecting both initial training and retraining
 
 * `class_list`: list of classes, terminated with a blank line
 * `model_config`: YOLOv3 model definition file with hyperparameters
@@ -61,10 +63,49 @@ These are high-level parameters affecting both initial training and retraining
 * `strip_len`: range of epochs to check the validation loss on
 * `successions`: number of successive strips with strict increase of loss before training is stopped
 
+**Hyperparameters**
+
+Parameters for basic YOLOv3 models, used for initial training, retraining, and benchmarking:
+
+* `img_size`
+* `batch_size`
+* `clip`: normalized value for gradient clipping
+* `gradient_accumulations`
+* `evaluation_interval`
+* `checkpoint_interval`
+* `multiscale`
+* `n_cpu`
+* `iou_thres`
+* `conf_thres`
+* `nms_thres`
+
 ## Sampling algorithm
 
-To be completed
+Various sampling approaches are defined in [`sampling.py`](./retrain/sampling.py) and can be used to create your own sampling functions. These functions take an input `ClassResult` (after running inference on a batch of images) and return a list of images that are sent back from the edge for training and testing (called the sample set). The included methods use the confidence of an image's inferred label(s) as the basis of its selection into the sample set.
+
+In each method, we define a probability density function P(*x*) that determines the likelihood of selecting a label with confidence *x* into the sample set. For example, we may have a uniform distribution where P(*x*) = 2 for 0 < *x* <= 0.5 and P(*x*) = 0 elsewhere, or we could have a normal distribution function. This function is used in either **probability sampling** or **bin sampling**. Note that if an image contains multiple classes, all of its labels will be used for retraining if it is selected to be in the sample set.
+
+### Probability Sampling
+
+We randomly select images to include in accordance with the probability density function, until the sample set size limit (bandwidth) is reached or there are no more images in the batch with a confidence score that can be selected. This process is stratified by inferred class by default, though there are options to ignore class balancing. Sampling methods that incorporate this approach include:
+
+* In-range sampling: this generates a uniform distribution for [*a*, *b*), where 0 < *a* < *b* <= 1
+* Random: a baseline for retraining, where we use in-range sampling on the interval [0, 1)
+* Median threshold: we compute the median confidence per class after running inference on the batch set, then in-range sample along [median, 1) and [0, median)
+* Interquartie range: we compute the first and third quartile confidences per class, then sample along [Q1, Q3)
+* Mid-threshold: we sample along [0, 0.5) and [0.5, 1), stratifying by class
+* Normal: instead of a uniform distribution, we use a normal density function centered at the mean confidence of each class and with a standard deviation following that of the class's labels
+* Mid-normal: we use a normal probability density function centered at 0.5 with a standard deviation of 0.25
+
+### Bin Sampling
+
+
 
 ## Output files
 
-* Checkpoints: These are 
+* Checkpoints
+* Batch splits
+* Sample sets
+* Benchmarks
+
+## Analyzing results

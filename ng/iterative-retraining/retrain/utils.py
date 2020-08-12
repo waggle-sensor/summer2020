@@ -15,6 +15,26 @@ def get_label_path(img):
     return img[:-4].replace("images", "labels") + ".txt"
 
 
+def get_epoch(filename):
+    return int(filename.split("_")[-1].split(".")[0])
+
+
+def get_epoch_splits(config, prefix, incl_last_epoch=False):
+    splits = [
+        get_epoch(file)
+        for file in sort_by_epoch(f"{config['output']}/{prefix}*sample*.txt")
+    ]
+    if incl_last_epoch:
+        last_checkpoint = sort_by_epoch(f"{config['checkpoints']}/{prefix}*.pth")[-1]
+        splits.append(get_epoch(last_checkpoint))
+    return splits
+
+
+def sort_by_epoch(pattern):
+    files = sorted(glob.glob(pattern))
+    return sorted(files, key=get_epoch)
+
+
 def parse_retrain_config(path):
     lines = [line for line in get_lines(path) if "=" in line]
 
