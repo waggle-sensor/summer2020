@@ -1,16 +1,14 @@
 import argparse
 import glob
 import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-from sklearn.linear_model import LinearRegression
-import statsmodels.api as sm
 
 import os
 from tqdm import tqdm
 from retrain.dataloader import LabeledSet
 import retrain.utils as utils
-import retrain.benchmark as bench
+
+import analysis.benchmark as bench
+from analysis import charts
 
 
 def get_epoch_splits(config, prefix, incl_last_epoch=False):
@@ -140,15 +138,14 @@ def aggregate_results(config, prefix, metric, delta=2, avg=False, roll=None):
 
     results.to_csv(f"{out_folder}/{prefix}-series-stats.csv")
 
-    plt.xlabel("Epoch")
-    plt.ylabel(f"Avg. {metric}")
+    xy_pairs = list()
     for name in names:
         filtered_data = results[results["test_set"] == name]
-        plt.plot(filtered_data["epoch"], filtered_data[metric], label=name)
-    plt.legend()
-    for split in epoch_splits:
-        plt.axvline(x=split, color="black", linestyle="dashed")
-    plt.show()
+        xy_pairs.append((filtered_data["epoch"], filtered_data[metric], name))
+
+    charts.plot_multiline(
+        xy_pairs, xlab="Epoch", ylab=f"Avg. {metric}", vert_lines=epoch_splits
+    )
 
 
 def get_epoch(filename):
@@ -169,36 +166,8 @@ def visualize_conf(prefix, benchmark, sample_filter=False):
     else:
         results, _ = bench.load_data(benchmark, by_actual=True)
 
-    num_rows = len(results)
-    fig, axs = plt.subplots(num_rows, 3)
-    plt.subplots_adjust(hspace=0.35)
-
-    graphs = ["hit", "miss", "all"]
-    all_data = dict()
-    for name in graphs:
-        all_data[name] = list()
-
-    colors = ["lightgreen", "red"]
-    for i, res in enumerate(results):
-        hit_miss = [[row["conf"] for row in data] for data in res.hits_misses()]
-
-        axs[i][0].hist(hit_miss[0], bins=15, color=colors[0], range=(0, 1))
-        axs[i][1].hist(hit_miss[1], bins=15, color=colors[1], range=(0, 1))
-        axs[i][2].hist(hit_miss, bins=15, color=colors, stacked=True, range=(0, 1))
-
-        if res.name == "All":
-            acc = round(bench.mean_accuracy(results[:-1]), 3)
-            prec = round(bench.mean_precision(results[:-1]), 3)
-        else:
-            acc = round(res.accuracy(), 3)
-            prec = round(res.precision(), 3)
-
-        title = f"Class: {res.name} (acc={acc}, " + f"prec={prec}, n={res.pop})"
-        axs[i][1].set_title(title)
-
-    fig.set_figheight(2.5 * num_rows)
-    fig.set_figwidth(10)
-    fig.savefig(benchmark[:-4] + "_viz.pdf", bbox_inches="tight")
+    filename = benchmark[:-4] + "_viz.pdf"
+    charts.make_conf_histogram(results, filename)
 
 
 def tabulate_batch_samples(config, prefix, silent=False, filter=False, roll=False):
@@ -245,24 +214,6 @@ def tabulate_batch_samples(config, prefix, silent=False, filter=False, roll=Fals
     return data
 
 
-def linear_regression(df):
-    x = df.iloc[:, 0].values.reshape(-1, 1)
-    y = df.iloc[:, 1].values.reshape(-1, 1)
-    linear_regressor = LinearRegression()
-    linear_regressor.fit(x, y)
-    print("R^2:", linear_regressor.score(x, y))
-    y_pred = linear_regressor.predict(x)
-    plt.scatter(x, y)
-    plt.xlabel(f"sample {df.columns[0]}")
-    plt.ylabel(f"next iteration benchmark {df.columns[1]}")
-    plt.plot(x, y_pred, color="r")
-    plt.show()
-
-    x_sm = sm.add_constant(x)
-    est = sm.OLS(y, x_sm).fit()
-    print(est.summary())
-
-
 def compare_benchmarks(prefixes, metric, metric2=None, roll=False):
     """Compares benchmarks on sample sets (before retraining) for sample methods."""
     df = pd.DataFrame()
@@ -277,7 +228,7 @@ def compare_benchmarks(prefixes, metric, metric2=None, roll=False):
         if "init" in prefixes:
             prefixes.remove("init")
         df = pd.DataFrame(
-            columns=["Method", f"avg. {opt.metric}", f"avg. {opt.metric2}",]
+            columns=["Method", f"avg. {opt.metric}", f"avg. {opt.metric2}"]
         ).set_index("Method")
 
         for prefix in prefixes:
@@ -290,7 +241,7 @@ def compare_benchmarks(prefixes, metric, metric2=None, roll=False):
             ]
 
         print(df)
-        linear_regression(df)
+        charts.linear_regression(df)
 
 
 def benchmark_batch_set(prefix, config, roll=None):
@@ -356,6 +307,7 @@ if __name__ == "__main__":
         "mid-normal",
         "bin-quintile",
         "bin-normal",
+        "random",
         "init",
     ]
 
@@ -374,7 +326,7 @@ if __name__ == "__main__":
         visualize_conf(opt.prefix, opt.visualize_conf, opt.filter_sample)
 
     elif opt.prefix != "init":
-        tabulate_batch_samples(config, opt.prefix, roll=opt.roll)
+        tabulate_batch_samples(config, opt.prefix, roll=opt.roll_avg)
         series_benchmark(config, opt.prefix, avg=opt.avg, roll=opt.roll_avg)
         aggregate_results(
             config, opt.prefix, opt.metric, avg=opt.avg, roll=opt.roll_avg

@@ -5,7 +5,7 @@ import os
 import retrain.utils as utils
 from retrain.train import train
 from retrain.dataloader import LabeledSet, ImageFolder
-import retrain.benchmark as bench
+import analysis.benchmark as bench
 import retrain.sampling as sample
 
 
@@ -58,6 +58,7 @@ def get_sample_methods():
                 "std": 0.25,
             },
         ),
+        "random": (sample.in_range_sample, {"min_val": 0.0, "max_val": 1.0}),
     }
 
 

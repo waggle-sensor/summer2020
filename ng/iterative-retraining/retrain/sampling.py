@@ -1,12 +1,10 @@
 import random
-import os
 
 import statistics as stats
 import numpy as np
 import scipy.stats
 import scipy.integrate as integrate
 import matplotlib.pyplot as plt
-from retrain import utils
 
 
 def sort_list_dict(freq, desc=False):
