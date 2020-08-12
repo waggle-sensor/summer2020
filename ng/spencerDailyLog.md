@@ -842,3 +842,18 @@ This seems to confirm the large number of false negatives, as does the decreasin
   * Need further analysis - do we use the outlier of median-below-thresh?
 * Cleaned up maingate dataset, in preparation for model training
   * Might use a simple object detector for cars, as we don't have enough labels for each class for retraining
+
+**Wednesday, August 12**
+
+* Investigated Stanford car dataset again
+  * We could use different types of cars (e.g. SUV, Minivan, Sudan) as classes, which would give us enough data to work with per class
+  * However, the maingate dataset doesn't have these labels, only the make and model
+* Deployed KAIST retraining models with parallelization to verify results of the first set of experiments
+  * This uses the new confidence score metric, accounting for object scores and multiple labels per image
+  * Should have complete results by tomorrow morning
+* Refactored code for analysis tools, adding to enable/disable lines on the timeseries graph
+  * **TODO**: combine the current iteration lines into one
+* Revised website article in preparation for publishing onto Wordpress
+* Added random sampling method and deployed it
+  * Should consider running some sampling methods without stratification, such as median-below-threshold
+* Continued documenting usage of sampling and analysis tools
