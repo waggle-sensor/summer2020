@@ -294,7 +294,20 @@ Tuesday 8/11
 2. Continuing to clean up and comment helper function code
 3, NAISE Seminar
 4. Uploaded NAISE blog post to SAGE website
-5. Added feature: prints and displays text on image every frame total number of detected people, number of safe people, and number of violators
+5. Added feature: prints out total number of detected people, number of safe people, and number of violators every 5 frames
 6. Added imutils.resize for consistent dimensions for each video input used
 7. Created requirements.txt file
 
+Wednesday 8/12
+1. Tried to write helper function to correctly order ROI points, unsuccessful for now
+2. Displayed text on first frame image, instructions on which points to click and in what order
+3. CELS Hang
+4. Added option to use live webcam instead of input video, analyzes continuous video stream
+5. Display pedestrians detected, safe pedestrians, and violator pedestrian values on street view output
+6. Started reviewing matplotlib, going to output time series data as graph of (violators / total people) vs. time
+
+Thursday 8/13
+1. AI/ML Scrum
+2. Implemented centroid tracking algorithm to assign unique ID to each detected person
+3. Organized output data into ordered dict but matplotlib not working
+4. Demo Presentation Prep

@@ -49,7 +49,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../SDDwBEV2" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../TDS_SDD_2" />
   </component>
   <component name="ProjectId" id="1ep9BhbvKB0ptWISGQuqHWB8AKF" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -63,28 +63,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager" selected="Python.OZ_HelperFunctions">
-    <configuration name="OZ_CentroidTracker" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="OZ_SDD" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/OZ_CentroidTracker.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.plot_test">
     <configuration name="OZ_HelperFunctions" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="OZ_SDD" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -98,6 +77,27 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/OZ_HelperFunctions.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="OZ_SDD" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="OZ_SDD" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/OZ_SDD.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -148,12 +148,34 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="plot_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="OZ_SDD" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/plot_test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.plot_test" />
+        <item itemvalue="Python.OZ_SDD" />
         <item itemvalue="Python.OZ_HelperFunctions" />
         <item itemvalue="Python.OZ_SDD_2" />
         <item itemvalue="Python.centroidtracker" />
-        <item itemvalue="Python.OZ_CentroidTracker" />
       </list>
     </recent_temporary>
   </component>
@@ -183,26 +205,46 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1659" height="255" key="GridCell.Tab.0.bottom" timestamp="1596579793981">
+    <state x="537" y="243" key="FileChooserDialogImpl" timestamp="1597354863399">
       <screen x="0" y="23" width="1680" height="956" />
     </state>
-    <state width="1659" height="255" key="GridCell.Tab.0.bottom/0.23.1680.956@0.23.1680.956" timestamp="1596579793981" />
-    <state width="1659" height="255" key="GridCell.Tab.0.center" timestamp="1596579793981">
+    <state x="537" y="243" key="FileChooserDialogImpl/0.23.1680.956@0.23.1680.956" timestamp="1597354863399" />
+    <state width="1659" height="317" key="GridCell.Tab.0.bottom" timestamp="1597356795178">
       <screen x="0" y="23" width="1680" height="956" />
     </state>
-    <state width="1659" height="255" key="GridCell.Tab.0.center/0.23.1680.956@0.23.1680.956" timestamp="1596579793981" />
-    <state width="1659" height="255" key="GridCell.Tab.0.left" timestamp="1596579793980">
+    <state width="1659" height="317" key="GridCell.Tab.0.bottom/0.23.1680.956@0.23.1680.956" timestamp="1597356795178" />
+    <state width="1659" height="317" key="GridCell.Tab.0.center" timestamp="1597356795177">
       <screen x="0" y="23" width="1680" height="956" />
     </state>
-    <state width="1659" height="255" key="GridCell.Tab.0.left/0.23.1680.956@0.23.1680.956" timestamp="1596579793980" />
-    <state width="1659" height="255" key="GridCell.Tab.0.right" timestamp="1596579793981">
+    <state width="1659" height="317" key="GridCell.Tab.0.center/0.23.1680.956@0.23.1680.956" timestamp="1597356795177" />
+    <state width="1659" height="317" key="GridCell.Tab.0.left" timestamp="1597356795176">
       <screen x="0" y="23" width="1680" height="956" />
     </state>
-    <state width="1659" height="255" key="GridCell.Tab.0.right/0.23.1680.956@0.23.1680.956" timestamp="1596579793981" />
-    <state x="251" y="120" key="SettingsEditor" timestamp="1595007555092">
+    <state width="1659" height="317" key="GridCell.Tab.0.left/0.23.1680.956@0.23.1680.956" timestamp="1597356795176" />
+    <state width="1659" height="317" key="GridCell.Tab.0.right" timestamp="1597356795177">
       <screen x="0" y="23" width="1680" height="956" />
     </state>
-    <state x="251" y="120" key="SettingsEditor/0.23.1680.956@0.23.1680.956" timestamp="1595007555092" />
+    <state width="1659" height="317" key="GridCell.Tab.0.right/0.23.1680.956@0.23.1680.956" timestamp="1597356795177" />
+    <state width="1659" height="317" key="GridCell.Tab.1.bottom" timestamp="1597356795179">
+      <screen x="0" y="23" width="1680" height="956" />
+    </state>
+    <state width="1659" height="317" key="GridCell.Tab.1.bottom/0.23.1680.956@0.23.1680.956" timestamp="1597356795179" />
+    <state width="1659" height="317" key="GridCell.Tab.1.center" timestamp="1597356795179">
+      <screen x="0" y="23" width="1680" height="956" />
+    </state>
+    <state width="1659" height="317" key="GridCell.Tab.1.center/0.23.1680.956@0.23.1680.956" timestamp="1597356795179" />
+    <state width="1659" height="317" key="GridCell.Tab.1.left" timestamp="1597356795178">
+      <screen x="0" y="23" width="1680" height="956" />
+    </state>
+    <state width="1659" height="317" key="GridCell.Tab.1.left/0.23.1680.956@0.23.1680.956" timestamp="1597356795178" />
+    <state width="1659" height="317" key="GridCell.Tab.1.right" timestamp="1597356795179">
+      <screen x="0" y="23" width="1680" height="956" />
+    </state>
+    <state width="1659" height="317" key="GridCell.Tab.1.right/0.23.1680.956@0.23.1680.956" timestamp="1597356795179" />
+    <state x="251" y="120" key="SettingsEditor" timestamp="1597354891245">
+      <screen x="0" y="23" width="1680" height="956" />
+    </state>
+    <state x="251" y="120" key="SettingsEditor/0.23.1680.956@0.23.1680.956" timestamp="1597354891245" />
     <state x="404" y="231" width="670" height="676" key="search.everywhere.popup" timestamp="1596561601821">
       <screen x="0" y="23" width="1680" height="956" />
     </state>
