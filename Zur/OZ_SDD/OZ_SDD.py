@@ -10,7 +10,14 @@ import argparse
 import os
 import imutils
 import time
+import datetime
+import matplotlib
+import matplotlib.pyplot as plt
+from collections import OrderedDict
 from OZ_HelperFunctions import *
+from OZ_CentroidTracker_2 import CentroidTracker
+
+# matplotlib.use("TKAgg")
 
 # **MOUSE CALLBACK FUNCTION** #########################################################################################
 
@@ -63,6 +70,11 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
 
     # scale video dimensions for bird's eye view output
     scale_w, scale_h = float(400 / width), float(600 / height)
+
+    # instantiate centroid tracker
+    ct = CentroidTracker(maxDisappeared=10, maxDistance=50)
+
+    time_series = OrderedDict()
 
     # **LOOP OVER EVERY FRAME OF THE VIDEO** ##########################################################################
     while True:
@@ -160,6 +172,13 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
             if i in nms_boxes:
                 boundingboxes.append(boxes[i])
 
+        # call update function in centroid tracker, draw unique ID above bounding box
+        objects = ct.update(boundingboxes)
+        for (objectID, bbox) in objects.items():
+            x1, y1, w, h = bbox
+            text = "ID: {}".format(objectID)
+            cv2.putText(frame, text, (x1, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 1)
+
         # **COORDINATE MAPPING AND DISTANCE CALCULATION** #############################################################
 
         # no need to do any analysis if no people detected
@@ -190,14 +209,24 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
             cv2.imshow('Street View', street_view)
             cv2.imshow('Bird Eye View', bird_view)
 
-        # update frame count
-        frameCount = frameCount + 1
-
         # print results every 5 frames
         if frameCount % 5 == 0:
             print("Pedestrians Detected: " + str(len(boundingboxes)))
             print("Safe Pedestrians: " + str(safe_count))
             print("Violator Pedestrians: " + str(violation_count))
+
+        sdd_ratio = violation_count / len(boundingboxes)
+        if frameCount % 20 == 0:
+            """
+            current_time = str(datetime.datetime.now().hour) + ":" + \
+                           str(datetime.datetime.now().minute) + ":" + \
+                           str(datetime.datetime.now().second)
+            """
+            current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            time_series[current_time] = sdd_ratio
+
+        # update frame count
+        frameCount = frameCount + 1
 
         # press 'q' to end program before video ends
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -212,6 +241,18 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
     hours, rem = divmod(end - start, 3600)
     minutes, seconds = divmod(rem, 60)
     print("Total Time Elapsed: {:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds))
+
+    print(time_series.items())
+    tuple_list = list(time_series.items())
+    print(tuple_list)
+    x, y = zip(*tuple_list)
+    xx = np.array(x)
+    yy = np.array(y)
+    print(xx)
+    print(yy)
+
+    # plt.plot(xx, yy, marker='o')
+    # plt.show()
 
 
 # **ARGUMENT PARSER, LOAD YOLO, CALL SDD FUNCTION** ###################################################################
