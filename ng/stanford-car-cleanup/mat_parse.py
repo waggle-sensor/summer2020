@@ -12,13 +12,26 @@ def get_freq(class_arr, classes):
             counts[c] += 1
     return counts
 
-types = ["Sedan", "Hatchback", "SUV", "Coupe", "Van", "Convertible", "Wagon", "Minivan", "Cab"]
+
+types = [
+    "Sedan",
+    "Hatchback",
+    "SUV",
+    "Coupe",
+    "Van",
+    "Convertible",
+    "Wagon",
+    "Minivan",
+    "Cab",
+]
+
+
 def main():
     data = mat4py.loadmat("cars_annos.mat")
-    
-    classes = (data["class_names"])
+
+    classes = data["class_names"]
     freq = get_freq(data["annotations"]["class"], classes)
-    
+
     type_freq = dict()
     counted = list()
     for car_type in types:
@@ -30,7 +43,6 @@ def main():
                     counted.append(make)
 
     print("\n".join(sorted(counted)))
-    
 
 
 if __name__ == "__main__":

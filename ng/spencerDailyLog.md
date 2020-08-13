@@ -857,3 +857,19 @@ This seems to confirm the large number of false negatives, as does the decreasin
 * Added random sampling method and deployed it
   * Should consider running some sampling methods without stratification, such as median-below-threshold
 * Continued documenting usage of sampling and analysis tools
+
+**Thursday, August 13**
+
+* Attended AI/ML scrum
+* Cleaned up data from overnight retraining and fixed errors
+* Benchmarked against various sampling methods in the second run
+* Wrote method to determine variance/standard deviation of object and class confidence scores when computing average
+* Combined current iteration lines into one series
+* Modified comparison method to include the change in metrics (e.g. accuracy/precision) against the baseline model
+* Begin documenting results in presentation
+  * After lowering threshold for a positive result to 0.3, we see a greater correlation in mean sample conf. vs. precision/accuracy in next iteration's batch set inferences
+  * This also fixes the lowered accuracy seen before
+* Researched potential datasets
+  * Dogs is another possibility for object detection
+  * Google's Waymo dataset has many vehicles, but no granular data like make/model
+  * Need to continue looking into this

@@ -167,7 +167,6 @@ def tabulate_batch_samples(config, prefix, silent=False, filter=False, roll=Fals
 
     benchmarks = utils.sort_by_epoch(bench_str)
     checkpoints = utils.sort_by_epoch(f"{config['checkpoints']}/{prefix}*.pth")
-
     data = pd.DataFrame(
         columns=["batch", "prec", "acc", "conf", "recall", "epochs trained"]
     )
@@ -212,14 +211,17 @@ def tabulate_batch_samples(config, prefix, silent=False, filter=False, roll=Fals
     return data
 
 
-def compare_benchmarks(prefixes, metric, metric2=None, roll=False):
+def compare_benchmarks(prefixes, metric, metric2=None, roll=False, compare_init=False):
     """Compares benchmarks on sample sets (before retraining) for sample methods."""
     df = pd.DataFrame()
     for prefix in prefixes:
         results = tabulate_batch_samples(
             config, prefix, silent=True, filter=opt.filter_sample, roll=roll
         )[metric]
-        df[prefix] = results
+        if prefix != "init" and compare_init:
+            df[prefix] = results - df["init"]
+        else:
+            df[prefix] = results
     print(df.transpose())
 
     if metric2:
@@ -229,13 +231,19 @@ def compare_benchmarks(prefixes, metric, metric2=None, roll=False):
             columns=["Method", f"avg. {opt.metric}", f"avg. {opt.metric2}"]
         ).set_index("Method")
 
+        init_vals = tabulate_batch_samples(config, "init", silent=True, filter=False)
+
         for prefix in prefixes:
             indep_var = tabulate_batch_samples(config, prefix, silent=True, filter=True)
             dep_var = tabulate_batch_samples(config, prefix, silent=True, filter=False)
 
+            y_series = dep_var[metric2]
+            if compare_init:
+                y_series -= init_vals[metric2]
+
             df.loc[prefix] = [
                 indep_var[metric][:-1].mean(),
-                dep_var[metric2][1:].mean(),
+                y_series[1:].mean(),
             ]
 
         print(df)
@@ -289,6 +297,7 @@ if __name__ == "__main__":
     parser.add_argument("--benchmark", action="store_true", default=False)
     parser.add_argument("--visualize_conf", default=None)
     parser.add_argument("--filter_sample", action="store_true", default=False)
+    parser.add_argument("--compare_init", action="store_true", default=False)
     parser.add_argument("--metric", default="prec")
     parser.add_argument("--metric2", default=None)
     opt = parser.parse_args()
@@ -296,6 +305,7 @@ if __name__ == "__main__":
     config = utils.parse_retrain_config(opt.config)
 
     prefixes = [
+        "init",
         "median-below-thresh",
         "median-thresh",
         "normal",
@@ -306,7 +316,6 @@ if __name__ == "__main__":
         "bin-quintile",
         "bin-normal",
         "random",
-        "init",
     ]
 
     if opt.benchmark and opt.prefix is None:
@@ -314,12 +323,18 @@ if __name__ == "__main__":
             benchmark_batch_set(prefix, config, opt.roll_avg)
             series_benchmark(config, prefix, avg=opt.avg, roll=opt.roll_avg)
     if opt.tabulate:
-        if opt.prefix != "init":
+        if opt.prefix is not None:
             tabulate_batch_samples(
                 config, opt.prefix, filter=opt.filter_sample, roll=opt.roll_avg
             )
         else:
-            compare_benchmarks(prefixes, opt.metric, opt.metric2, roll=opt.roll_avg)
+            compare_benchmarks(
+                prefixes,
+                opt.metric,
+                opt.metric2,
+                roll=opt.roll_avg,
+                compare_init=opt.compare_init,
+            )
 
     elif opt.visualize_conf:
         visualize_conf(opt.prefix, opt.visualize_conf, opt.filter_sample)
