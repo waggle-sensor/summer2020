@@ -1,4 +1,5 @@
 import statistics as stats
+import math
 import csv
 import itertools
 import glob
@@ -17,7 +18,7 @@ from retrain import utils
 from retrain.dataloader import LabeledSet
 
 
-def load_data(output, by_actual=True, add_all=True, filter=None):
+def load_data(output, by_actual=True, add_all=True, filter=None, conf_thresh=0.5):
     samples = dict()
     all_data = list()
 
@@ -45,11 +46,11 @@ def load_data(output, by_actual=True, add_all=True, filter=None):
                 samples[key_val].append(row)
             all_data.append(row)
     samples = {k: samples[k] for k in sorted(samples)}
-    results = [ClassResults(k, v) for k, v in samples.items()]
+    results = [ClassResults(k, v, conf_thresh=conf_thresh) for k, v in samples.items()]
     mat = confusion_matrix(actual, pred, labels=list(samples.keys()) + [""])
 
     if add_all:
-        results.append(ClassResults("All", all_data))
+        results.append(ClassResults("All", all_data, conf_thresh=conf_thresh))
 
     return results, mat
 
@@ -86,6 +87,7 @@ class ClassResults:
 
         for row in output_rows:
             row["conf"] = float(row["conf"])
+            # row["conf_std"] = float(row["conf_std"])
             if row["conf"] >= conf_thresh:
                 if row["hit"] == "True":
                     result = "true_pos"
@@ -230,11 +232,8 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, roll=False):
         "actual",
         "detected",
         "conf",
+        "conf_var",
         "hit",
-        # "cen_x",
-        # "cen_y",
-        # "w",
-        # "h",
     ]
 
     results = pd.DataFrame(columns=metrics)
@@ -244,8 +243,8 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, roll=False):
         ground_truths = img_folder.get_classes(utils.get_label_path(path))
         detection_pairs = list()
         if detections is not None:
-            region_detections = yoloutils.group_average_bb(
-                detections, total, config["nms_thres"]
+            region_detections, regions_std = yoloutils.group_average_bb(
+                detections, total, config["iou_thres"]
             )
 
             # evaluate.save_image(region_detections, path, config, classes)
@@ -267,13 +266,15 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, roll=False):
         for (truth, box) in detection_pairs:
             if box is None:
                 continue
-            (x1, y1, x2, y2, obj_conf, class_conf, pred_class) = box.numpy()
+            obj_conf, class_conf, pred_class = box.numpy()[4:]
+            obj_std, class_std = regions_std[round(float(class_conf), 3)]
 
             row = {
                 "file": path,
                 "detected": classes[int(pred_class)],
                 "actual": classes[int(truth)] if truth is not None else "",
                 "conf": obj_conf * class_conf,
+                "conf_var": math.sqrt(obj_std ** 2 + class_std ** 2),
             }
             row["hit"] = row["actual"] == row["detected"]
 

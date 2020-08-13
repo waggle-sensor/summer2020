@@ -79,7 +79,7 @@ def match_detections(model, img_folder, detections, config):
             detections, targets, iou_threshold=config["iou_thres"]
         )[0]
 
-        detections = detections.squeeze(0)
+        detections.squeeze_(0)
         for i in range(len(overlaps[0])):
             for detection in detections:
                 # Find the boxes that correspond with those generated from

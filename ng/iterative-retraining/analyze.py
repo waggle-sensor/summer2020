@@ -114,7 +114,9 @@ def aggregate_results(config, prefix, metric, delta=2, avg=False, roll=None):
             if not os.path.exists(out_name):
                 continue
 
-            epoch_res, _ = bench.load_data(out_name, by_actual=True)
+            epoch_res, _ = bench.load_data(
+                out_name, by_actual=True, conf_thresh=config["pos_thres"]
+            )
             new_row = {
                 "test_set": name,
                 "epoch": i,
@@ -129,7 +131,14 @@ def aggregate_results(config, prefix, metric, delta=2, avg=False, roll=None):
 
     xy_pairs = list()
     for name in names:
-        filtered_data = results[results["test_set"] == name]
+        if "cur_iter" in name:
+            if name == "cur_iter0":
+                filtered_data = results[results["test_set"].str.contains("cur_iter")]
+                name = "cur_iter"
+            else:
+                continue
+        else:
+            filtered_data = results[results["test_set"] == name]
         xy_pairs.append((filtered_data["epoch"], filtered_data[metric], name))
 
     charts.plot_multiline(
@@ -167,11 +176,20 @@ def tabulate_batch_samples(config, prefix, silent=False, filter=False, roll=Fals
         if filter and prefix != "init":
             sampled_imgs = glob.glob(f"{config['output']}/{prefix}{i}_sample*")[0]
             results, _ = bench.load_data(
-                benchmark, by_actual=True, add_all=False, filter=sampled_imgs
+                benchmark,
+                by_actual=True,
+                add_all=False,
+                filter=sampled_imgs,
+                conf_thresh=config["pos_thres"],
             )
 
         else:
-            results, _ = bench.load_data(benchmark, by_actual=True, add_all=False)
+            results, _ = bench.load_data(
+                benchmark,
+                by_actual=True,
+                add_all=False,
+                conf_thresh=config["pos_thres"],
+            )
 
         if i == len(benchmarks) - 1:
             train_len = utils.get_epoch(checkpoints[-1]) - utils.get_epoch(benchmark)
@@ -243,16 +261,16 @@ def benchmark_batch_set(prefix, config, roll=None):
         num_ckpts = roll if roll is not None else config["conf_check_num"]
         filename = f"{out_dir}/{prefix}{i}_benchmark_"
         filename += "roll_" if roll else "avg_"
-        filename += f"{end_epoch}.csv"
+        filename += f"1_{end_epoch}.csv"
 
         if os.path.exists(filename):
             continue
         if roll is not None:
-            results = bench.simple_benchmark_avg(
+            results = bench.benchmark_avg(
                 batch_folder, prefix, 1, end_epoch, num_ckpts, config, roll=True
             )
         else:
-            results = bench.simple_benchmark_avg(
+            results = bench.benchmark_avg(
                 batch_folder, prefix, 1, end_epoch, num_ckpts, config,
             )
 
@@ -261,7 +279,7 @@ def benchmark_batch_set(prefix, config, roll=None):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--prefix", default="init", help="prefix of model to test")
+    parser.add_argument("--prefix", default=None, help="prefix of model to test")
     parser.add_argument("--config", required=True)
     parser.add_argument("--out", default=None)
     parser.add_argument("--in_list", default=None)
@@ -291,9 +309,10 @@ if __name__ == "__main__":
         "init",
     ]
 
-    if opt.benchmark:
+    if opt.benchmark and opt.prefix is None:
         for prefix in prefixes:
             benchmark_batch_set(prefix, config, opt.roll_avg)
+            series_benchmark(config, prefix, avg=opt.avg, roll=opt.roll_avg)
     if opt.tabulate:
         if opt.prefix != "init":
             tabulate_batch_samples(
@@ -305,9 +324,11 @@ if __name__ == "__main__":
     elif opt.visualize_conf:
         visualize_conf(opt.prefix, opt.visualize_conf, opt.filter_sample)
 
-    elif opt.prefix != "init":
+    elif opt.prefix is not None:
+        benchmark_batch_set(opt.prefix, config, opt.roll_avg)
         tabulate_batch_samples(config, opt.prefix, roll=opt.roll_avg)
-        series_benchmark(config, opt.prefix, avg=opt.avg, roll=opt.roll_avg)
-        aggregate_results(
-            config, opt.prefix, opt.metric, avg=opt.avg, roll=opt.roll_avg
-        )
+        if opt.prefix != "init":
+            series_benchmark(config, opt.prefix, avg=opt.avg, roll=opt.roll_avg)
+            aggregate_results(
+                config, opt.prefix, opt.metric, avg=opt.avg, roll=opt.roll_avg
+            )

@@ -150,42 +150,50 @@ def group_average_bb(detections, num_ckpts, iou_thres=0.1):
         if not merged:
             regions.append(detection.unsqueeze(0))
 
+    regions_std = dict()
+
     for i, region in enumerate(regions):
         # For each region, sum the confidences per class
         num_classes = int(region[:, -1].max()) + 1
-        obj_conf = [0.0 for _ in range(num_classes)]
-        class_conf = [0.0 for _ in range(num_classes)]
-        count = [0 for _ in range(num_classes)]
+        obj_conf = [list() for _ in range(num_classes)]
+        class_conf = [list() for _ in range(num_classes)]
 
         for bbox in region.squeeze(1):
             class_i = int(bbox[-1])
-            obj_conf[class_i] += bbox[4]
-            class_conf[class_i] += bbox[5]
-            count[class_i] += 1
+            obj_conf[class_i].append(bbox[4])
+            class_conf[class_i].append(bbox[5])
 
-        obj_conf = np.divide(obj_conf, max(num_ckpts, np.amax(count)))
-        class_conf = np.divide(class_conf, max(num_ckpts, np.amax(count)))
+        # To average, we divide either by the largest number of bounding boxes for a region
+        # or by the number of checkpoints
+        max_detections = max(num_ckpts, np.amax(list(map(len, obj_conf))))
+        for j in range(num_classes):
+            for _ in range(max_detections - len(obj_conf[j])):
+                obj_conf[j].append(0.0)
+                class_conf[j].append(0.0)
 
         # Retain the class with the greatest confidence
-        best_class = np.argmax(np.multiply(class_conf, obj_conf))
+        best_class = np.argmax(np.multiply(class_conf, obj_conf).mean(1))
 
         # Retain the dimensions of the BB of that class with the greatest confidence
         for bbox in sort_conf(region, asc=False).squeeze(1):
             if int(bbox[-1]) == best_class:
                 best_bbox = bbox
+                break
 
         # For each final BB (one per region), divide confidence by number of checkpoints
         best_bbox = best_bbox.squeeze(0)
 
-        best_bbox[4] = np.float64(obj_conf[best_class])
-        best_bbox[5] = np.float64(class_conf[best_class])
+        best_bbox[4] = np.mean(obj_conf[best_class], dtype=np.float64)
 
-        if best_bbox[-2] > 1.0:
-            print(region)
+        best_bbox[5] = np.mean(class_conf[best_class], dtype=np.float64)
+
+        obj_std = np.std(obj_conf[best_class], dtype=np.float64, ddof=1)
+        class_std = np.std(obj_conf[best_class], dtype=np.float64, ddof=1)
+        regions_std[round(float(best_bbox[5]), 3)] = (obj_std, class_std)
 
         regions[i] = best_bbox.unsqueeze(0)
 
-    return torch.cat(regions, 0)
+    return torch.cat(regions, 0), regions_std
 
 
 def sort_conf(detections, asc=True):
