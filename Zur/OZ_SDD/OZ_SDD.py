@@ -11,13 +11,13 @@ import os
 import imutils
 import time
 import datetime
-import matplotlib
+# import matplotlib
+# matplotlib.use("TKAgg")
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 from OZ_HelperFunctions import *
 from OZ_CentroidTracker_2 import CentroidTracker
 
-# matplotlib.use("TKAgg")
 
 # **MOUSE CALLBACK FUNCTION** #########################################################################################
 
@@ -72,7 +72,7 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
     scale_w, scale_h = float(400 / width), float(600 / height)
 
     # instantiate centroid tracker
-    ct = CentroidTracker(maxDisappeared=10, maxDistance=50)
+    ct = CentroidTracker(maxDisappeared=10)
 
     time_series = OrderedDict()
 
@@ -215,13 +215,8 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
             print("Safe Pedestrians: " + str(safe_count))
             print("Violator Pedestrians: " + str(violation_count))
 
-        sdd_ratio = violation_count / len(boundingboxes)
-        if frameCount % 20 == 0:
-            """
-            current_time = str(datetime.datetime.now().hour) + ":" + \
-                           str(datetime.datetime.now().minute) + ":" + \
-                           str(datetime.datetime.now().second)
-            """
+        if frameCount % 10 == 0:
+            sdd_ratio = violation_count / len(boundingboxes)
             current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             time_series[current_time] = sdd_ratio
 
@@ -232,9 +227,8 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-    # release video capture and destroy all windows
+    # release video capture
     vs.release()
-    cv2.destroyAllWindows()
 
     # end time, print elapsed time
     end = time.time()
@@ -242,18 +236,19 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
     minutes, seconds = divmod(rem, 60)
     print("Total Time Elapsed: {:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds))
 
-    print(time_series.items())
+    print(time_series)
     tuple_list = list(time_series.items())
-    print(tuple_list)
     x, y = zip(*tuple_list)
     xx = np.array(x)
     yy = np.array(y)
     print(xx)
     print(yy)
 
-    # plt.plot(xx, yy, marker='o')
-    # plt.show()
+    plt.figure()
+    plt.plot(xx, yy, marker='o')
+    plt.show()
 
+    cv2.destroyAllWindows()
 
 # **ARGUMENT PARSER, LOAD YOLO, CALL SDD FUNCTION** ###################################################################
 
