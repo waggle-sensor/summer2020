@@ -873,3 +873,15 @@ This seems to confirm the large number of false negatives, as does the decreasin
   * Dogs is another possibility for object detection
   * Google's Waymo dataset has many vehicles, but no granular data like make/model
   * Need to continue looking into this
+
+**Friday, August 14**
+
+* Ran regression and time series tests after benchmarks were running overnight
+  * Sample conf vs. next batch precision yields the best correlation, even compared to sample precision
+* Documented results in presentation for next week
+* Briefly revised analyses tools to incorporate a matplotlib graph of confidences, alongside the generated PDF
+* Attended AI/ML presentations
+* Wrote script to label Stanford car dataset, sorting by car types (e.g. sedan, SUV, cab)
+* Deployed model on Lambda to train for the weekend
+* Writing tools to help manually annotate the maingate dataset, hopefully each class yields similar types
+  * Otherwise, may search the internet for similar images

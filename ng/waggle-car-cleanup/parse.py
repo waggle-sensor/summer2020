@@ -125,15 +125,19 @@ def main():
     exts = [".JPG", ".jpg"]
 
     print("Cleaning up data...")
-    cleanup.clean(DATA, OUTPUT, exts, ".xml", annot_parser, annot_path_to_img)
+    # cleanup.clean(DATA, OUTPUT, exts, ".xml", annot_parser, annot_path_to_img)
     img_paths = cleanup.get_img_paths(DATA + "/images/labeled", exts)
 
     print("Parsing annotations...")
     annots = cleanup.parse_annots(img_paths, ".xml", annot_parser)
 
     classes = open("output/chars.names", "r").read().split("\n")[:-1]
-    for a in tqdm.tqdm(annots, "Cropping letters"):
-        a.crop_labels(classes, DATA + "images/objs/")
+    for a in tqdm.tqdm(annots, "Cropping..."):
+        # a.draw_bounding_boxes()
+        try:
+            a.crop_labels(classes, "data/images/obj/")
+        finally:
+            pass
 
 
 if __name__ == "__main__":

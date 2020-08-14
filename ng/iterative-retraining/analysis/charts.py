@@ -54,6 +54,7 @@ def make_conf_histogram(results, filename):
     fig.set_figheight(2.5 * num_rows)
     fig.set_figwidth(10)
     fig.savefig(filename, bbox_inches="tight")
+    plt.clf()
 
 
 def plot_multiline(xy_pairs, xlab=str(), ylab=str(), vert_lines=None):
@@ -88,4 +89,33 @@ def plot_multiline(xy_pairs, xlab=str(), ylab=str(), vert_lines=None):
     if vert_lines is not None:
         for x in vert_lines:
             plt.axvline(x=x, color="black", linestyle="dashed")
+    plt.show()
+
+
+def get_conf_data(result_list):
+    return [row["conf"] for row in result_list]
+
+
+def show_overall_hist(results):
+    acc = round(bench.mean_accuracy(results[:-1]), 3)
+    prec = round(bench.mean_precision(results[:-1]), 3)
+    hit_miss = [get_conf_data(data) for data in results[-1].hits_misses()]
+
+    colors = ["lightgreen", "red"]
+    plt.hist(hit_miss[0], bins=10, color=colors[0], range=(0.0, 1.0))
+    plt.show()
+    title = f"Misses on Sample Batch 0"
+    plt.title(title)
+    plt.xlabel("Confidence")
+    plt.ylabel("Count")
+    plt.hist(hit_miss[1], bins=20, color=colors[1], range=(0.0, 1.0))
+    plt.show()
+    title = (
+        f"Confidence Distribution on Sample Batch 0 (Old Method)\n(acc={acc}, "
+        + f"prec={prec}, n={results[-1].pop})"
+    )
+    plt.title(title)
+    plt.xlabel("Confidence")
+    plt.ylabel("Count")
+    plt.hist(hit_miss, bins=10, color=colors, range=(0.0, 1.0), stacked=True)
     plt.show()

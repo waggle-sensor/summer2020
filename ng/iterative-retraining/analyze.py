@@ -146,17 +146,20 @@ def aggregate_results(config, prefix, metric, delta=2, avg=False, roll=None):
     )
 
 
-def visualize_conf(prefix, benchmark, sample_filter=False):
+def visualize_conf(prefix, benchmark, sample_filter=False, pos_thres=0.5):
     if sample_filter:
         folder = "/".join(benchmark.split("/")[:-1])
         epoch = utils.get_epoch(benchmark)
         sampled_imgs = glob.glob(f"{folder}/{prefix}*_sample_{epoch}.txt")[0]
-        results, _ = bench.load_data(benchmark, by_actual=True, filter=sampled_imgs)
+        results, _ = bench.load_data(
+            benchmark, by_actual=True, filter=sampled_imgs, conf_thresh=pos_thres
+        )
     else:
-        results, _ = bench.load_data(benchmark, by_actual=True)
+        results, _ = bench.load_data(benchmark, by_actual=True, conf_thresh=pos_thres)
 
     filename = benchmark[:-4] + "_viz.pdf"
     charts.make_conf_histogram(results, filename)
+    charts.show_overall_hist(results)
 
 
 def tabulate_batch_samples(config, prefix, silent=False, filter=False, roll=False):
@@ -228,10 +231,11 @@ def compare_benchmarks(prefixes, metric, metric2=None, roll=False, compare_init=
         if "init" in prefixes:
             prefixes.remove("init")
         df = pd.DataFrame(
-            columns=["Method", f"avg. {opt.metric}", f"avg. {opt.metric2}"]
+            columns=["Method", f"avg. {opt.metric}", f"batch avg. {opt.metric2}"]
         ).set_index("Method")
 
         init_vals = tabulate_batch_samples(config, "init", silent=True, filter=False)
+        print(f"Baseline avg {metric2}: ", init_vals[metric2][1:].mean())
 
         for prefix in prefixes:
             indep_var = tabulate_batch_samples(config, prefix, silent=True, filter=True)
@@ -246,7 +250,7 @@ def compare_benchmarks(prefixes, metric, metric2=None, roll=False, compare_init=
                 y_series[1:].mean(),
             ]
 
-        print(df)
+        print(df.sort_values(df.columns[0]))
         charts.linear_regression(df)
 
 
@@ -337,7 +341,9 @@ if __name__ == "__main__":
             )
 
     elif opt.visualize_conf:
-        visualize_conf(opt.prefix, opt.visualize_conf, opt.filter_sample)
+        visualize_conf(
+            opt.prefix, opt.visualize_conf, opt.filter_sample, config["pos_thres"]
+        )
 
     elif opt.prefix is not None:
         benchmark_batch_set(opt.prefix, config, opt.roll_avg)

@@ -126,20 +126,18 @@ def get_freq(annots):
     return freq
 
 
-def parse_annots(img_path, ext, annot_parser, normalize=False):
-    return [Annotation(path, ext, annot_parser, normalize) for path in img_path]
+def parse_annots(img_path, ext, annot_parser, normalize=False, **kwargs):
+    return [
+        Annotation(path, ext, annot_parser, normalize, **kwargs) for path in img_path
+    ]
 
 
 class Annotation:
-    def __init__(self, img_path, annot_ext, annot_parser, normalize=False):
+    def __init__(self, img_path, annot_ext, annot_parser, normalize=False, **kwargs):
         self.img_path = img_path
 
         annot_path = img_path[:-4] + annot_ext
-        self.parse(annot_path, annot_parser, normalize)
-
-    def parse(self, annot_path, annot_parser, normalize):
-        self.labels = annot_parser(annot_path)
-
+        self.labels = annot_parser(annot_path, **kwargs)
         if normalize:
             self.normalize_labels()
 
@@ -187,9 +185,12 @@ class Annotation:
         print(self.img_path)
         for label in self.labels:
             cv2.rectangle(img, label["minXY"], label["maxXY"], (0, 255, 0), 3)
+            cv2.putText(
+                img, label["class"], label["minXY"], cv2.FONT_HERSHEY_SIMPLEX, 3.0, 2, 5
+            )
         if img is None:
             return
-        disp_img = imutils.resize(img, width=1024)
+        disp_img = imutils.resize(img, width=2048)
         cv2.imshow("Bounding box", disp_img)
         cv2.waitKey(0)
 
@@ -200,16 +201,17 @@ class Annotation:
                 continue
             idx = class_list.index(label["class"])
 
-            folder = f"{output_path}Class{str(idx).zfill(num_digits)}-{label['class']}"
+            folder = f"{output_path}/Class{str(idx).zfill(num_digits)}-{label['class']}"
             os.makedirs(folder, exist_ok=True)
             name = str(len(os.listdir(folder)) + 1) + ".png"
 
             img = cv2.imread(self.img_path)
+
             (x0, y0) = label["minXY"]
             (x1, y1) = label["maxXY"]
             cropped_img = img[y0:y1, x0:x1]
-
-            cv2.imwrite(folder + "/" + name, cropped_img)
+            if len(cropped_img) != 0:
+                cv2.imwrite(folder + "/" + name, cropped_img)
 
 
 def get_img_paths(data, img_exts):
