@@ -5,6 +5,7 @@ from collections import Counter
 import albumentations as alb
 import albumentations.augmentations.transforms as trans
 import cv2
+import numpy as np
 from tqdm import tqdm
 
 from retrain.utils import get_label_path
@@ -55,7 +56,6 @@ def multi_aug(augs, major=True, bbox_params=None):
         ],
         p=1.0,
         bbox_params=bbox_params,
-        label_fields=["classes"],
     )
 
 
@@ -98,13 +98,14 @@ class Augmenter:
     def augment(self, imgs_per_class, major_aug, min_visibility=0.75):
         incr_factors = self.get_incr_factors(imgs_per_class)
 
-        bbox_params = alb.BboxParams("yolo", min_visibility=min_visibility)
+        bbox_params = alb.BboxParams(
+            "yolo", min_visibility=min_visibility, label_fields=["classes"]
+        )
         aug = multi_aug(get_augmentations(), major_aug, bbox_params)
 
-        classes = [i for i in range(len(incr_factors.keys()))]
         pbar = tqdm(desc="Augmenting training images", total=sum(incr_factors.values()))
         for img, count in incr_factors.items():
-            augment_img(aug, "compose", img, classes, count=count)
+            augment_img(aug, "compose", img, count=count)
             new_imgs = {
                 f"{img[:-4].replace('images', 'aug-images')}_compose-{i}.png"
                 for i in range(count)
@@ -116,7 +117,7 @@ class Augmenter:
         pbar.close()
 
 
-def augment_img(aug, suffix, img_path, classes, count=1):
+def augment_img(aug, suffix, img_path, count=1):
     img = cv2.imread(img_path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
@@ -137,7 +138,7 @@ def augment_img(aug, suffix, img_path, classes, count=1):
             continue
 
         try:
-            result = aug(image=img, bboxes=boxes, classes=classes)
+            result = aug(image=img, bboxes=boxes, classes=field_ids)
         except IndexError:
             continue
         aug_img = result["image"]
@@ -168,7 +169,7 @@ def parse_label(label_path):
             if i == 0:
                 field_ids.append(int(info))
             else:
-                box.append(float(info))
+                box.append(np.float64(info))
         boxes.append(box)
 
     return boxes, field_ids
