@@ -73,7 +73,7 @@ class ImageFolder(Dataset):
         self.imgs.update(img_folder.imgs)
 
     def to_dataset(self, **args):
-        return ListDataset(list(self.imgs), **args)
+        return ListDataset(list(self.imgs), img_size=self.img_size, **args)
 
     def save_img_list(self, output):
         """Save list of images (for splits) as a text file."""
