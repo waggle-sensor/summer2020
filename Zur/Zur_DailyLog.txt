@@ -311,3 +311,8 @@ Thursday 8/13
 2. Implemented centroid tracking algorithm to assign unique ID to each detected person
 3. Organized output data into ordered dict but matplotlib not working
 4. Demo Presentation Prep
+
+Friday 8/14
+1. Demo Presentation Prep
+2. AI/ML Demo Presentation
+3. Worked with Sean and Raj to try to find solution to matplotlib problem, it worked on Sean's machine so not worried about it, might try to use different version of python over the weekend.

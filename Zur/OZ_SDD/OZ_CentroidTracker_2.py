@@ -4,7 +4,7 @@ import numpy as np
 
 
 class CentroidTracker:
-    def __init__(self, maxDisappeared=50, maxDistance=50):
+    def __init__(self, maxDisappeared=50):
         # initialize unique object ID
         self.nextObjectID = 0
 
@@ -18,9 +18,6 @@ class CentroidTracker:
         # store the number of frames an object can be marked "disappeared"
         # before it is deregistered
         self.maxDisappeared = maxDisappeared
-
-        # store max distance between centroids to associate an object
-        self.maxDistance = maxDistance
 
     # registering a new object using next available ID to store its centroid
     def register(self, centroid, bbox):
@@ -81,9 +78,6 @@ class CentroidTracker:
 
             for (row, col) in zip(rows, cols):
                 if row in usedRows or col in usedCols:
-                    continue
-
-                if D[row, col] > self.maxDistance:
                     continue
 
                 # update centroid and disappeared counter
