@@ -885,3 +885,27 @@ This seems to confirm the large number of false negatives, as does the decreasin
 * Deployed model on Lambda to train for the weekend
 * Writing tools to help manually annotate the maingate dataset, hopefully each class yields similar types
   * Otherwise, may search the internet for similar images
+
+## Week 10
+
+**Monday, August 17**
+
+* Tried to troubleshoot why car type model deployed overnight failed
+  * CUDA shapes are wrong
+  * Bounding boxes are transformed outside of the image
+* Fixed bugs in albumentations pipeline
+  * Added BboxParams object for minimum visibility
+  * Partially rewrote library to remove rounding errors
+* Deployed model again, targeting 10k images per class
+  * Augmentations appear to be sound
+  * After low mAP with 30 epochs of training, increased to 15k images per class
+  * SUV, Van, and Cab classes appear to have highest precision
+* Researched similar datasets online
+  * Stanford dataset generally used for classification, sometimes with low mAP
+  * COCO could be used for training, in an instance of a binary classifier (vehicle and non-vehicle)
+    * Essentially judges improvement in object detection within maingate images
+  * We could also crop images of the maingate cars, in order to help with object detection
+  * Lowering the number of classes in the model is a third option
+* Wrote tool to help manually label classes (vehicle type) for the maingate dataset
+  * Began labelling, though we skew towards high amounts of SUVs and sedans
+  * Not sure if the data is very usable for retraining

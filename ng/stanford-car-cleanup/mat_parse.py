@@ -71,6 +71,7 @@ if __name__ == "__main__":
                     counted.append(make)
                     make_map[make] = car_type
 
+    print("\n".join(map(str, make_map.items())))
     print(type_freq)
     os.makedirs("output", exist_ok=True)
     os.makedirs("data/labels", exist_ok=True)

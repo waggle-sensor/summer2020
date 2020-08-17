@@ -6,6 +6,7 @@ import random
 from math import log, ceil
 import cv2
 import imutils
+from tqdm import tqdm
 
 """
 Cleans up a set of annotated scene images for training.
@@ -127,9 +128,10 @@ def get_freq(annots):
 
 
 def parse_annots(img_path, ext, annot_parser, normalize=False, **kwargs):
-    return [
-        Annotation(path, ext, annot_parser, normalize, **kwargs) for path in img_path
-    ]
+    annot_list = list()
+    for path in tqdm(img_path, "Parsing annotations..."):
+        annot_list.append(Annotation(path, ext, annot_parser, normalize, **kwargs))
+    return annot_list
 
 
 class Annotation:
@@ -152,8 +154,9 @@ class Annotation:
             normalized_labels.append(label)
         self.labels = normalized_labels
 
-    def make_darknet_label(self, class_list):
-        out_path = self.img_path.replace("images", "labels")[:-4] + ".txt"
+    def make_darknet_label(self, class_list, out_path=None):
+        if out_path is None:
+            out_path = self.img_path.replace("images", "labels")[:-4] + ".txt"
         lines = list()
         for label in self.labels:
             if label["class"] not in class_list:
@@ -182,7 +185,6 @@ class Annotation:
 
     def draw_bounding_boxes(self):
         img = cv2.imread(self.img_path)
-        print(self.img_path)
         for label in self.labels:
             cv2.rectangle(img, label["minXY"], label["maxXY"], (0, 255, 0), 3)
             cv2.putText(
@@ -192,7 +194,7 @@ class Annotation:
             return
         disp_img = imutils.resize(img, width=2048)
         cv2.imshow("Bounding box", disp_img)
-        cv2.waitKey(0)
+        return cv2.waitKey(0)
 
     def crop_labels(self, class_list, output_path):
         num_digits = ceil(log(len(class_list), 10))
@@ -248,7 +250,7 @@ def clean(
         classes = list(freq.keys())
     else:
         classes = list(freq.keys())[:top_classes]
-    with open(output + "chars.names", "w+") as out:
+    with open(output + "make_model.names", "w+") as out:
         out.write("\n".join(classes) + "\n")
 
     if not os.path.exists(data + "labels/labeled"):

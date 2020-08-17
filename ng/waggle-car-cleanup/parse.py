@@ -6,6 +6,8 @@ import lxml.etree as ET
 import os
 import cleanup
 import tqdm
+import random
+from glob import glob
 
 DATA = "./data/"
 OUTPUT = "./output/"
@@ -117,6 +119,83 @@ def annot_parser(xml):
     return labels
 
 
+key_map = {
+    "c": "Cab",
+    "n": "Convertible",
+    "u": "Coupe",
+    "h": "Hatchback",
+    "m": "Minivan",
+    "s": "SUV",
+    "d": "Sedan",
+    "v": "Van",
+    "w": "Wagon",
+}
+
+
+def increment(mapping, make_model, car_type):
+    mapping[make_model][car_type] += 1
+    car_type_count = mapping[make_model][car_type]
+    if (
+        car_type_count >= 10
+        and car_type_count / sum(mapping[make_model].values()) >= 0.9
+    ):
+        mapping[make_model] = car_type
+
+
+def get_classes(label_file):
+    return [int(line.split(" ")[0]) for line in open(label_file).read().split("\n")]
+
+
+def relabel(annot, car_types, mapping):
+    labels = annot.labels
+    filename = f"output/labels/{annot.img_path.split('/')[-1][:-4]}.txt"
+    remove_list = list()
+    if os.path.exists(filename):
+        label_classes = get_classes(filename)
+        for txt_class, annot_label in zip(label_classes, labels):
+            increment(mapping, annot_label["class"], car_types[txt_class])
+        return
+
+    i = 0
+    while i < len(labels):
+        label = labels[i]
+        annot.labels = [label]
+        make_model = label["class"]
+        if make_model in car_types:
+            i += 1
+            continue
+        print(make_model)
+        if make_model != "unknown unknown" and isinstance(mapping[make_model], str):
+            label["class"] = mapping[make_model]
+            continue
+
+        choice = annot.draw_bounding_boxes()
+        if choice == ord("x"):
+            remove_list.append(label)
+            i += 1
+            continue
+        for key, car_type in key_map.items():
+            if choice == ord(key):
+                label["class"] = car_type
+                break
+        if label["class"] in key_map.values():
+            increment(mapping, make_model, car_type)
+            i += 1
+
+    annot.labels = [lab for lab in labels if lab not in remove_list]
+    annot.make_darknet_label(car_types, filename)
+
+
+def count_types(folder, car_types):
+    freq = {car: 0 for car in car_types}
+    labels = glob(folder + "/*.txt")
+    for label in labels:
+        for car_type in get_classes(label):
+            freq[car_types[car_type]] += 1
+
+    return freq
+
+
 def annot_path_to_img(annot_path):
     return annot_path[:-4] + ".jpg"
 
@@ -128,16 +207,23 @@ def main():
     # cleanup.clean(DATA, OUTPUT, exts, ".xml", annot_parser, annot_path_to_img)
     img_paths = cleanup.get_img_paths(DATA + "/images/labeled", exts)
 
-    print("Parsing annotations...")
     annots = cleanup.parse_annots(img_paths, ".xml", annot_parser)
 
-    classes = open("output/chars.names", "r").read().split("\n")[:-1]
-    for a in tqdm.tqdm(annots, "Cropping..."):
-        # a.draw_bounding_boxes()
-        try:
-            a.crop_labels(classes, "data/images/obj/")
-        finally:
-            pass
+    old_classes = open("output/make_model.names", "r").read().split("\n")[:-1]
+    new_classes = open("output/cars.names", "r").read().split("\n")[:-1]
+
+    mapping = {old: {new: 0 for new in new_classes} for old in old_classes}
+
+    for i, a in enumerate(annots):
+        print(i)
+        relabel(a, new_classes, mapping)
+
+    # for a in tqdm.tqdm(annots, "Cropping..."):
+    #     # a.draw_bounding_boxes()
+    #     try:
+    #         a.crop_labels(classes, "data/images/obj/")
+    #     finally:
+    #         pass
 
 
 if __name__ == "__main__":
