@@ -316,3 +316,11 @@ Friday 8/14
 1. Demo Presentation Prep
 2. AI/ML Demo Presentation
 3. Worked with Sean and Raj to try to find solution to matplotlib problem, it worked on Sean's machine so not worried about it, might try to use different version of python over the weekend.
+
+Week 10 (8/17 - 8/21)
+
+Monday 8/17
+1. Downloaded Python 3.8, created new virtual environment, copied all my SDD code over
+2. Matplotlib still not working on my end but apparently it works for Sean so not worrying about it anymore
+3. Worked on turning blog post into more formal paper
+4. Added output txt file every 20 frames instead of printing every 5 frames
