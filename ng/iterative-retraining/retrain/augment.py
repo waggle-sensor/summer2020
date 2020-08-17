@@ -55,6 +55,7 @@ def multi_aug(augs, major=True, bbox_params=None):
         ],
         p=1.0,
         bbox_params=bbox_params,
+        label_fields=["classes"],
     )
 
 
@@ -100,10 +101,10 @@ class Augmenter:
         bbox_params = alb.BboxParams("yolo", min_visibility=min_visibility)
         aug = multi_aug(get_augmentations(), major_aug, bbox_params)
 
+        classes = [i for i in range(len(incr_factors.keys()))]
         pbar = tqdm(desc="Augmenting training images", total=sum(incr_factors.values()))
-
         for img, count in incr_factors.items():
-            augment_img(aug, "compose", img, count=count)
+            augment_img(aug, "compose", img, classes, count=count)
             new_imgs = {
                 f"{img[:-4].replace('images', 'aug-images')}_compose-{i}.png"
                 for i in range(count)
@@ -115,7 +116,7 @@ class Augmenter:
         pbar.close()
 
 
-def augment_img(aug, suffix, img_path, count=1):
+def augment_img(aug, suffix, img_path, classes, count=1):
     img = cv2.imread(img_path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
@@ -136,7 +137,7 @@ def augment_img(aug, suffix, img_path, count=1):
             continue
 
         try:
-            result = aug(image=img, bboxes=boxes)
+            result = aug(image=img, bboxes=boxes, classes=classes)
         except IndexError:
             continue
         aug_img = result["image"]
