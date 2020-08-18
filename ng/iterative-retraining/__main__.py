@@ -37,7 +37,7 @@ def get_sample_methods():
         "mid-below-thresh": (sample.in_range_sample, {"min_val": 0.0, "max_val": 0.5}),
         "bin-quintile": (
             sample.bin_sample,
-            {"stratify": False, "num_bins": 5, "curve": sample.const, "thresh": 0.0,},
+            {"stratify": False, "num_bins": 5, "curve": sample.const, "thresh": 0.0},
         ),
         "bin-normal": (
             sample.bin_sample,
@@ -96,7 +96,7 @@ def sample_retrain(name, batches, config, last_epoch, seen_images, sample_func, 
     for i, sample_folder in enumerate(batches):
         sample_folder.label(classes, label_sample_set)
         sample_labeled = LabeledSet(
-            sample_folder.imgs, len(classes), img_size=config["img_size"],
+            sample_folder.imgs, len(classes), config["img_size"],
         )
 
         sample_filename = f"{config['output']}/{name}{i}_sample_{last_epoch}.txt"
@@ -135,7 +135,9 @@ def sample_retrain(name, batches, config, last_epoch, seen_images, sample_func, 
 
         # Receive raw sampled data in the cloud
         # This process simulates manually labeling/verifying all inferences
-        retrain_obj = LabeledSet(retrain_files, len(classes), prefix=f"{name}{i}")
+        retrain_obj = LabeledSet(
+            retrain_files, len(classes), config["img_size"], prefix=f"{name}{i}"
+        )
 
         new_splits = split_set(
             retrain_obj,
@@ -187,7 +189,9 @@ if __name__ == "__main__":
 
     classes = utils.load_classes(config["class_list"])
 
-    init_images = LabeledSet(config["initial_set"], len(classes), prefix="init")
+    init_images = LabeledSet(
+        config["initial_set"], len(classes), config["img_size"], prefix="init"
+    )
     split_set(init_images, config["output"], config["train_init"], config["valid_init"])
 
     # Run initial training
@@ -198,9 +202,7 @@ if __name__ == "__main__":
         init_end_epoch = utils.get_epoch(opt.reload_baseline)
 
     # Sample
-    all_samples = ImageFolder(
-        config["sample_set"], img_size=config["img_size"], prefix="sample"
-    )
+    all_samples = ImageFolder(config["sample_set"], config["img_size"], prefix="sample")
 
     # Simulate a video feed at the edge
     batched_samples = all_samples.get_batch_splits(

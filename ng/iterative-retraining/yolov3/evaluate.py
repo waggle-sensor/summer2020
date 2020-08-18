@@ -69,7 +69,7 @@ def match_detections(model, img_folder, detections, config):
 
         # Rescale target
         targets[:, 2:] = utils.xywh2xyxy(targets[:, 2:])
-        targets[:, 2:] *= config["img_size"]
+        targets[:, 2:] *= img_folder.img_size
 
         labels = targets[:, 1].tolist()
 
@@ -157,17 +157,10 @@ def save_image(detections, path, opt, classes, best_label_only=False):
 
 
 def evaluate(
-    model,
-    img_list,
-    iou_thres,
-    conf_thres,
-    nms_thres,
-    img_size,
-    batch_size,
-    silent=False,
+    model, img_folder, iou_thres, conf_thres, nms_thres, batch_size, silent=False,
 ):
     # Get dataloader
-    dataset = img_list.to_dataset(multiscale=False)
+    dataset = img_folder.to_dataset(multiscale=False)
     dataloader = torch.utils.data.DataLoader(
         dataset,
         batch_size=batch_size,
@@ -197,7 +190,7 @@ def evaluate(
 
         # Rescale target
         targets[:, 2:] = utils.xywh2xyxy(targets[:, 2:])
-        targets[:, 2:] *= img_size
+        targets[:, 2:] *= img_folder.img_size
 
         outputs = utils.non_max_suppression(
             outputs, conf_thres=conf_thres, nms_thres=nms_thres
@@ -218,15 +211,16 @@ def evaluate(
     return precision, recall, AP, f1, ap_class, total_loss
 
 
-def get_results(model, img_list, opt, class_names, logger=None, epoch=0, silent=False):
+def get_results(
+    model, img_folder, opt, class_names, logger=None, epoch=0, silent=False
+):
 
     precision, recall, AP, f1, ap_class, loss = evaluate(
         model,
-        img_list=img_list,
+        img_folder=img_folder,
         iou_thres=opt["iou_thres"],
         conf_thres=opt["conf_thres"],
         nms_thres=opt["nms_thres"],
-        img_size=opt["img_size"],
         batch_size=8,
         silent=silent,
     )

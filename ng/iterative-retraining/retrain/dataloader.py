@@ -35,7 +35,7 @@ def resize(image, size):
 
 
 class ImageFolder(Dataset):
-    def __init__(self, src, img_size=416, prefix=str()):
+    def __init__(self, src, img_size, prefix=str()):
         if isinstance(src, (list, set)):
             self.imgs = set(src)
         elif ".txt" in src and os.path.isfile(src):
@@ -46,7 +46,6 @@ class ImageFolder(Dataset):
             raise TypeError("ImageFolder source must be file list or folder")
 
         self.prefix = prefix
-        self.img_size = img_size
 
     def __getitem__(self, index):
         img_path = list(self.imgs)[index % len(self.imgs)]
