@@ -324,3 +324,9 @@ Monday 8/17
 2. Matplotlib still not working on my end but apparently it works for Sean so not worrying about it anymore
 3. Worked on turning blog post into more formal paper
 4. Added output txt file every 20 frames instead of printing every 5 frames
+
+Tuesday 8/18
+1. AI/ML Scrum
+2. NAISE Seminar
+3. Worked on output text file
+4. Wrote README.md 

@@ -11,8 +11,6 @@ import os
 import imutils
 import time
 import datetime
-import matplotlib
-matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 from helpers import *
@@ -46,7 +44,7 @@ def get_mouse_points(event, x, y, flags, param):
 
 
 # **SOCIAL DISTANCE DETECTOR FUNCTION** ###############################################################################
-def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold):
+def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold, frames):
     # start timer
     start = time.time()
 
@@ -63,8 +61,8 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
     (H, W) = (None, None)  # frame dimensions
     frameCount = 0  # keep track of number of frames analyzed so far
     points = []  # list of mouse input coordinates
-    time_series = OrderedDict() # ordered dictionary for data collection
-    ct = CentroidTracker(maxDisappeared=10) # centroid tracker
+    time_series = OrderedDict()  # ordered dictionary for data collection
+    ct = CentroidTracker(maxDisappeared=10)  # centroid tracker
 
     # Get video height and width
     height = int(vs.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -72,6 +70,9 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
 
     # scale video dimensions for bird's eye view output
     scale_w, scale_h = float(400 / width), float(600 / height)
+
+    # initialize output text file
+    out = open("out.txt", "w")
 
     # **LOOP OVER EVERY FRAME OF THE VIDEO** ##########################################################################
     while True:
@@ -124,6 +125,10 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
 
         # calculating number of pixels that make up approx. 6 feet
         safe_dist = np.sqrt((warped_pt[0][0] - warped_pt[1][0]) ** 2 + (warped_pt[0][1] - warped_pt[1][1]) ** 2)
+
+        # write min safe distance to output text file
+        if frameCount == 0:
+            out.write("6 feet = " + str(int(safe_dist)) + " pixels." + "\n" + "\n")
 
         # drawing the rectangle on the video for the remaining frames
         pnts = np.array(points[:4], np.int32)
@@ -207,31 +212,23 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
             # show current frame
             cv2.imshow('Street View', street_view)
             cv2.imshow('Bird Eye View', bird_view)
-        """
-        # print results every 5 frames
-        if frameCount % 5 == 0 and frameCount != 0:
-            print("Pedestrians Detected: " + str(len(boundingboxes)))
-            print("Safe Pedestrians: " + str(safe_count))
-            print("Violator Pedestrians: " + str(violation_count))
-        """
-        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        # every 10 frames, append current data to ordered dictionary
-        if frameCount % 10 == 0 and frameCount != 0:
-            sdd_ratio = violation_count / len(boundingboxes)
-            time_series[current_time] = sdd_ratio
 
-        if frameCount % 20 == 0 and frameCount != 0:
-            out = open(str("output/" + current_time + ".txt"), "w")
-            out.write("6 feet = " + str(safe_dist) + " pixels.")
+        # set current time and calculate social distancing ratio
+        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        sdd_ratio = violation_count / len(boundingboxes)
+
+        # every (default) 20 frames, output current frame data to text file and append to ordered dictionary
+        if (frameCount % frames == 0) and (frameCount != 0):
+            out.write("Current time: " + str(current_time) + "\n")
+            out.write("Pedestrians Detected: " + str(len(boundingboxes)) + "\n")
+            for (objectID, point) in bottom_points:
+                out.write("\t" + "Object ID: {}".format(objectID) + str(point) + "\n")
+            out.write("Safe Pedestrians: " + str(safe_count) + "\n")
+            out.write("Violator Pedestrians: " + str(violation_count) + "\n")
+            out.write("Social Distancing Ratio: " + str(sdd_ratio) + "\n")
             out.write("\n")
-            out.write("Current time: " + str(current_time))
-            out.write("\n")
-            out.write("Pedestrians Detected: " + str(len(boundingboxes)))
-            out.write("\n")
-            out.write("Safe Pedestrians: " + str(safe_count))
-            out.write("\n")
-            out.write("Violator Pedestrians: " + str(violation_count))
-            out.close()
+
+            time_series[current_time] = sdd_ratio
 
         # update frame count
         frameCount = frameCount + 1
@@ -243,12 +240,7 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
     # release video capture
     vs.release()
 
-    # end time, print elapsed time
-    end = time.time()
-    hours, rem = divmod(end - start, 3600)
-    minutes, seconds = divmod(rem, 60)
-    print("Total Time Elapsed: {:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds))
-
+    """
     # organize ordered dictionary into two numpy arrays
     tuple_list = list(time_series.items())
     x, y = zip(*tuple_list)
@@ -258,12 +250,20 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold)
     print(yy)
 
     # plotting sdd ratio vs. time
-    # plt.figure()
-    # plt.plot(xx, yy, marker='o')
-    # plt.show()
+    plt.figure()
+    plt.plot(xx, yy, marker='o')
+    plt.show()
+    """
 
     # destroy all windows
     cv2.destroyAllWindows()
+
+    # output elapsed time and close output text file
+    end = time.time()
+    hours, rem = divmod(end - start, 3600)
+    minutes, seconds = divmod(rem, 60)
+    out.write("Total Time Elapsed: {:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds))
+    out.close()
 
 
 # **ARGUMENT PARSER, LOAD YOLO, CALL SDD FUNCTION** ###################################################################
@@ -278,6 +278,8 @@ ap.add_argument("-c", "--confidence", type=float, default=0.5,
                 help="minimum probability to filter weak detections")
 ap.add_argument("-t", "--threshold", type=float, default=0.3,
                 help="threshold when applying non-maximum suppression")
+ap.add_argument("-f", "--frames", type=int, default=20,
+                help="number of frames between data output to text file")
 args = vars(ap.parse_args())
 
 # deriving the paths to the YOLO weights and model configuration
@@ -295,4 +297,4 @@ cv2.namedWindow("image")
 cv2.setMouseCallback("image", get_mouse_points)
 
 # calling SDD function
-social_distance_detector(args["input"], net, ln, args["confidence"], args["threshold"])
+social_distance_detector(args["input"], net, ln, args["confidence"], args["threshold"], args["frames"])
