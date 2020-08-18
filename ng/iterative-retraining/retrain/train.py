@@ -33,7 +33,6 @@ def train(img_folder, opt, load_weights=None):
     model_def = utils.parse_model_config(opt["model_config"])
 
     model = Darknet(model_def, opt["img_size"])
-    
 
     # Initiate model
     model.apply(yoloutils.weights_init_normal)
@@ -178,7 +177,7 @@ def train(img_folder, opt, load_weights=None):
                 else:
                     state_dict = model.state_dict()
                 torch.save(
-                    ,
+                    state_dict,
                     f"{opt['checkpoints']}/{img_folder.prefix}_ckpt_{epoch}.pth",
                 )
 

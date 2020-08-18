@@ -174,8 +174,10 @@ def sample_retrain(name, batches, config, last_epoch, seen_images, sample_func, 
         checkpoint = utils.find_checkpoint(config, name, last_epoch)
         last_epoch = train(retrain_obj, config, checkpoint)
 
+
 def get_cuda_devices():
     torch.cuda.device_count()
+
 
 if __name__ == "__main__":
     random.seed("sage")

@@ -90,6 +90,4 @@ if __name__ == "__main__":
         imgs.extend(img_paths)
         img_detections.extend(detections)
 
-
-
         evaluate.save_images(img_paths, detections, opt, classes, False)
