@@ -133,6 +133,8 @@ key_map = {
 
 
 def increment(mapping, make_model, car_type):
+    if isinstance(mapping[make_model], str):
+        return
     mapping[make_model][car_type] += 1
     car_type_count = mapping[make_model][car_type]
     if (

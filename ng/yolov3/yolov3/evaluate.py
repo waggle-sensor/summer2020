@@ -29,7 +29,7 @@ def detect(input_imgs, conf_thres, model, nms_thres=0.5):
     return detections
 
 
-def save_images(imgs, img_detections, opt, best_label_only=False):
+def save_images(imgs, img_detections, opt, classes, best_label_only=False):
     print("\nSaving images:")
     # Iterate through images and save plot of detections
     for img_i, (path, detections) in enumerate(zip(imgs, img_detections)):
@@ -37,7 +37,7 @@ def save_images(imgs, img_detections, opt, best_label_only=False):
 
         # Draw bounding boxes and labels of detections
         if detections is not None:
-            save_image(detections, path, opt, best_label_only)
+            save_image(detections, path, opt, classes, best_label_only)
 
 
 def get_most_conf(detections):

@@ -909,3 +909,39 @@ This seems to confirm the large number of false negatives, as does the decreasin
 * Wrote tool to help manually label classes (vehicle type) for the maingate dataset
   * Began labelling, though we skew towards high amounts of SUVs and sedans
   * Not sure if the data is very usable for retraining
+
+**Tuesday, August 18**
+
+* Attended AI/ML scrum meeting
+* Fixed bug with image resizing in inference - cause of low precision before
+* Performance on validation set:
+
+```
+Early stop at epoch 104:
++-------+-------------+---------+
+| Index | Class name  | AP      |
++-------+-------------+---------+
+| 0     | Cab         | 0.68267 |
+| 1     | Convertible | 0.44596 |
+| 2     | Coupe       | 0.35592 |
+| 3     | Hatchback   | 0.14437 |
+| 4     | Minivan     | 0.29072 |
+| 5     | SUV         | 0.59701 |
+| 6     | Sedan       | 0.42085 |
+| 7     | Van         | 0.69161 |
+| 8     | Wagon       | 0.19666 |
++-------+-------------+---------+
+---- mAP 0.42508408587691826
+Previous loss: 650.4346039295197
+Current loss: 651.8103536367416
+```
+
+* Good baseline, except running inference roughly on the maingate dataset leads to many false positives
+  * Environmental features detected as cars
+  * Haven't validated against manual ground truth labels yet, except cars do appear to be detected
+* Running with the average method on the combined initial Stanford set leads to an accuracy of 0.729 and precision of 0.714, with 468 images
+* Need to figure out if I'll proceed with this or somehow alter classes to make the problem easier
+  * Right now, false positives would drive down accuracy and precision significantly - need to benchmark a running average on the sample set to see
+* Reading papers about false positives within object detection
+* Wrote code to parallelize training pipeline
+* Documented more about sampling methods

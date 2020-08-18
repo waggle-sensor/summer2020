@@ -31,13 +31,19 @@ def train(img_folder, opt, load_weights=None):
 
     device = yoloutils.get_device()
     model_def = utils.parse_model_config(opt["model_config"])
-    model = Darknet(model_def, opt["img_size"]).to(device)
+
+    model = Darknet(model_def, opt["img_size"])
+    
 
     # Initiate model
     model.apply(yoloutils.weights_init_normal)
 
     if load_weights is not None:
         model.load_state_dict(torch.load(load_weights))
+
+    if torch.cuda.device_count() > 1:
+        model = torch.nn.DataParallel(model)
+    model.to(device)
 
     class_names = utils.load_classes(opt["class_list"])
 
@@ -167,8 +173,12 @@ def train(img_folder, opt, load_weights=None):
                 model.seen += imgs.size(0)
 
             if epoch % opt["checkpoint_interval"] == 0:
+                if hasattr(model, module):
+                    state_dict = model.module.state_dict()
+                else:
+                    state_dict = model.state_dict()
                 torch.save(
-                    model.state_dict(),
+                    ,
                     f"{opt['checkpoints']}/{img_folder.prefix}_ckpt_{epoch}.pth",
                 )
 

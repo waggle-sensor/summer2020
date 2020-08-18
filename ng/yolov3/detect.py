@@ -71,7 +71,7 @@ if __name__ == "__main__":
     )
 
     classes = utils.load_classes(opt.class_path)  # Extracts class labels from file
-
+    print(classes)
     imgs = []  # Stores image paths
     img_detections = []  # Stores detections for each image index
 
@@ -90,4 +90,6 @@ if __name__ == "__main__":
         imgs.extend(img_paths)
         img_detections.extend(detections)
 
-    evaluate.save_images(imgs, img_detections, opt, classes, True)
+
+
+        evaluate.save_images(img_paths, detections, opt, classes, False)

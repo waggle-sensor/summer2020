@@ -46,6 +46,7 @@ class ImageFolder(Dataset):
             raise TypeError("ImageFolder source must be file list or folder")
 
         self.prefix = prefix
+        self.img_size = img_size
 
     def __getitem__(self, index):
         img_path = list(self.imgs)[index % len(self.imgs)]
@@ -113,6 +114,8 @@ class ImageFolder(Dataset):
     def label(self, classes, ground_truth_func):
         for img in self.imgs:
             labels = ground_truth_func(img)
+            if len(labels) == 0:
+                return
             text_label = open(get_label_path(img), "w+")
             for i, (class_display_name, x_cent, y_cent, w, h) in enumerate(labels):
                 class_num = classes.index(class_display_name)

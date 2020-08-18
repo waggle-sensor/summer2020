@@ -83,22 +83,32 @@ Parameters for basic YOLOv3 models, used for initial training, retraining, and b
 
 Various sampling approaches are defined in [`sampling.py`](./retrain/sampling.py) and can be used to create your own sampling functions. These functions take an input `ClassResult` (after running inference on a batch of images) and return a list of images that are sent back from the edge for training and testing (called the sample set). The included methods use the confidence of an image's inferred label(s) as the basis of its selection into the sample set.
 
-In each method, we define a probability density function P(*x*) that determines the likelihood of selecting a label with confidence *x* into the sample set. For example, we may have a uniform distribution where P(*x*) = 2 for 0 < *x* <= 0.5 and P(*x*) = 0 elsewhere, or we could have a normal distribution function. This function is used in either **probability sampling** or **bin sampling**. Note that if an image contains multiple classes, all of its labels will be used for retraining if it is selected to be in the sample set.
+In each method, we define a probability density function (PDF), P(*x*), that determines the likelihood of selecting a label with confidence *x* into the sample set. For example, we may have a uniform distribution where P(*x*) = 2 for 0 < *x* <= 0.5 and P(*x*) = 0 elsewhere, or we could have a normal distribution function. This function is used in either **probability sampling** or **bin sampling**. Note that if an image contains multiple classes, all of its labels will be used for retraining if it is selected to be in the sample set.
 
 ### Probability Sampling
 
-We randomly select images to include in accordance with the probability density function, until the sample set size limit (bandwidth) is reached or there are no more images in the batch with a confidence score that can be selected. This process is stratified by inferred class by default, though there are options to ignore class balancing. Sampling methods that incorporate this approach include:
+We randomly select images to include in accordance with the PDF, until the sample set size limit (bandwidth) is reached or there are no more images in the batch with a confidence score that can be selected. This process is stratified by inferred class by default, though there are options to ignore class balancing. Sampling methods that incorporate this approach include:
 
 * In-range sampling: this generates a uniform distribution for [*a*, *b*), where 0 < *a* < *b* <= 1
-* Random: a baseline for retraining, where we use in-range sampling on the interval [0, 1)
+* Random: a baseline for retraining, where we use in-range stratified sampling on the interval [0, 1)
 * Median threshold: we compute the median confidence per class after running inference on the batch set, then in-range sample along [median, 1) and [0, median)
 * Interquartie range: we compute the first and third quartile confidences per class, then sample along [Q1, Q3)
 * Mid-threshold: we sample along [0, 0.5) and [0.5, 1), stratifying by class
 * Normal: instead of a uniform distribution, we use a normal density function centered at the mean confidence of each class and with a standard deviation following that of the class's labels
-* Mid-normal: we use a normal probability density function centered at 0.5 with a standard deviation of 0.25
+* Mid-normal: we use a normal PDF centered at 0.5 with a standard deviation of 0.25
 
 ### Bin Sampling
 
+In this method, equal-sized confidence bins (e.g. [0.0, 0.2), [0.2, 0.4), etc.) are created in order to sample from a range of different confidences instead of randomly sampling individual images. The number of samples collected for each bin is proportional to the area under the PDF curve within that bin, with undersampling as needed. Sampling is also class-agnostic, so we aim to improve the classes that generally the least precision.
+
+Sampling methods that incoporate this approach include:
+
+* Binned quintile: intervals of 0.2 are created, with a uniform PDF. This aims to collect equal numbers of each bin
+* Binned normal: a normal PDF centered at 0.5 with a standard deviation of 0.25 is used. This attempts to eliminate the slight skews in the sample (propagated from the original confidence distribution) that can be present in the mid-normal method, as images with confidences slightly deviating from 0.5 still have a very high chance of being selected.
+
+### Adding & Modifying Sampling Methods
+
+In [the root module](./__main__.py), a list of sampling methods are returned from `get_sample_methods()`. These 
 
 
 ## Output files
