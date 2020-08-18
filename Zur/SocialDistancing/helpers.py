@@ -1,35 +1,33 @@
 # import packages
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
-from collections import OrderedDict
 
 
-# function to transform and calculate bottom points of each bounding boxer
-# input: list of boxes, transformation matrix
-# output: list of (x, y) coordinates
+# function to transform and calculate bottom points of each bounding box
+# input: list of boxes with object IDs, transformation matrix
+# output: list of tuples (objectID, (x,y))
 def transform_box_points(boundingboxes, matrix):
     bottom_points = []
-    boxes = [box[1] for box in boundingboxes]
-    for box in boxes:
+    for box in boundingboxes:
         # calculate coordinate of bottom center point of each box
-        bottom_center = np.array([[[int(box[0] + (box[2] * 0.5)), int(box[1] + box[3])]]], dtype="float32")
+        bottom_center = np.array([[[int(box[1][0] + (box[1][2] * 0.5)), int(box[1][1] + box[1][3])]]], dtype="float32")
 
         # transform point coordinates using transformation matrix, append to list
         warped_pt = cv2.perspectiveTransform(bottom_center, matrix)[0][0]
         pnt = [int(warped_pt[0]), int(warped_pt[1])]
-        bottom_points.append(pnt)
+        bottom_points.append((box[0], pnt))
 
     return bottom_points
 
 
 # function that that calculates distances between each pair of bottom_points and compares to minimum safe distance
-# input: list of boxes, list of bottom points, minimum safe distance
+# input: list of boxes with object IDs, list of bottom points with object IDs, minimum safe distance
 # output: list of pairs of points tagged with safe boolean, list of pairs of boxes tagged with safe boolean
-def violation_detection(boundingboxes, bottom_points, safe_dist):
+def violation_detection(boundingboxes, bpoints, safe_dist):
     distance_pairs = []
     box_pairs = []
     boxes = [box[1] for box in boundingboxes]
+    bottom_points = [pnt[1] for pnt in bpoints]
     # loop through all combinations of pairs of points
     for i in range(len(bottom_points)):
         for j in range(len(bottom_points)):
