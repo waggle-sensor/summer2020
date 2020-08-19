@@ -155,10 +155,17 @@ def visualize_conf(prefix, benchmark, sample_filter=False, pos_thres=0.5):
             benchmark, by_actual=True, filter=sampled_imgs, conf_thresh=pos_thres
         )
     else:
-        results, _ = bench.load_data(benchmark, by_actual=True, conf_thresh=pos_thres)
+        results, conf_mat = bench.load_data(
+            benchmark, by_actual=True, conf_thresh=pos_thres
+        )
 
-    filename = benchmark[:-4] + "_viz.pdf"
-    charts.make_conf_histogram(results, filename)
+    conf_mat_file = benchmark[:-4] + "_conf.csv"
+    classes = [result.name for result in results]
+    classes.remove("All")
+    charts.make_conf_matrix(conf_mat, classes, conf_mat_file)
+
+    hist_filename = benchmark[:-4] + "_viz.pdf"
+    charts.make_conf_histogram(results, hist_filename)
     charts.show_overall_hist(results)
 
 

@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 import statsmodels.api as sm
+import pandas as pd
 
 import analysis.benchmark as bench
 
@@ -119,3 +120,9 @@ def show_overall_hist(results):
     plt.ylabel("Count")
     plt.hist(hit_miss, bins=10, color=colors, range=(0.0, 1.0), stacked=True)
     plt.show()
+
+
+def make_conf_matrix(conf_mat, classes, filename):
+    classes.append("")
+    df = pd.DataFrame(conf_mat, index=classes, columns=classes)
+    df.to_csv(filename)

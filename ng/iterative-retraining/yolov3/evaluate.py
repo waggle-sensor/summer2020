@@ -47,7 +47,7 @@ def get_most_conf(detections):
 
 
 def match_detections(model, img_folder, detections, config):
-    """Match the labels for an image with its bounding box"""
+    """Match the labels for an image with its bounding boxes"""
     dataset = img_folder.to_dataset()
 
     dataloader = torch.utils.data.DataLoader(
@@ -88,14 +88,18 @@ def match_detections(model, img_folder, detections, config):
                     boxes.append((overlaps[0][i], detection))
                     break
         pairs = list()
+
+        # Find true positives
         for label in labels:
             correct_box = None
             for i, (hit, detection) in enumerate(boxes):
                 if hit and detection[-1] == label:
                     correct_box = detection
+                    del boxes[i]
                     break
-            del boxes[i]
             pairs.append((label, correct_box))
+
+        # Create false positive results
         for (hit, detection) in boxes:
             pairs.append((None, detection))
 

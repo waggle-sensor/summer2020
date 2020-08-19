@@ -19,9 +19,13 @@ def label_sample_set(img_path):
     (class_label, bounding_box_x_center, bb_y_center, bb_width, bb_height)
     These coordinates should also be normalized according to the image's width and height.
     """
-    class_letter = img_path.split("-")[1].split("/")[0]
-    label = (class_letter, 0.5, 0.5, 1.0, 1.0)
-    return [label]
+    path = img_path.replace("images", "classes")[:-4] + ".txt"
+    if os.path.exists(path):
+        labels = map(lambda x: map(float, x.split(" ")), open(path).read().split("\n"))
+        for label in labels:
+            label[0] = classes[int(label[0])]
+        return labels
+    return []
 
 
 def get_sample_methods():

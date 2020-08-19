@@ -108,7 +108,28 @@ Sampling methods that incoporate this approach include:
 
 ### Adding & Modifying Sampling Methods
 
-In [the root module](./__main__.py), a list of sampling methods are returned from `get_sample_methods()`. These 
+In [the root module](./__main__.py), a dictionary of sampling methods are returned from `get_sample_methods()`. Each entry contains a function-argument pairing, where the sampling function returns a list of image paths to sample, given a [`ClassResult`](./analysis/benchmark.py#L76) object as the first argument. This data object contains an ordered dictionary for each bounding box in either a particular class or the entire sample set (as denoted by its `name` attribute), with entries for its ground truth, confidence, predicted class, and image path.
+
+The prototype for your custom sampling function should resemble the following:
+
+```
+def custom_sample(result, params ...):
+	sample_pool = result.get_all()
+	chosen_samples = []
+
+	# This can loop through samples once, iterate until a target number is reached, etc.
+	for sample in sample_pool:
+		conf = sample["conf"]
+
+		# Condition for selecting an image
+		if ...:
+			chosen_samples.append(sample["file"])
+	return chosen_samples
+```
+
+If the function returns more images than the number specified in the configuration `bandwidth`, `create_sample()` will randomly remove images to enforce the limit, stratifying by class if specified.
+
+#### Extending 
 
 
 ## Output files

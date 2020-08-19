@@ -36,15 +36,16 @@ def load_data(output, by_actual=True, add_all=True, filter=None, conf_thresh=0.5
                 continue
             actual.append(row["actual"])
             pred.append(row["detected"])
+            all_data.append(row)
 
             key_val = row["actual"] if by_actual else row["detected"]
-            if key_val == str():
+            if not by_actual and key_val == str():
                 continue
             if key_val not in samples.keys():
                 samples[key_val] = [row]
             else:
                 samples[key_val].append(row)
-            all_data.append(row)
+
     samples = {k: samples[k] for k in sorted(samples)}
     results = [ClassResults(k, v, conf_thresh=conf_thresh) for k, v in samples.items()]
     mat = confusion_matrix(actual, pred, labels=list(samples.keys()) + [""])
@@ -87,7 +88,7 @@ class ClassResults:
 
         for row in output_rows:
             row["conf"] = float(row["conf"])
-            # row["conf_std"] = float(row["conf_std"])
+            row["conf_std"] = float(row["conf_std"])
             if row["conf"] >= conf_thresh:
                 if row["hit"] == "True":
                     result = "true_pos"
