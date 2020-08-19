@@ -89,7 +89,7 @@ In each method, we define a probability density function (PDF), P(*x*), that det
 
 We randomly select images to include in accordance with the PDF, until the sample set size limit (bandwidth) is reached or there are no more images in the batch with a confidence score that can be selected. This process is stratified by inferred class by default, though there are options to ignore class balancing. Sampling methods that incorporate this approach include:
 
-* In-range sampling: this generates a uniform distribution for [*a*, *b*), where 0 < *a* < *b* <= 1
+* In-range sampling: this generates a uniform distribution for [*a*, *b*), where 0 <= *a* < *b* <= 1
 * Random: a baseline for retraining, where we use in-range stratified sampling on the interval [0, 1)
 * Median threshold: we compute the median confidence per class after running inference on the batch set, then in-range sample along [median, 1) and [0, median)
 * Interquartie range: we compute the first and third quartile confidences per class, then sample along [Q1, Q3)

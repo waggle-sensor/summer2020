@@ -115,7 +115,7 @@ def aggregate_results(config, prefix, metric, delta=2, avg=False, roll=None):
                 continue
 
             epoch_res, _ = bench.load_data(
-                out_name, by_actual=True, conf_thresh=config["pos_thres"]
+                out_name, by_actual=False, conf_thresh=config["pos_thres"]
             )
             new_row = {
                 "test_set": name,
@@ -151,13 +151,11 @@ def visualize_conf(prefix, benchmark, sample_filter=False, pos_thres=0.5):
         folder = "/".join(benchmark.split("/")[:-1])
         epoch = utils.get_epoch(benchmark)
         sampled_imgs = glob.glob(f"{folder}/{prefix}*_sample_{epoch}.txt")[0]
-        results, _ = bench.load_data(
-            benchmark, by_actual=True, filter=sampled_imgs, conf_thresh=pos_thres
-        )
-    else:
-        results, conf_mat = bench.load_data(
-            benchmark, by_actual=True, conf_thresh=pos_thres
-        )
+        kwargs = {"filter": sampled_imgs}
+
+    results, conf_mat = bench.load_data(
+        benchmark, by_actual=False, conf_thresh=pos_thres, **kwargs
+    )
 
     conf_mat_file = benchmark[:-4] + "_conf.csv"
     classes = [result.name for result in results]
@@ -184,21 +182,14 @@ def tabulate_batch_samples(config, prefix, silent=False, filter=False, roll=Fals
     for i, benchmark in enumerate(benchmarks):
         if filter and prefix != "init":
             sampled_imgs = glob.glob(f"{config['output']}/{prefix}{i}_sample*")[0]
-            results, _ = bench.load_data(
-                benchmark,
-                by_actual=True,
-                add_all=False,
-                filter=sampled_imgs,
-                conf_thresh=config["pos_thres"],
-            )
-
-        else:
-            results, _ = bench.load_data(
-                benchmark,
-                by_actual=True,
-                add_all=False,
-                conf_thresh=config["pos_thres"],
-            )
+            kwargs = {"filter": sampled_imgs}
+        results, _ = bench.load_data(
+            benchmark,
+            by_actual=False,
+            add_all=False,
+            conf_thresh=config["pos_thres"],
+            **kwargs,
+        )
 
         if i == len(benchmarks) - 1:
             train_len = utils.get_epoch(checkpoints[-1]) - utils.get_epoch(benchmark)

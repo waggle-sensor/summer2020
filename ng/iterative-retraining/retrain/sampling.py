@@ -105,13 +105,9 @@ def bin_sample(result, num_bins, curve, start=0.0, end=1.0, **func_kwargs):
 
 
 def in_range_sample(result, min_val, max_val):
-    return prob_sample(
-        result,
-        in_range(result, min_val, max_val),
-        const,
-        thresh=min_val,
-        max_val=max_val,
-    )
+    return [
+        res["file"] for res in result.get_all() if max_val >= res["conf"] >= min_val
+    ]
 
 
 def median_thresh_sample(result, thresh=0.5):
@@ -158,7 +154,7 @@ def normal_sample(result, avg=None, stdev=None, p=0.75, thresh=0.5):
 
 def in_range(result, min_val, max_val=1.0):
     """Get the number of elements in a ClassResult above a threshold."""
-    return len([res for res in result.get_all() if max_val >= res["conf"] >= min_val])
+    return len([res for res in result.get_all() if max_val > res["conf"] >= min_val])
 
 
 def sample_histogram(retrain, title):

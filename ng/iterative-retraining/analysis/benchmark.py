@@ -38,13 +38,16 @@ def load_data(output, by_actual=True, add_all=True, filter=None, conf_thresh=0.5
             pred.append(row["detected"])
             all_data.append(row)
 
-            key_val = row["actual"] if by_actual else row["detected"]
-            if not by_actual and key_val == str():
-                continue
-            if key_val not in samples.keys():
-                samples[key_val] = [row]
-            else:
+            key_val = (
+                row["actual"]
+                if by_actual or row["detected"] == str()
+                else row["detected"]
+            )
+
+            if key_val in samples.keys():
                 samples[key_val].append(row)
+            else:
+                samples[key_val] = [row]
 
     samples = {k: samples[k] for k in sorted(samples)}
     results = [ClassResults(k, v, conf_thresh=conf_thresh) for k, v in samples.items()]
@@ -95,12 +98,13 @@ class ClassResults:
                 else:
                     result = "false_pos"
             else:
-                if row["hit"] == "True":
+                if row["hit"] == "True" or row["detected"] == str():
                     result = "false_neg"
                 else:
                     result = "true_neg"
-            self.data[result].append(row)
-            self.pop += 1
+            if result != "true_neg":
+                self.data[result].append(row)
+                self.pop += 1
 
     def __len__(self):
         files = set()
@@ -233,7 +237,7 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, roll=False):
         "actual",
         "detected",
         "conf",
-        "conf_var",
+        "conf_std",
         "hit",
     ]
 
@@ -249,20 +253,10 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, roll=False):
             )
 
             # evaluate.save_image(region_detections, path, config, classes)
-            if len(region_detections) == 1:
-                detected_class = int(region_detections.numpy()[0][-1])
-                if detected_class in ground_truths:
-                    label = detected_class
-                elif len(ground_truths) == 1:
-                    label = ground_truths[0]
-                else:
-                    label = None
-                detection_pairs = [(label, region_detections[0])]
-            else:
-                test_img = LabeledSet([path], len(classes))
-                detection_pairs = evaluate.match_detections(
-                    model, test_img, region_detections.unsqueeze(0), config
-                )
+            test_img = LabeledSet([path], len(classes))
+            detection_pairs = evaluate.match_detections(
+                model, test_img, region_detections.unsqueeze(0), config
+            )
 
         for (truth, box) in detection_pairs:
             if box is None:
@@ -275,7 +269,7 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, roll=False):
                 "detected": classes[int(pred_class)],
                 "actual": classes[int(truth)] if truth is not None else "",
                 "conf": obj_conf * class_conf,
-                "conf_var": math.sqrt(obj_std ** 2 + class_std ** 2),
+                "conf_std": math.sqrt(obj_std ** 2 + class_std ** 2),
             }
             row["hit"] = row["actual"] == row["detected"]
 
@@ -292,6 +286,7 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, roll=False):
                 "actual": classes[int(truth)],
                 "conf": 0.0,
                 "hit": False,
+                "conf_std": 0.0,
             }
 
             results = results.append(row, ignore_index=True)
