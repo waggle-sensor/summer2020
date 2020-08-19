@@ -945,3 +945,14 @@ Current loss: 651.8103536367416
 * Reading papers about false positives within object detection
 * Wrote code to parallelize training pipeline
 * Documented more about sampling methods
+
+**Wednesday, August 19**
+
+* Looked into hard false positives in the maingate dataset when running the Stanford model
+  * Separating the classifier with the detector (and doing more complex analysis with the object confidence scores) may work, but the goal is to create a generalized pipeline with YOLO
+* Fixed bugs in classifying false negatives
+  * Verified results on old character model; few changes in actual trends/results
+* Sped up augmentation increase calculation and sampling methods by optimizing algorithms
+* Documented sampling methods (and creating custom ones)
+* Finished labeling maingate set by car type
+  * Dataset contains 1500 images, 1800 labels

@@ -147,11 +147,12 @@ def aggregate_results(config, prefix, metric, delta=2, avg=False, roll=None):
 
 
 def visualize_conf(prefix, benchmark, sample_filter=False, pos_thres=0.5):
+    kwargs = dict()
     if sample_filter:
         folder = "/".join(benchmark.split("/")[:-1])
         epoch = utils.get_epoch(benchmark)
         sampled_imgs = glob.glob(f"{folder}/{prefix}*_sample_{epoch}.txt")[0]
-        kwargs = {"filter": sampled_imgs}
+        kwargs["filter"] = sampled_imgs
 
     results, conf_mat = bench.load_data(
         benchmark, by_actual=False, conf_thresh=pos_thres, **kwargs
@@ -180,9 +181,10 @@ def tabulate_batch_samples(config, prefix, silent=False, filter=False, roll=Fals
     )
 
     for i, benchmark in enumerate(benchmarks):
+        kwargs = dict()
         if filter and prefix != "init":
             sampled_imgs = glob.glob(f"{config['output']}/{prefix}{i}_sample*")[0]
-            kwargs = {"filter": sampled_imgs}
+            kwargs["filter"] = sampled_imgs
         results, _ = bench.load_data(
             benchmark,
             by_actual=False,

@@ -199,7 +199,7 @@ class LabeledSet(ImageFolder):
         if all(os.path.exists(path) for path in split_paths):
             file_lists = [get_lines(path) for path in split_paths]
             labeled_sets = self.convert_splits(file_lists)
-            for i, (name, split_set) in enumerate(zip(self.sets, labeled_sets)):
+            for name, split_set in zip(self.sets, labeled_sets):
                 setattr(self, name, split_set)
             return True
         return False

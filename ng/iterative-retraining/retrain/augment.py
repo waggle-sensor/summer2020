@@ -81,11 +81,10 @@ class Augmenter:
             for img, labels in imgs_by_label_count.items():
                 overshoot = False
                 label_counts = Counter(labels)
-                for label, count in label_counts.items():
-                    if desired[label] - count < 0:
-                        overshoot = True
-                        break
-                if overshoot:
+
+                if any(
+                    desired[label] - count < 0 for label, count in label_counts.items()
+                ):
                     continue
                 for label, count in label_counts.items():
                     desired[label] -= count

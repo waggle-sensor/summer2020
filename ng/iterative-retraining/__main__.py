@@ -3,6 +3,7 @@ import random
 import os
 import copy
 from torch import cuda
+from multiprocessing import Process
 
 import retrain.utils as utils
 from retrain.train import train
@@ -224,7 +225,20 @@ if __name__ == "__main__":
 
     sample_methods = get_sample_methods()
 
-    for name, (func, kwargs) in sample_methods.items():
-        sample_retrain(
-            name, batched_samples, config, init_end_epoch, init_images, func, kwargs
-        )
+    running = list()
+    gpus = torch.cuda.device_count()
+    for i, (name, (func, kwargs)) in enumerate(sample_methods.items()):
+        if gpus <= 1:
+            sample_retrain(
+                name, batched_samples, config, init_end_epoch, init_images, func, kwargs
+            )
+            continue
+        while len(running) < gpus:
+            process = Process(sample_retrain, [batched_samples, config, init_end_epoch, init_images, func, kwargs])
+            running.append(process)
+            os.environ["CUDA_VISIBLE_DEVICES"] = str(i % gpus)
+            process.start()
+        if len(running) == gpus:
+            for process in running:
+                process.join()
+            running = list()
