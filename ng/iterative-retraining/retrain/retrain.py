@@ -1,4 +1,4 @@
-from retrain import sample
+from retrain import sampling as sample
 from retrain import utils
 from retrain import train
 import os
@@ -98,16 +98,17 @@ def parallel_retrain(
     sample_methods, config, batched_samples, init_end_epoch, init_images
 ):
     with Pool(len(train.get_free_gpus(config))) as pool:
+        grouped_args = list()
         for name, (func, kwargs) in sample_methods.items():
-            pool.apply_async(
-                sample_retrain,
-                (
-                    name,
-                    batched_samples,
-                    config,
-                    init_end_epoch,
-                    init_images,
-                    func,
-                    kwargs,
-                ),
+            method_args = (
+                name,
+                batched_samples,
+                config,
+                init_end_epoch,
+                init_images,
+                func,
+                kwargs,
             )
+            grouped_args.append(method_args)
+
+        pool.map(sample_retrain, grouped_args)

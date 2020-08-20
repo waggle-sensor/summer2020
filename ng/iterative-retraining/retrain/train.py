@@ -11,9 +11,10 @@ from torch.autograd import Variable
 
 from terminaltables import AsciiTable
 
-import yolov3.evaluate as evaluate
+from yolov3 import evaluate
 from yolov3.logger import Logger
 import yolov3.utils as yoloutils
+from yolov3 import models
 
 import retrain.utils as utils
 
@@ -34,9 +35,9 @@ def train(img_folder, opt, load_weights=None):
     os.makedirs(opt["checkpoints"], exist_ok=True)
     os.makedirs(opt["output"], exist_ok=True)
 
-    model = yoloutils.get_train_model(opt)
+    model = models.get_train_model(opt)
 
-    free_gpus = get_free_gpus(model, opt)
+    free_gpus = get_free_gpus(opt, model)
     if len(free_gpus) != 0:
         os.environ["CUDA_VISIBLE_DEVICES"] = str(free_gpus[0])
         device_str = "cuda"
@@ -231,20 +232,25 @@ def train(img_folder, opt, load_weights=None):
 
 def get_free_gpus(config, model=None):
     if model is None:
-        model = yoloutils.get_train_model(config)
+        model = models.get_train_model(config)
 
-    input_shape = (3, config["img_size"], config["img_size"])
-    stat_str, _ = summary_string(model, input_shape, config["batch_size"])
-    target_str = "Estimated Total Size (MB): "
-    mem_str = [s for s in stat_str.split("\n") if target_str in s][0]
+    # input_shape = (3, config["img_size"], config["img_size"])
 
-    memory_needed = float(mem_str.split(target_str)[1])
+    # TODO: Fix error where calling this results in error
+    # stat_str, _ = summary_string(model, input_shape, config["batch_size"])
+    # target_str = "Estimated Total Size (MB): "
+    # mem_str = [s for s in stat_str.split("\n") if target_str in s][0]
 
-    free_gpus = list()
+    # memory_needed = float(mem_str.split(target_str)[1])
+
+    # Rough estimate of model size, in bytes
+    memory_needed = config["img_size"] ** 2 * config["batch_size"] * 3 * 4 * 160
+    free_gpus = dict()
     for i in range(cuda.device_count()):
         bytes_free = cuda.get_device_properties(i).total_memory - cuda.memory_allocated(
             i
         )
-        if bytes_free > (memory_needed + 50) * 2 ** 20:
-            free_gpus.append(i)
-    return free_gpus
+        if bytes_free > memory_needed:
+            free_gpus[i] = bytes_free
+    free_gpus = dict(sorted(free_gpus.items(), key=lambda gpu: gpu[1], reverse=True))
+    return free_gpus.keys()

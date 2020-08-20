@@ -986,3 +986,5 @@ Total     | 9835     | 39814
   * This will lead to 13 full batches
   * Hopefully, this is also a more realistic simulation of a video feed
   * Other parameters remain the same from the KAIST run, though positive threshold may change if confidence distribution is significantly different
+* Wrote code to properly parallelize running multiple sampling/retraining methods
+* Running new model/classes overnight, starting from intial training
