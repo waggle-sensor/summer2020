@@ -9,14 +9,14 @@ class CentroidTracker:
         self.nextObjectID = 0
 
         # initialize three ordered dictionaries:
-        #   1. keep track of mapping a given object ID to its centroid
-        #   2. keep track of number of consecutive frames an object has been marked "disappeared"
+        #   1. Key = objectID, Val = centroid coordinates
+        #   2. Key = objectID, Val = number of consecutive frames this objectID has been marked "disappeared"
+        #   3. Key = objectID, Val = coordinates of that objects bounding box (x, y, w, h)
         self.objects = OrderedDict()
         self.disappeared = OrderedDict()
         self.bbox = OrderedDict()
 
-        # store the number of frames an object can be marked "disappeared"
-        # before it is deregistered
+        # store the number of frames an object can be marked "disappeared" before it is deregistered
         self.maxDisappeared = maxDisappeared
 
     # registering a new object using next available ID to store its centroid
@@ -26,7 +26,7 @@ class CentroidTracker:
         self.disappeared[self.nextObjectID] = 0
         self.bbox[self.nextObjectID] = bbox
 
-    # deregistering an object by deleting object ID from both dictionaries
+    # de-registering an object by deleting object ID from both dictionaries
     def deregister(self, objectID):
         del self.objects[objectID]
         del self.disappeared[objectID]
@@ -34,7 +34,7 @@ class CentroidTracker:
 
     # update state every frame
     def update(self, boxes):
-        # if no current bounding boxes, deregister any object past limit and return early
+        # if no current bounding boxes, de-register any object past limit and return early
         if len(boxes) == 0:
             for objectID in list(self.disappeared.keys()):
                 self.disappeared[objectID] += 1

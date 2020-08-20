@@ -44,7 +44,7 @@ def get_mouse_points(event, x, y, flags, param):
 
 
 # **SOCIAL DISTANCE DETECTOR FUNCTION** ###############################################################################
-def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold, frames):
+def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold, disappeared, frames):
     # start timer
     start = time.time()
 
@@ -62,14 +62,7 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold,
     frameCount = 0  # keep track of number of frames analyzed so far
     points = []  # list of mouse input coordinates
     time_series = OrderedDict()  # ordered dictionary for data collection
-    ct = CentroidTracker(maxDisappeared=10)  # centroid tracker
-
-    # Get video height and width
-    height = int(vs.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    width = int(vs.get(cv2.CAP_PROP_FRAME_WIDTH))
-
-    # scale video dimensions for bird's eye view output
-    scale_w, scale_h = float(400 / width), float(600 / height)
+    ct = CentroidTracker(maxDisappeared=disappeared)  # centroid tracker
 
     # initialize output text file
     out = open("out.txt", "w")
@@ -112,22 +105,21 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold,
                     break
             points = mouse_pts
 
-        # **IMAGE TRANSFORMATION** ####################################################################################
+            # **IMAGE TRANSFORMATION** ################################################################################
 
-        # creating transformation matrix from first four mouse input points
-        src = np.float32(np.array(points[:4]))
-        dst = np.float32([[0, H], [W, H], [W, 0], [0, 0]])
-        matrix = cv2.getPerspectiveTransform(src, dst)
+            # creating transformation matrix from first four mouse input points
+            src = np.float32(np.array(points[:4]))
+            dst = np.float32([[0, H], [W, H], [W, 0], [0, 0]])
+            matrix = cv2.getPerspectiveTransform(src, dst)
 
-        # warping mouse points 5 - 6 using transformation matrix
-        pts = np.float32(np.array([points[4:6]]))
-        warped_pt = cv2.perspectiveTransform(pts, matrix)[0]
+            # warping mouse points 5 - 6 using transformation matrix
+            pts = np.float32(np.array([points[4:6]]))
+            warped_pt = cv2.perspectiveTransform(pts, matrix)[0]
 
-        # calculating number of pixels that make up approx. 6 feet
-        safe_dist = np.sqrt((warped_pt[0][0] - warped_pt[1][0]) ** 2 + (warped_pt[0][1] - warped_pt[1][1]) ** 2)
+            # calculating number of pixels that make up approx. 6 feet
+            safe_dist = np.sqrt((warped_pt[0][0] - warped_pt[1][0]) ** 2 + (warped_pt[0][1] - warped_pt[1][1]) ** 2)
 
-        # write min safe distance to output text file
-        if frameCount == 0:
+            # write min safe distance to output text file
             out.write("6 feet = " + str(int(safe_dist)) + " pixels." + "\n" + "\n")
 
         # drawing the rectangle on the video for the remaining frames
@@ -202,6 +194,7 @@ def social_distance_detector(vid_input, yolo_net, layerNames, confid, threshold,
         # **OUTPUT DISPLAY AND CLEAN UP** #############################################################################
 
         # create blank window for bird's eye view, plot transformed points as green and red circles
+        scale_w, scale_h = float(400 / W), float(600 / H)
         bird_view = bird_output(frame, distance_pairs, scale_w, scale_h)
 
         # draw red or green rectangles on each detected person in frame
@@ -278,6 +271,8 @@ ap.add_argument("-c", "--confidence", type=float, default=0.5,
                 help="minimum probability to filter weak detections")
 ap.add_argument("-t", "--threshold", type=float, default=0.3,
                 help="threshold when applying non-maximum suppression")
+ap.add_argument("-d", "--disappeared", type=int, default=10,
+                help="number of frames that an object ID is not detected before it is de-registered")
 ap.add_argument("-f", "--frames", type=int, default=20,
                 help="number of frames between data output to text file")
 args = vars(ap.parse_args())
@@ -297,4 +292,5 @@ cv2.namedWindow("image")
 cv2.setMouseCallback("image", get_mouse_points)
 
 # calling SDD function
-social_distance_detector(args["input"], net, ln, args["confidence"], args["threshold"], args["frames"])
+social_distance_detector(args["input"], net, ln, args["confidence"], args["threshold"],
+                         args["disappeared"], args["frames"])

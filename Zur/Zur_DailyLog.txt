@@ -334,3 +334,7 @@ Tuesday 8/18
 Wednesday 8/19
 1. Edited and resubmit READEME.md
 2. Worked on paper
+
+Thursday 8/20
+1. Worked on paper
+2. Added number of disappeared frames for centroid tracker as adjustable argument
