@@ -16,15 +16,20 @@ def get_freq(class_arr, classes):
 
 
 types = [
-    "Sedan",
-    "Hatchback",
-    "SUV",
-    "Coupe",
-    "Van",
-    "Convertible",
-    "Wagon",
-    "Minivan",
-    "Cab",
+    "cab",
+    "hatchback",
+    "sedan",
+    "suv",
+    "van",
+    # "Sedan",
+    # "Hatchback",
+    # "SUV",
+    # "Coupe",
+    # "Van",
+    # "Convertible",
+    # "Wagon",
+    # "Minivan",
+    # "Cab",
 ]
 
 
@@ -65,7 +70,7 @@ if __name__ == "__main__":
     for car_type in types:
         type_freq[car_type] = 0
         for make, count in freq.items():
-            if f" {car_type} " in make:
+            if f" {car_type} " in make.lower():
                 type_freq[car_type] += count
                 if make not in counted:
                     counted.append(make)
