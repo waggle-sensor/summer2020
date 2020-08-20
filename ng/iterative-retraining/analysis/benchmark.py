@@ -208,7 +208,7 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, roll=False):
     for n in tqdm(checkpoints_i, "Benchmarking epochs", disable=single):
         ckpt = get_checkpoint(config["checkpoints"], prefix, n)
 
-        model_def = utils.parse_model_config(config["model_config"])
+        model_def = yoloutils.parse_model_config(config["model_config"])
         model = models.get_eval_model(model_def, config["img_size"], ckpt)
 
         for (img_paths, input_imgs) in loader:
@@ -312,7 +312,7 @@ def series_benchmark_loss(img_folder, prefix, start, end, delta, config, filenam
 
     for epoch in tqdm(range(start, end + 1, delta), "Benchmarking epochs"):
         ckpt = get_checkpoint(config["checkpoints"], prefix, epoch)
-        model_def = utils.parse_model_config(config["model_config"])
+        model_def = yoloutils.parse_model_config(config["model_config"])
         model = models.get_eval_model(model_def, config["img_size"], ckpt)
 
         results = evaluate.get_results(model, img_folder, config, list(), silent=True)
@@ -351,7 +351,7 @@ def simple_benchmark_avg(img_folder, prefix, start, end, total, config, roll=Fal
     for n in tqdm(checkpoints_i, "Benchmarking epochs", disable=single):
         ckpt = get_checkpoint(config["checkpoints"], prefix, n)
 
-        model_def = utils.parse_model_config(config["model_config"])
+        model_def = yoloutils.parse_model_config(config["model_config"])
         model = models.get_eval_model(model_def, config["img_size"], ckpt)
 
         for (img_paths, input_imgs) in loader:

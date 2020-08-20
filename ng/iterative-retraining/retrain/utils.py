@@ -52,23 +52,6 @@ def parse_retrain_config(path):
     return options
 
 
-def parse_model_config(path):
-    """Parse the yolov3 layer configuration file and returns module definitions."""
-    lines = get_lines(path)
-    module_defs = []
-    for line in lines:
-        if line.startswith("["):  # This marks the start of a new block
-            module_defs.append({})
-            module_defs[-1]["type"] = line[1:-1].rstrip()
-            if module_defs[-1]["type"] == "convolutional":
-                module_defs[-1]["batch_normalize"] = 0
-        else:
-            key, value = line.split("=")
-            value = value.strip()
-            module_defs[-1][key.rstrip()] = value.strip()
-    return module_defs
-
-
 def get_lines(path):
     with open(path, "r") as file:
         lines = file.read().split("\n")

@@ -79,7 +79,6 @@ class Augmenter:
         # by the most desired and normalizing classes relative to each other
         while sum(desired.values()) > 0:
             for img, labels in imgs_by_label_count.items():
-                overshoot = False
                 label_counts = Counter(labels)
 
                 if any(

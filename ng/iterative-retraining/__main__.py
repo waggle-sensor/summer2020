@@ -1,15 +1,12 @@
 import argparse
 import random
 import os
-import copy
-from torch import cuda
-from multiprocessing import Process
 
 import retrain.utils as utils
-from retrain.train import train
-from retrain.dataloader import LabeledSet, ImageFolder
-import analysis.benchmark as bench
+from retrain.train import train_initial, get_free_gpus
+from retrain.dataloader import LabeledSet, ImageFolder, split_set
 import retrain.sampling as sample
+from retrain import retrain
 
 
 def label_sample_set(img_path):
@@ -31,20 +28,13 @@ def label_sample_set(img_path):
 
 def get_sample_methods():
     return {
-        "median-thresh": (sample.median_thresh_sample, {"thresh": 0.0}),
         "median-below-thresh": (sample.median_below_thresh_sample, {"thresh": 0.0}),
-        "iqr": (sample.iqr_sample, {"thresh": 0.0}),
-        "normal": (sample.normal_sample, {"thresh": 0.0}),
-        "mid-normal": (
-            sample.normal_sample,
-            {"thresh": 0.0, "avg": 0.5, "stdev": 0.25},
-        ),
-        "mid-thresh": (sample.in_range_sample, {"min_val": 0.5, "max_val": 1.0}),
-        "mid-below-thresh": (sample.in_range_sample, {"min_val": 0.0, "max_val": 0.5}),
+        "median-thresh": (sample.median_thresh_sample, {"thresh": 0.0}),
         "bin-quintile": (
             sample.bin_sample,
             {"stratify": False, "num_bins": 5, "curve": sample.const, "thresh": 0.0},
         ),
+        "random": (sample.in_range_sample, {"min_val": 0.0, "max_val": 1.0}),
         "bin-normal": (
             sample.bin_sample,
             {
@@ -55,133 +45,15 @@ def get_sample_methods():
                 "std": 0.25,
             },
         ),
-        "random": (sample.in_range_sample, {"min_val": 0.0, "max_val": 1.0}),
+        "mid-below-thresh": (sample.in_range_sample, {"min_val": 0.0, "max_val": 0.5}),
+        "iqr": (sample.iqr_sample, {"thresh": 0.0}),
+        "normal": (sample.normal_sample, {"thresh": 0.0}),
+        "mid-normal": (
+            sample.normal_sample,
+            {"thresh": 0.0, "avg": 0.5, "stdev": 0.25},
+        ),
+        "mid-thresh": (sample.in_range_sample, {"min_val": 0.5, "max_val": 1.0}),
     }
-
-
-def split_set(labeled_set, output, train_prop, valid_prop, save=True, sample_dir=None):
-    print(f"Getting splits for {labeled_set.prefix}")
-
-    if labeled_set.load_splits(output):
-        train_imgs = sum(
-            round(train_prop * len(v)) for v in labeled_set.group_by_class().values()
-        )
-        train_len = len(labeled_set.train)
-
-        # Case where we use load splits from the mixed set of sampled
-        # and known images
-        if sample_dir is not None:
-            train_imgs = (
-                len(labeled_set.valid) + train_len + len(labeled_set.test)
-            ) * train_prop
-
-        if abs(train_len - train_imgs) <= 10:
-            print("Previous splits found and validated")
-            return False
-        else:
-            print("Train list mismatch found... Ignoring....")
-
-    print("Generating new splits")
-    labeled_set.split_img_set(train_prop, valid_prop)
-    if save:
-        labeled_set.save_splits(output)
-    return True
-
-
-def train_initial(init_folder, config):
-    config["start_epoch"] = 1
-
-    init_folder.train.augment(config["images_per_class"])
-    end_epoch = train(init_folder, config)
-    return end_epoch
-
-
-def sample_retrain(name, batches, config, last_epoch, seen_images, sample_func, kwargs):
-    classes = utils.load_classes(config["class_list"])
-    seen_images = copy.deepcopy(seen_images)
-    for i, sample_folder in enumerate(batches):
-        sample_folder.label(classes, label_sample_set)
-        sample_labeled = LabeledSet(
-            sample_folder.imgs, len(classes), config["img_size"],
-        )
-
-        sample_filename = f"{config['output']}/{name}{i}_sample_{last_epoch}.txt"
-        if os.path.exists(sample_filename):
-            print("Loading existing samples")
-            retrain_files = open(sample_filename, "r").read().split("\n")
-
-        else:
-            # Benchmark data at the edge
-            bench_file = (
-                f"{config['output']}/{name}{i}_benchmark_avg_1_{last_epoch}.csv"
-            )
-
-            if not os.path.exists(bench_file):
-                results_df = bench.benchmark_avg(
-                    sample_labeled,
-                    name,
-                    1,
-                    last_epoch,
-                    config["conf_check_num"],
-                    config,
-                )
-
-                bench.save_results(results_df, bench_file)
-
-            # Create samples from the benchmark
-            results, _ = bench.load_data(bench_file, by_actual=False)
-
-            print(f"===== {name} ======")
-            retrain_files = sample.create_sample(
-                results, config["bandwidth"], func, **kwargs
-            )
-
-            with open(sample_filename, "w+") as out:
-                out.write("\n".join(retrain_files))
-
-        # Receive raw sampled data in the cloud
-        # This process simulates manually labeling/verifying all inferences
-        retrain_obj = LabeledSet(
-            retrain_files, len(classes), config["img_size"], prefix=f"{name}{i}"
-        )
-
-        new_splits = split_set(
-            retrain_obj,
-            config["output"],
-            config["train_sample"],
-            config["valid_sample"],
-            save=False,
-            sample_dir=config["sample_set"],
-        )
-
-        if new_splits:
-            # If reloaded, splits have old images already incorporated
-            for set_name in retrain_obj.sets:
-                # Calculate proportion of old examples needed
-                number_desired = (1 / config["retrain_new"] - 1) * len(
-                    getattr(retrain_obj, set_name)
-                )
-                if round(number_desired) == 0:
-                    continue
-                print(set_name, number_desired)
-                extra_images = getattr(seen_images, set_name).split_batch(
-                    round(number_desired)
-                )[0]
-                orig_set = getattr(retrain_obj, set_name)
-                orig_set += extra_images
-
-        seen_images += retrain_obj
-
-        retrain_obj.save_splits(config["output"])
-        retrain_obj.train.augment(config["images_per_class"])
-
-        config["start_epoch"] = last_epoch + 1
-        checkpoint = utils.find_checkpoint(config, name, last_epoch)
-        last_epoch = train(retrain_obj, config, checkpoint)
-
-
-def get_cuda_devices():
-    torch.cuda.device_count()
 
 
 if __name__ == "__main__":
@@ -225,31 +97,19 @@ if __name__ == "__main__":
 
     sample_methods = get_sample_methods()
 
-    running = list()
-    gpus = torch.cuda.device_count()
-    for i, (name, (func, kwargs)) in enumerate(sample_methods.items()):
-        if gpus <= 1:
-            sample_retrain(
-                name, batched_samples, config, init_end_epoch, init_images, func, kwargs
+    if len(get_free_gpus(config)) <= 1:
+        for name, (func, kwargs) in sample_methods.items():
+            retrain.sample_retrain(
+                name,
+                batched_samples,
+                config,
+                init_end_epoch,
+                init_images,
+                label_sample_set,
+                func,
+                kwargs,
             )
-            continue
-        while len(running) < gpus:
-            process = Process(
-                sample_retrain,
-                [
-                    name,
-                    batched_samples,
-                    config,
-                    init_end_epoch,
-                    init_images,
-                    func,
-                    kwargs,
-                ],
-            )
-            running.append(process)
-            os.environ["CUDA_VISIBLE_DEVICES"] = str(i % gpus)
-            process.start()
-        if len(running) == gpus:
-            for process in running:
-                process.join()
-            running = list()
+    else:
+        retrain.parallel_retrain(
+            sample_methods, config, batched_samples, init_end_epoch, init_images
+        )

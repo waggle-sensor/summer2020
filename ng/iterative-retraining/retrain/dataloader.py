@@ -351,3 +351,32 @@ class ListDataset(Dataset):
 
     def __len__(self):
         return len(self.img_files)
+
+
+def split_set(labeled_set, output, train_prop, valid_prop, save=True, sample_dir=None):
+    print(f"Getting splits for {labeled_set.prefix}")
+
+    if labeled_set.load_splits(output):
+        train_imgs = sum(
+            round(train_prop * len(v)) for v in labeled_set.group_by_class().values()
+        )
+        train_len = len(labeled_set.train)
+
+        # Case where we use load splits from the mixed set of sampled
+        # and known images
+        if sample_dir is not None:
+            train_imgs = (
+                len(labeled_set.valid) + train_len + len(labeled_set.test)
+            ) * train_prop
+
+        if abs(train_len - train_imgs) <= 10:
+            print("Previous splits found and validated")
+            return False
+        else:
+            print("Train list mismatch found... Ignoring....")
+
+    print("Generating new splits")
+    labeled_set.split_img_set(train_prop, valid_prop)
+    if save:
+        labeled_set.save_splits(output)
+    return True

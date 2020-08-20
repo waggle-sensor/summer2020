@@ -3,18 +3,27 @@ from __future__ import division
 import os
 import time
 import datetime
+from torchsummary import summary_string
 
 import torch
+from torch import cuda
 from torch.autograd import Variable
 
 from terminaltables import AsciiTable
 
 import yolov3.evaluate as evaluate
-from yolov3.models import Darknet
 from yolov3.logger import Logger
 import yolov3.utils as yoloutils
 
 import retrain.utils as utils
+
+
+def train_initial(init_folder, config):
+    config["start_epoch"] = 1
+
+    init_folder.train.augment(config["images_per_class"])
+    end_epoch = train(init_folder, config)
+    return end_epoch
 
 
 def train(img_folder, opt, load_weights=None):
@@ -25,14 +34,19 @@ def train(img_folder, opt, load_weights=None):
     os.makedirs(opt["checkpoints"], exist_ok=True)
     os.makedirs(opt["output"], exist_ok=True)
 
-    device_str = "cuda" if torch.cuda.is_available() else "cpu"
+    model = yoloutils.get_train_model(opt)
+
+    free_gpus = get_free_gpus(model, opt)
+    if len(free_gpus) != 0:
+        os.environ["CUDA_VISIBLE_DEVICES"] = str(free_gpus[0])
+        device_str = "cuda"
+    else:
+        device_str = "cpu"
+
+    device = torch.device(device_str)
+
     print(f"Using {device_str} for training")
     yoloutils.clear_vram()
-
-    device = yoloutils.get_device()
-    model_def = utils.parse_model_config(opt["model_config"])
-
-    model = Darknet(model_def, opt["img_size"])
 
     # Initiate model
     model.apply(yoloutils.weights_init_normal)
@@ -40,8 +54,6 @@ def train(img_folder, opt, load_weights=None):
     if load_weights is not None:
         model.load_state_dict(torch.load(load_weights))
 
-    # if torch.cuda.device_count() > 1:
-    #     model = torch.nn.DataParallel(model)
     model.to(device)
 
     class_names = utils.load_classes(opt["class_list"])
@@ -215,3 +227,24 @@ def train(img_folder, opt, load_weights=None):
 
     yoloutils.clear_vram()
     return last_epoch
+
+
+def get_free_gpus(config, model=None):
+    if model is None:
+        model = yoloutils.get_train_model(config)
+
+    input_shape = (3, config["img_size"], config["img_size"])
+    stat_str, _ = summary_string(model, input_shape, config["batch_size"])
+    target_str = "Estimated Total Size (MB): "
+    mem_str = [s for s in stat_str.split("\n") if target_str in s][0]
+
+    memory_needed = float(mem_str.split(target_str)[1])
+
+    free_gpus = list()
+    for i in range(cuda.device_count()):
+        bytes_free = cuda.get_device_properties(i).total_memory - cuda.memory_allocated(
+            i
+        )
+        if bytes_free > (memory_needed + 50) * 2 ** 20:
+            free_gpus.append(i)
+    return free_gpus
