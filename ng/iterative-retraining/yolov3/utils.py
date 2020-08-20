@@ -3,7 +3,6 @@ import torch
 import torch.nn as nn
 import numpy as np
 from retrain import utils
-from yolov3.models import Darknet
 
 
 def weights_init_normal(m):
@@ -412,8 +411,3 @@ def parse_model_config(path):
             value = value.strip()
             module_defs[-1][key.rstrip()] = value.strip()
     return module_defs
-
-
-def get_train_model(config):
-    model_def = parse_model_config(config["model_config"])
-    return Darknet(model_def, config["img_size"])

@@ -11,9 +11,10 @@ from torch.autograd import Variable
 
 from terminaltables import AsciiTable
 
-import yolov3.evaluate as evaluate
+from yolov3 import evaluate
 from yolov3.logger import Logger
 import yolov3.utils as yoloutils
+from yolov3 import models
 
 import retrain.utils as utils
 
@@ -34,7 +35,7 @@ def train(img_folder, opt, load_weights=None):
     os.makedirs(opt["checkpoints"], exist_ok=True)
     os.makedirs(opt["output"], exist_ok=True)
 
-    model = yoloutils.get_train_model(opt)
+    model = models.get_train_model(opt)
 
     free_gpus = get_free_gpus(model, opt)
     if len(free_gpus) != 0:
@@ -231,7 +232,7 @@ def train(img_folder, opt, load_weights=None):
 
 def get_free_gpus(config, model=None):
     if model is None:
-        model = yoloutils.get_train_model(config)
+        model = models.get_train_model(config)
 
     input_shape = (3, config["img_size"], config["img_size"])
     stat_str, _ = summary_string(model, input_shape, config["batch_size"])

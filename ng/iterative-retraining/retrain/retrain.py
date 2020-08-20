@@ -1,4 +1,4 @@
-from retrain import sample
+from retrain import sampling as sample
 from retrain import utils
 from retrain import train
 import os

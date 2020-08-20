@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
-from yolov3.utils import build_targets, to_cpu
+from yolov3 import utils
 
 
 def create_modules(module_defs):
@@ -205,7 +205,7 @@ class YOLOLayer(nn.Module):
                 th,
                 tcls,
                 tconf,
-            ) = build_targets(
+            ) = utils.build_targets(
                 pred_boxes=pred_boxes,
                 pred_cls=pred_cls,
                 target=targets,
@@ -239,19 +239,19 @@ class YOLOLayer(nn.Module):
             recall75 = torch.sum(iou75 * detected_mask) / (obj_mask.sum() + 1e-16)
 
             self.metrics = {
-                "loss": to_cpu(total_loss).item(),
-                "x": to_cpu(loss_x).item(),
-                "y": to_cpu(loss_y).item(),
-                "w": to_cpu(loss_w).item(),
-                "h": to_cpu(loss_h).item(),
-                "conf": to_cpu(loss_conf).item(),
-                "cls": to_cpu(loss_cls).item(),
-                "cls_acc": to_cpu(cls_acc).item(),
-                "recall50": to_cpu(recall50).item(),
-                "recall75": to_cpu(recall75).item(),
-                "precision": to_cpu(precision).item(),
-                "conf_obj": to_cpu(conf_obj).item(),
-                "conf_noobj": to_cpu(conf_noobj).item(),
+                "loss": utils.to_cpu(total_loss).item(),
+                "x": utils.to_cpu(loss_x).item(),
+                "y": utils.to_cpu(loss_y).item(),
+                "w": utils.to_cpu(loss_w).item(),
+                "h": utils.to_cpu(loss_h).item(),
+                "conf": utils.to_cpu(loss_conf).item(),
+                "cls": utils.to_cpu(loss_cls).item(),
+                "cls_acc": utils.to_cpu(cls_acc).item(),
+                "recall50": utils.to_cpu(recall50).item(),
+                "recall75": utils.to_cpu(recall75).item(),
+                "precision": utils.to_cpu(precision).item(),
+                "conf_obj": utils.to_cpu(conf_obj).item(),
+                "conf_noobj": utils.to_cpu(conf_noobj).item(),
                 "grid_size": grid_size,
             }
 
@@ -297,7 +297,7 @@ class Darknet(nn.Module):
                 loss += layer_loss
                 yolo_outputs.append(x)
             layer_outputs.append(x)
-        yolo_outputs = to_cpu(torch.cat(yolo_outputs, 1))
+        yolo_outputs = utils.to_cpu(torch.cat(yolo_outputs, 1))
         return yolo_outputs if targets is None else (loss, yolo_outputs)
 
     def load_darknet_weights(self, weights_path):
@@ -409,3 +409,8 @@ def get_eval_model(model_def, img_size, weights_path):
     model.eval()  # Set in evaluation mode
 
     return model
+
+
+def get_train_model(config):
+    model_def = utils.parse_model_config(config["model_config"])
+    return Darknet(model_def, config["img_size"])
