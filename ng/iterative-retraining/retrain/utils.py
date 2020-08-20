@@ -77,8 +77,7 @@ def get_lines(path):
 
 def load_classes(path):
     """Loads class labels at path."""
-    with open(path, "r") as file:
-        return file.read().split("\n")[:-1]
+    return [line for line in get_lines(path) if line != str()]
 
 
 def save_stdout(filename, func, *pos_args, **var_args):

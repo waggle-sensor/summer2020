@@ -1,6 +1,7 @@
 import os
 import lxml.etree as et
 from shutil import copyfile
+from tqdm import tqdm
 
 """
 Generate Darknet labels for the VeRi car dataset, as located on LCRC.
@@ -45,7 +46,7 @@ if __name__ == "__main__":
     for prefix in ("train", "test"):
         labels = parse_labels(f"data/{prefix}_label.xml")
 
-        for label in labels:
+        for label in tqdm(labels):
             class_name = original_classes[label["class"]]
             if class_name not in new_classes:
                 continue

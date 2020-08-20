@@ -1,6 +1,7 @@
 import mat4py
 import os
 import cv2
+from tqdm import tqdm
 
 
 def get_freq(class_arr, classes):
@@ -87,7 +88,7 @@ if __name__ == "__main__":
         dict,
         zip(*[[(k, v) for v in values] for k, values in data["annotations"].items()]),
     )
-    for annot in annotations:
+    for annot in tqdm(annotations):
         image_path = annot["relative_im_path"].replace("car_ims", "data/images")
         label_path = image_path.replace("images", "labels")[:-4] + ".txt"
         if classes[annot["class"] - 1] not in counted:

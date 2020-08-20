@@ -234,7 +234,18 @@ if __name__ == "__main__":
             )
             continue
         while len(running) < gpus:
-            process = Process(sample_retrain, [batched_samples, config, init_end_epoch, init_images, func, kwargs])
+            process = Process(
+                sample_retrain,
+                [
+                    name,
+                    batched_samples,
+                    config,
+                    init_end_epoch,
+                    init_images,
+                    func,
+                    kwargs,
+                ],
+            )
             running.append(process)
             os.environ["CUDA_VISIBLE_DEVICES"] = str(i % gpus)
             process.start()

@@ -956,3 +956,33 @@ Current loss: 651.8103536367416
 * Documented sampling methods (and creating custom ones)
 * Finished labeling maingate set by car type
   * Dataset contains 1500 images, 1800 labels
+
+**Thursday, August 20**
+
+* Attended AI/ML scrum meeting
+* Looked into NVIDIA car data sets
+  * Track 1 (video stream) has no ground truth, as the goal is counting vehicles in each frame
+  * Track 2 has ground truth labels for truck/car and isn't in context
+* Found VeRi dataset also on LCRC
+  * Has car types and many images but no images in context (pre-cropped)
+  * GitHub link seems to indicate full scene images (from a camera feed) are available, I've reached out to the authors
+* Other car datasets either aren't labeled with the data we want, are from the wrong perspectives,and/or aren't in context
+* Sticking with the VeRi dataset in lieu of the Waggle one for sampling due to its more reliable labels
+  * Unfortunately, this won't be a true object detection problem again for now, but could be if I get the full dataset
+    * We still evaluate using object detection methods
+  * Classifying based on one of five vehicle types
+
+Class     | Stanford | VeRi
+----------|----------|-------
+Cab/Wagon | 1430     | 3094
+Hatchback | 1103     | 2769 
+Sedan     | 3787     | 25011
+SUV       | 2855     | 6617
+Van       | 660      | 2323
+Total     | 9835     | 39814
+
+* To balance between consistency and the KAIST experiment, where the training set size was around 8% of the original training set, 3000 images per batch will be used, with an 1800 image bandwidth limit and a 70/15/15 split
+  * 75% new data will once again be the new iteration set size amount, with seen images added in for the other 25%
+  * This will lead to 13 full batches
+  * Hopefully, this is also a more realistic simulation of a video feed
+  * Other parameters remain the same from the KAIST run, though positive threshold may change if confidence distribution is significantly different
