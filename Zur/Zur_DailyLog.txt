@@ -336,5 +336,12 @@ Wednesday 8/19
 2. Worked on paper
 
 Thursday 8/20
-1. Worked on paper
-2. Added number of disappeared frames for centroid tracker as adjustable argument
+1. AI/ML Scrum
+2. Worked on paper
+3. Added number of disappeared frames for centroid tracker as adjustable argument
+
+Friday 8/21
+1. AI/ML Demo Meeting
+2. Finished paper
+3. Final README.md edits
+4. Finalized code comments / cleanup
