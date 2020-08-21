@@ -5,7 +5,8 @@ import os
 import copy
 from retrain.dataloader import LabeledSet, split_set
 import analysis.benchmark as bench
-from multiprocessing import Pool
+import multiprocessing as mp
+import userdefs
 
 
 def sample_retrain(
@@ -94,10 +95,10 @@ def sample_retrain(
         last_epoch = train.train(retrain_obj, config, checkpoint)
 
 
-def parallel_retrain(
-    sample_methods, config, batched_samples, init_end_epoch, init_images
-):
-    with Pool(len(train.get_free_gpus(config))) as pool:
+def parallel_retrain(config, batched_samples, init_end_epoch, init_images):
+    mp.set_start_method("spawn")
+    sample_methods = userdefs.get_sample_methods()
+    with mp.Pool(max(1, len(train.get_free_gpus(config)))) as pool:
         grouped_args = list()
         for name, (func, kwargs) in sample_methods.items():
             method_args = (
@@ -106,9 +107,10 @@ def parallel_retrain(
                 config,
                 init_end_epoch,
                 init_images,
+                userdefs.label_sample_set,
                 func,
                 kwargs,
             )
             grouped_args.append(method_args)
 
-        pool.map(sample_retrain, grouped_args)
+        pool.starmap(sample_retrain, grouped_args)
