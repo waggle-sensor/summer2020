@@ -988,3 +988,29 @@ Total     | 9835     | 39814
   * Other parameters remain the same from the KAIST run, though positive threshold may change if confidence distribution is significantly different
 * Wrote code to properly parallelize running multiple sampling/retraining methods
 * Running new model/classes overnight, starting from intial training
+
+**Friday, August 21**
+
+* Finished training initial model at epoch 154:
+
+```
++-------+------------+---------+
+| Index | Class name | AP      |
++-------+------------+---------+
+| 0     | cab        | 0.71968 |
+| 1     | hatchback  | 0.32797 |
+| 2     | sedan      | 0.78136 |
+| 3     | suv        | 0.73037 |
+| 4     | van        | 0.77173 |
++-------+------------+---------+
+---- mAP 0.6662235857615968
+Previous loss: 344.7222201228142
+Current loss: 347.083483338356
+```
+
+* Fixed bugs in GPU multiprocessing
+* Updated presentation with general overview and brief updates on car detection
+* Gave presentation
+  * Might want to look into measuring improvement as a function of bandwidth limit/sample batch size, to evaluate real-world tradeoffs
+  * Could also augment seen images and sample images separately, such that we use as many different raw images as possible for the 75%/25% split
+    * i.e. Augment a lot more sample images, fewer seen images
