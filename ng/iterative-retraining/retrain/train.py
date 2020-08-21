@@ -27,7 +27,7 @@ def train_initial(init_folder, config):
     return end_epoch
 
 
-def train(img_folder, opt, load_weights=None):
+def train(img_folder, opt, load_weights=None, device=None):
     """Trains a given image set, with an early stop.
 
     Precondition: img_folder has been split into train, test, and validation sets.
@@ -38,11 +38,13 @@ def train(img_folder, opt, load_weights=None):
     model = models.get_train_model(opt)
 
     free_gpus = get_free_gpus(opt, model)
-    if len(free_gpus) != 0:
-        os.environ["CUDA_VISIBLE_DEVICES"] = str(free_gpus[0])
-        device_str = "cuda"
+
+    if device is None:
+        device_str = "cuda" if len(free_gpus) != 0 else "cpu"
     else:
-        device_str = "cpu"
+        if device not in free_gpus:
+            device = free_gpus[0]
+        device_str = f"cuda:{device}"
 
     device = torch.device(device_str)
 
@@ -253,4 +255,4 @@ def get_free_gpus(config, model=None):
         if bytes_free > memory_needed:
             free_gpus[i] = bytes_free
     free_gpus = dict(sorted(free_gpus.items(), key=lambda gpu: gpu[1], reverse=True))
-    return free_gpus.keys()
+    return list(free_gpus.keys())

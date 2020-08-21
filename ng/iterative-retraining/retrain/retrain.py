@@ -6,11 +6,20 @@ import copy
 from retrain.dataloader import LabeledSet, split_set
 import analysis.benchmark as bench
 import multiprocessing as mp
+import multiprocessing.pool
 import userdefs
 
 
 def sample_retrain(
-    name, batches, config, last_epoch, seen_images, label_func, sample_func, kwargs
+    name,
+    batches,
+    config,
+    last_epoch,
+    seen_images,
+    label_func,
+    sample_func,
+    kwargs,
+    device=None,
 ):
     classes = utils.load_classes(config["class_list"])
     seen_images = copy.deepcopy(seen_images)
@@ -92,15 +101,32 @@ def sample_retrain(
 
         config["start_epoch"] = last_epoch + 1
         checkpoint = utils.find_checkpoint(config, name, last_epoch)
-        last_epoch = train.train(retrain_obj, config, checkpoint)
+        last_epoch = train.train(retrain_obj, config, checkpoint, device=device)
+
+
+class NoDaemonProcess(mp.Process):
+    def _get_daemon(self):
+        return False
+
+    def _set_daemon(self, value):
+        pass
+
+    daemon = property(_get_daemon, _set_daemon)
+
+
+class NoDaemonPool(multiprocessing.pool.Pool):
+    Process = NoDaemonProcess
 
 
 def parallel_retrain(config, batched_samples, init_end_epoch, init_images):
+    os.environ["MKL_THREADING_LAYER"] = "GNU"
     mp.set_start_method("spawn")
     sample_methods = userdefs.get_sample_methods()
-    with mp.Pool(max(1, len(train.get_free_gpus(config)))) as pool:
+    free_gpus = train.get_free_gpus(config)
+    with NoDaemonPool(max(1, len(free_gpus))) as pool:
         grouped_args = list()
-        for name, (func, kwargs) in sample_methods.items():
+        for i, (name, (func, kwargs)) in enumerate(sample_methods.items()):
+            device = free_gpus[i % len(free_gpus)]
             method_args = (
                 name,
                 batched_samples,
@@ -110,6 +136,7 @@ def parallel_retrain(config, batched_samples, init_end_epoch, init_images):
                 userdefs.label_sample_set,
                 func,
                 kwargs,
+                device,
             )
             grouped_args.append(method_args)
 
