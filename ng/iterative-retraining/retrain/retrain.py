@@ -123,7 +123,7 @@ def parallel_retrain(config, batched_samples, init_end_epoch, init_images):
     mp.set_start_method("spawn")
     sample_methods = userdefs.get_sample_methods()
     free_gpus = train.get_free_gpus(config)
-    with NoDaemonPool(max(1, len(free_gpus))) as pool:
+    with NoDaemonPool(max(1, len(free_gpus)) * 10) as pool:
         grouped_args = list()
         for i, (name, (func, kwargs)) in enumerate(sample_methods.items()):
             device = free_gpus[i % len(free_gpus)]

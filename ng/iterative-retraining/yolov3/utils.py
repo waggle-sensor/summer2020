@@ -386,9 +386,19 @@ def to_cpu(tensor):
 
 
 def get_device():
-    device_str = "cuda" if torch.cuda.is_available() else "cpu"
+    free_gpus = get_free_gpus()
+    device_str = f"cuda:{free_gpus[0]}" if len(free_gpus) != 0 else "cpu"
     device = torch.device(device_str)
     return device
+
+
+def get_free_gpus():
+    free_gpus = dict()
+    for i in range(cuda.device_count()):
+        bytes_free = cuda.get_device_properties(i).total_memory
+        free_gpus[i] = bytes_free
+    free_gpus = dict(sorted(free_gpus.items(), key=lambda gpu: gpu[1], reverse=True))
+    return list(free_gpus.keys())
 
 
 def clear_vram():

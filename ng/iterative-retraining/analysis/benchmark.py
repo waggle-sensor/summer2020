@@ -253,10 +253,20 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, roll=False):
             )
 
             # evaluate.save_image(region_detections, path, config, classes)
-            test_img = LabeledSet([path], len(classes))
-            detection_pairs = evaluate.match_detections(
-                model, test_img, region_detections.unsqueeze(0), config
-            )
+            if len(region_detections) == 1:
+                detected_class = int(region_detections.numpy()[0][-1])
+                if detected_class in ground_truths:
+                    label = detected_class
+                elif len(ground_truths) == 1:
+                    label = ground_truths[0]
+                else:
+                    label = None
+                detection_pairs = [(label, region_detections[0])]
+            else:
+                test_img = LabeledSet([path], len(classes))
+                detection_pairs = evaluate.match_detections(
+                    model, test_img, region_detections.unsqueeze(0), config
+                )
 
         for (truth, box) in detection_pairs:
             if box is None:
