@@ -1,3 +1,7 @@
+import os
+import retrain.sampling as sample
+
+
 def label_sample_set(img_path):
     """Sample function to label an image path with its ground truth with a list of labels.
 

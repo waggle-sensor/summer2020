@@ -1,11 +1,9 @@
 import argparse
 import random
-import os
 
 import retrain.utils as utils
-from retrain.train import train_initial, get_free_gpus
+from retrain.train import train_initial
 from retrain.dataloader import LabeledSet, ImageFolder, split_set
-import retrain.sampling as sample
 from retrain import retrain
 
 
