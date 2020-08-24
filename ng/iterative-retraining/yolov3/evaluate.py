@@ -1,3 +1,7 @@
+"""
+Module with functions to run inference on images and compare
+inferences against ground truth.
+"""
 from __future__ import division
 
 import random
@@ -16,7 +20,7 @@ from terminaltables import AsciiTable
 from yolov3 import utils
 
 
-def detect(input_imgs, conf_thres, model, nms_thres=0.5, nms=True):
+def detect(input_imgs, conf_thres, model, nms_thres=0.5):
     # Configure input
     Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
     input_imgs = Variable(input_imgs.type(Tensor))
@@ -40,9 +44,9 @@ def save_images(imgs, img_detections, opt, best_label_only=False):
 
 def get_most_conf(detections):
     most_conf = None
-    for d in detections:
+    for detection in detections:
         if most_conf is None or d[5] > most_conf[5]:
-            most_conf = d
+            most_conf = detection
     return most_conf
 
 
@@ -64,8 +68,6 @@ def match_detections(model, img_folder, detections, config):
     for (_, imgs, targets) in dataloader:
 
         imgs = Variable(imgs.to(device).type(Tensor), requires_grad=False)
-
-        _, outputs = model(imgs, Variable(targets.to(device)))
 
         # Rescale target
         targets[:, 2:] = utils.xywh2xyxy(targets[:, 2:])

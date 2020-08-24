@@ -42,7 +42,7 @@ def ap_per_class(tp, conf, pred_cls, target_cls):
 
         if n_p == 0 and n_gt == 0:
             continue
-        elif n_p == 0 or n_gt == 0:
+        if n_p == 0 or n_gt == 0:
             ap.append(0)
             r.append(0)
             p.append(0)
@@ -100,21 +100,20 @@ def compute_ap(recall, precision):
 def get_batch_statistics(outputs, targets, iou_threshold):
     """ Compute true positives, predicted scores and predicted labels per sample """
     batch_metrics = []
-    for sample_i in range(len(outputs)):
+    for i, output in enumerate(outputs):
 
-        if outputs[sample_i] is None:
+        if outputs is None:
             continue
 
-        output = outputs[sample_i]
         pred_boxes = output[:, :4]
         pred_scores = output[:, 4]
         pred_labels = output[:, -1]
 
         true_positives = np.zeros(pred_boxes.shape[0])
 
-        annotations = targets[targets[:, 0] == sample_i][:, 1:]
-        target_labels = annotations[:, 0] if len(annotations) else []
-        if len(annotations):
+        annotations = targets[targets[:, 0] == i][:, 1:]
+        target_labels = annotations[:, 0] if len(annotations) != 0 else []
+        if len(annotations) != 0:
             detected_boxes = []
             target_boxes = annotations[:, 1:]
 
@@ -222,7 +221,7 @@ def nms_merge(detections, nms_thres):
         return torch.stack(keep_boxes)
 
 
-def non_max_suppression(prediction, conf_thres=0.5, nms_thres=0.4, convert=True):
+def non_max_suppression(prediction, conf_thres=0.5, nms_thres=0.4):
     """
     Removes detections with lower object confidence score than 'conf_thres' and performs
     Non-Maximum Suppression to further filter detections.
@@ -347,7 +346,7 @@ def build_targets(pred_boxes, pred_cls, target, anchors, ignore_thres, device):
     gwh = target_boxes[:, 2:]
     # Get anchors with best iou
     ious = torch.stack([bbox_wh_iou(anchor, gwh) for anchor in anchors])
-    best_ious, best_n = ious.max(0)
+    _, best_n = ious.max(0)
     # Separate target values
     b, target_labels = target[:, :2].long().t()
     gx, gy = gxy.t()

@@ -154,8 +154,6 @@ class YOLOLayer(nn.Module):
 
         # Tensors for cuda support
         FloatTensor = torch.cuda.FloatTensor if x.is_cuda else torch.FloatTensor
-        LongTensor = torch.cuda.LongTensor if x.is_cuda else torch.LongTensor
-        BoolTensor = torch.cuda.BoolTensor if x.is_cuda else torch.BoolTensor
 
         self.img_dim = img_dim
         num_samples = x.size(0)
@@ -297,9 +295,7 @@ class Darknet(nn.Module):
         img_dim = x.shape[2]
         loss = 0
         layer_outputs, yolo_outputs = [], []
-        for i, (module_def, module) in enumerate(
-            zip(self.module_defs, self.module_list)
-        ):
+        for module_def, module in zip(self.module_defs, self.module_list):
             if module_def["type"] in ["convolutional", "upsample", "maxpool"]:
                 x = module(x)
             elif module_def["type"] == "route":

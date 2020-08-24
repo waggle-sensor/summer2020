@@ -383,8 +383,8 @@ def split_set(labeled_set, output, train_prop, valid_prop, save=True, sample_dir
         if abs(train_len - train_imgs) <= 10:
             print("Previous splits found and validated")
             return False
-        else:
-            print("Train list mismatch found... Ignoring....")
+
+        print("Train list mismatch found... Ignoring....")
 
     print("Generating new splits")
     labeled_set.split_img_set(train_prop, valid_prop)
