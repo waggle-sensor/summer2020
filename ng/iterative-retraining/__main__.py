@@ -1,15 +1,26 @@
-import argparse
-import random
+"""
+Entry point for the sampling and retraining pipeline.
 
-import retrain.utils as utils
+To run the pipeline, specify the configuration file and (optionally) the checkpoint model
+from initial training:
+
+    python3 . --config <config> [--reload_baseline <checkpoint>]
+
+If no initial checkpoint is specified, an initial model will be created from the training
+set. Sampling and retraining will run with the sampling methods specified in userdefs.py,
+until the images in the sample set are exhausted.
+
+Ensure the ground truth mapping function in userdefs.py is also accurate before running this.
+"""
+
+import argparse
+
 from retrain.train import train_initial
 from retrain.dataloader import LabeledSet, ImageFolder, split_set
-from retrain import retrain
+from retrain import retrain, utils
 
 
 if __name__ == "__main__":
-    random.seed("sage")
-
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", required=True, help="configuration for retraining")
     parser.add_argument(
@@ -18,13 +29,14 @@ if __name__ == "__main__":
         help="bypass initial training with a checkpoint",
     )
     opt = parser.parse_args()
-    config = utils.parse_retrain_config(opt.config)
 
+    config = utils.parse_retrain_config(opt.config)
     classes = utils.load_classes(config["class_list"])
 
     init_images = LabeledSet(
         config["initial_set"], len(classes), config["img_size"], prefix="init"
     )
+
     split_set(init_images, config["output"], config["train_init"], config["valid_init"])
 
     # Run initial training
@@ -46,4 +58,10 @@ if __name__ == "__main__":
     if len(batched_samples[-1]) != len(batched_samples[0]):
         batched_samples = batched_samples[:-1]
 
-    retrain.parallel_retrain(config, batched_samples, init_end_epoch, init_images)
+    retrain.retrain(
+        config,
+        batched_samples,
+        init_end_epoch,
+        init_images,
+        parallel=config["parallel"],
+    )

@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 
 def create_sample(results, max_samp, sample_func, stratify=True, **func_args):
     # The first part of this function simulates decisions made at the edge
+    random.seed("sage")
     retrain_by_class = list()
 
     if stratify:
@@ -187,6 +188,7 @@ def multi_argmax(arr):
 
 
 def iterative_stratification(images, proportions):
+    random.seed("sage")
     remaining = dict()
 
     # Build the list of images per label that have not

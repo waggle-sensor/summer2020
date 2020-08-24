@@ -7,7 +7,7 @@ import numpy as np
 from PIL import Image
 
 import torch
-import torch.nn.functional as F
+from torch import nn
 from torch.utils.data import Dataset
 import torchvision.transforms as transforms
 
@@ -24,13 +24,15 @@ def pad_to_square(img, pad_value):
     # Determine padding
     pad = (0, 0, pad1, pad2) if h <= w else (pad1, pad2, 0, 0)
     # Add padding
-    img = F.pad(img, pad, "constant", value=pad_value)
+    img = nn.functional.pad(img, pad, "constant", value=pad_value)
 
     return img, pad
 
 
 def resize(image, size):
-    image = F.interpolate(image.unsqueeze(0), size=size, mode="nearest").squeeze(0)
+    image = nn.functional.interpolate(
+        image.unsqueeze(0), size=size, mode="nearest"
+    ).squeeze(0)
     return image
 
 

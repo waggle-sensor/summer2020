@@ -2,7 +2,6 @@ from __future__ import division, absolute_import
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import numpy as np
 
 from yolov3 import utils
@@ -96,7 +95,7 @@ class Upsample(nn.Module):
         self.mode = mode
 
     def forward(self, x):
-        x = F.interpolate(x, scale_factor=self.scale_factor, mode=self.mode)
+        x = nn.functional.interpolate(x, scale_factor=self.scale_factor, mode=self.mode)
         return x
 
 
@@ -130,9 +129,20 @@ class YOLOLayer(nn.Module):
         FloatTensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
         self.stride = self.img_dim / self.grid_size
         # Calculate offsets for each grid
-        self.grid_x = torch.arange(g).repeat(g, 1).view([1, 1, g, g]).type(FloatTensor).cuda(self.device)
+        self.grid_x = (
+            torch.arange(g)
+            .repeat(g, 1)
+            .view([1, 1, g, g])
+            .type(FloatTensor)
+            .cuda(self.device)
+        )
         self.grid_y = (
-            torch.arange(g).repeat(g, 1).t().view([1, 1, g, g]).type(FloatTensor).cuda(self.device)
+            torch.arange(g)
+            .repeat(g, 1)
+            .t()
+            .view([1, 1, g, g])
+            .type(FloatTensor)
+            .cuda(self.device)
         )
         self.scaled_anchors = FloatTensor(
             [(a_w / self.stride, a_h / self.stride) for a_w, a_h in self.anchors]
@@ -211,7 +221,7 @@ class YOLOLayer(nn.Module):
                 target=targets,
                 anchors=self.scaled_anchors,
                 ignore_thres=self.ignore_thres,
-                device=self.device
+                device=self.device,
             )
 
             # Loss : Mask outputs to ignore non-existing objects (except with conf. loss)

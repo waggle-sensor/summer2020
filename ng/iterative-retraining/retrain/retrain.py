@@ -1,15 +1,12 @@
 import os
 import copy
-import traceback
-
-import multiprocessing as mp
-import multiprocessing.pool as pool
 
 import analysis.benchmark as bench
 import userdefs
 from retrain import sampling as sample
 from retrain import utils, train
 from retrain.dataloader import LabeledSet, split_set
+from yolov3 import parallelize
 
 
 def sample_retrain(
@@ -106,59 +103,28 @@ def sample_retrain(
         last_epoch = train.train(retrain_obj, config, checkpoint, device=device)
 
 
-class NoDaemonProcess(mp.Process):
-    def _get_daemon(self):
-        return False
-
-    def _set_daemon(self, value):
-        pass
-
-    daemon = property(_get_daemon, _set_daemon)
-
-
-class ExceptionLogger(object):
-    def __init__(self, callable):
-        self.__callable = callable
-
-    def __call__(self, *args, **kwargs):
-        try:
-            result = self.__callable(*args, **kwargs)
-        except Exception:
-            with open("error.err", "a+") as out:
-                out.write(traceback.format_exc())
-            raise Exception(traceback.format_exc())
-        return result
-
-
-class NoDaemonPool(pool.Pool):
-    Process = NoDaemonProcess
-
-    def starmap_async(self, func, iterable, **kwargs):
-        return pool.Pool.starmap_async(self, ExceptionLogger(func), iterable, **kwargs)
-
-
-def parallel_retrain(config, batched_samples, init_end_epoch, init_images):
-    os.environ["MKL_THREADING_LAYER"] = "GNU"
-    mp.set_start_method("spawn")
+def retrain(config, batched_samples, init_end_epoch, init_images, parallel=False):
     sample_methods = userdefs.get_sample_methods()
     free_gpus = train.get_free_gpus(config)
-    with NoDaemonPool(max(1, len(free_gpus)) * 10) as pool:
-        grouped_args = list()
-        for i, (name, (func, kwargs)) in enumerate(sample_methods.items()):
-            device = free_gpus[i % len(free_gpus)]
-            method_args = (
-                name,
-                batched_samples,
-                config,
-                init_end_epoch,
-                init_images,
-                userdefs.label_sample_set,
-                func,
-                kwargs,
-                device,
-            )
-            grouped_args.append(method_args)
 
-        pool.starmap_async(sample_retrain, grouped_args)
-        pool.close()
-        pool.join()
+    grouped_args = list()
+    for i, (name, (func, kwargs)) in enumerate(sample_methods.items()):
+        device = free_gpus[i % len(free_gpus)]
+        method_args = (
+            name,
+            batched_samples,
+            config,
+            init_end_epoch,
+            init_images,
+            userdefs.label_sample_set,
+            func,
+            kwargs,
+            device,
+        )
+        grouped_args.append(method_args)
+
+        if not parallel:
+            sample_retrain(*method_args)
+
+    if parallel:
+        parallelize.run_parallel(sample_retrain, grouped_args)

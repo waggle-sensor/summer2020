@@ -5,17 +5,15 @@ import time
 import datetime
 
 import torch
-from torch import cuda
 from torch.autograd import Variable
 
 from terminaltables import AsciiTable
 
-from yolov3 import evaluate
+from yolov3 import evaluate, models
 from yolov3.logger import Logger
 import yolov3.utils as yoloutils
-from yolov3 import models
 
-import retrain.utils as utils
+from retrain import utils
 
 
 def train_initial(init_folder, config):
@@ -236,23 +234,6 @@ def get_free_gpus(config, model=None):
     if model is None:
         model = models.get_train_model(config)
 
-    # input_shape = (3, config["img_size"], config["img_size"])
-
-    # TODO: Fix error where calling this results in error
-    # stat_str, _ = summary_string(model, input_shape, config["batch_size"])
-    # target_str = "Estimated Total Size (MB): "
-    # mem_str = [s for s in stat_str.split("\n") if target_str in s][0]
-
-    # memory_needed = float(mem_str.split(target_str)[1])
-
     # Rough estimate of model size, in bytes
     memory_needed = config["img_size"] ** 2 * config["batch_size"] * 3 * 4 * 160
-    free_gpus = dict()
-    for i in range(cuda.device_count()):
-        bytes_free = cuda.get_device_properties(i).total_memory - cuda.memory_allocated(
-            i
-        )
-        if bytes_free > memory_needed:
-            free_gpus[i] = bytes_free
-    free_gpus = dict(sorted(free_gpus.items(), key=lambda gpu: gpu[1], reverse=True))
-    return list(free_gpus.keys())
+    return yoloutils.get_free_gpus(memory_needed)

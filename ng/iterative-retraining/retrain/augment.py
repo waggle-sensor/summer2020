@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 import os
 from collections import Counter
+import cv2
+import numpy as np
 
 import albumentations as alb
 import albumentations.augmentations.transforms as trans
-import cv2
-import numpy as np
+
 from tqdm import tqdm
 
 from retrain.utils import get_label_path

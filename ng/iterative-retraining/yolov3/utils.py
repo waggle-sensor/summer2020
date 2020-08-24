@@ -325,24 +325,24 @@ def build_targets(pred_boxes, pred_cls, target, anchors, ignore_thres, device):
     BoolTensor = torch.cuda.BoolTensor if pred_boxes.is_cuda else torch.BoolTensor
     FloatTensor = torch.cuda.FloatTensor if pred_boxes.is_cuda else torch.FloatTensor
 
-    nB = pred_boxes.size(0)
-    nA = pred_boxes.size(1)
-    nC = pred_cls.size(-1)
-    nG = pred_boxes.size(2)
+    n_b = pred_boxes.size(0)
+    n_a = pred_boxes.size(1)
+    n_c = pred_cls.size(-1)
+    n_g = pred_boxes.size(2)
 
     # Output tensors
-    obj_mask = BoolTensor(nB, nA, nG, nG).cuda(device).fill_(0)
-    noobj_mask = BoolTensor(nB, nA, nG, nG).cuda(device).fill_(1)
-    class_mask = FloatTensor(nB, nA, nG, nG).cuda(device).fill_(0)
-    iou_scores = FloatTensor(nB, nA, nG, nG).cuda(device).fill_(0)
-    tx = FloatTensor(nB, nA, nG, nG).cuda(device).fill_(0)
-    ty = FloatTensor(nB, nA, nG, nG).cuda(device).fill_(0)
-    tw = FloatTensor(nB, nA, nG, nG).cuda(device).fill_(0)
-    th = FloatTensor(nB, nA, nG, nG).cuda(device).fill_(0)
-    tcls = FloatTensor(nB, nA, nG, nG, nC).cuda(device).fill_(0)
+    obj_mask = BoolTensor(n_b, n_a, n_g, n_g).cuda(device).fill_(0)
+    noobj_mask = BoolTensor(n_b, n_a, n_g, n_g).cuda(device).fill_(1)
+    class_mask = FloatTensor(n_b, n_a, n_g, n_g).cuda(device).fill_(0)
+    iou_scores = FloatTensor(n_b, n_a, n_g, n_g).cuda(device).fill_(0)
+    tx = FloatTensor(n_b, n_a, n_g, n_g).cuda(device).fill_(0)
+    ty = FloatTensor(n_b, n_a, n_g, n_g).cuda(device).fill_(0)
+    tw = FloatTensor(n_b, n_a, n_g, n_g).cuda(device).fill_(0)
+    th = FloatTensor(n_b, n_a, n_g, n_g).cuda(device).fill_(0)
+    tcls = FloatTensor(n_b, n_a, n_g, n_g, n_c).cuda(device).fill_(0)
 
     # Convert to position relative to box
-    target_boxes = target[:, 2:6] * nG
+    target_boxes = target[:, 2:6] * n_g
     gxy = target_boxes[:, :2]
     gwh = target_boxes[:, 2:]
     # Get anchors with best iou
@@ -392,11 +392,14 @@ def get_device():
     return device
 
 
-def get_free_gpus():
+def get_free_gpus(bytes_needed=0):
     free_gpus = dict()
     for i in range(cuda.device_count()):
-        bytes_free = cuda.get_device_properties(i).total_memory
-        free_gpus[i] = bytes_free
+        bytes_free = cuda.get_device_properties(i).total_memory - cuda.memory_allocated(
+            i
+        )
+        if bytes_free > bytes_needed:
+            free_gpus[i] = bytes_free
     free_gpus = dict(sorted(free_gpus.items(), key=lambda gpu: gpu[1], reverse=True))
     return list(free_gpus.keys())
 

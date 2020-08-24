@@ -3,6 +3,10 @@ from sklearn.linear_model import LinearRegression
 import statsmodels.api as sm
 import pandas as pd
 
+import os
+from glob import glob
+from retrain import utils
+
 import analysis.benchmark as bench
 
 
@@ -126,3 +130,175 @@ def make_conf_matrix(conf_mat, classes, filename):
     classes.append("")
     df = pd.DataFrame(conf_mat, index=classes, columns=classes)
     df.to_csv(filename)
+
+
+def aggregate_results(config, prefix, metric, delta=2, avg=False, roll=None):
+    names = [
+        "init",
+        "sample",
+        "all_iter",
+        "all",
+    ]
+    epoch_splits = utils.get_epoch_splits(config, prefix, True)
+    names += [f"cur_iter{i}" for i in range(len(epoch_splits))]
+
+    results = pd.DataFrame(
+        columns=["test_set", "epoch", "prec", "acc", "conf", "recall"]
+    )
+
+    out_folder = f"{config['output']}/{prefix}-series"
+    if avg or roll:
+        out_folder += "-roll-avg" if roll else "-avg"
+    for name in names:
+        for i in range(0, epoch_splits[-1], delta):
+            out_name = f"{out_folder}/{name}_{i}.csv"
+            if not os.path.exists(out_name):
+                continue
+
+            epoch_res, _ = bench.load_data(
+                out_name, by_actual=False, conf_thresh=config["pos_thres"]
+            )
+            new_row = {
+                "test_set": name,
+                "epoch": i,
+                "prec": bench.mean_precision(epoch_res),
+                "acc": bench.mean_accuracy(epoch_res),
+                "conf": bench.mean_conf(epoch_res),
+                "recall": bench.mean_recall(epoch_res),
+            }
+            results = results.append(new_row, ignore_index=True)
+
+    results.to_csv(f"{out_folder}/{prefix}-series-stats.csv")
+
+    xy_pairs = list()
+    for name in names:
+        if "cur_iter" in name:
+            if name == "cur_iter0":
+                filtered_data = results[results["test_set"].str.contains("cur_iter")]
+                name = "cur_iter"
+            else:
+                continue
+        else:
+            filtered_data = results[results["test_set"] == name]
+        xy_pairs.append((filtered_data["epoch"], filtered_data[metric], name))
+
+    plot_multiline(
+        xy_pairs, xlab="Epoch", ylab=f"Avg. {metric}", vert_lines=epoch_splits
+    )
+
+
+def visualize_conf(prefix, benchmark, sample_filter=False, pos_thres=0.5):
+    kwargs = dict()
+    if sample_filter:
+        folder = "/".join(benchmark.split("/")[:-1])
+        epoch = utils.get_epoch(benchmark)
+        sampled_imgs = glob(f"{folder}/{prefix}*_sample_{epoch}.txt")[0]
+        kwargs["filter"] = sampled_imgs
+
+    results, conf_mat = bench.load_data(
+        benchmark, by_actual=False, conf_thresh=pos_thres, **kwargs
+    )
+
+    conf_mat_file = benchmark[:-4] + "_conf.csv"
+    classes = [result.name for result in results]
+    classes.remove("All")
+    make_conf_matrix(conf_mat, classes, conf_mat_file)
+
+    hist_filename = benchmark[:-4] + "_viz.pdf"
+    make_conf_histogram(results, hist_filename)
+    show_overall_hist(results)
+
+
+def tabulate_batch_samples(config, prefix, silent=False, filter=False, roll=False):
+    """Analyze accuracy/precision relationships and training duration
+    for each batched sample using existing testing data."""
+    bench_str = f"{config['output']}/{prefix}*_benchmark"
+    bench_str += "_roll*.csv" if roll else "_avg*.csv"
+
+    benchmarks = utils.sort_by_epoch(bench_str)
+    checkpoints = utils.sort_by_epoch(f"{config['checkpoints']}/{prefix}*.pth")
+    data = pd.DataFrame(
+        columns=["batch", "prec", "acc", "conf", "recall", "epochs trained"]
+    )
+
+    for i, benchmark in enumerate(benchmarks):
+        kwargs = dict()
+        if filter and prefix != "init":
+            sampled_imgs = glob(f"{config['output']}/{prefix}{i}_sample*")[0]
+            kwargs["filter"] = sampled_imgs
+        results, _ = bench.load_data(
+            benchmark,
+            by_actual=False,
+            add_all=False,
+            conf_thresh=config["pos_thres"],
+            **kwargs,
+        )
+
+        if i == len(benchmarks) - 1:
+            train_len = utils.get_epoch(checkpoints[-1]) - utils.get_epoch(benchmark)
+        else:
+            train_len = utils.get_epoch(benchmarks[i + 1]) - utils.get_epoch(benchmark)
+
+        data.loc[i] = [
+            i,
+            bench.mean_precision(results),
+            bench.mean_accuracy(results),
+            bench.mean_conf(results),
+            bench.mean_recall(results),
+            train_len,
+        ]
+
+    if not silent:
+        print("=== Metrics on Batch ===")
+        print(data)
+
+    return data
+
+
+def compare_benchmarks(
+    config,
+    prefixes,
+    metric,
+    metric2=None,
+    roll=False,
+    compare_init=False,
+    filter_sample=False,
+):
+    """Compares benchmarks on sample sets (before retraining) for sample methods."""
+    df = pd.DataFrame()
+    print("Avg.", metric)
+    for prefix in prefixes:
+        results = tabulate_batch_samples(
+            config, prefix, silent=True, filter=filter_sample, roll=roll
+        )[metric]
+        if prefix != "init" and compare_init:
+            df[prefix] = results - df["init"]
+        else:
+            df[prefix] = results
+    print(df.transpose())
+
+    if metric2 is not None:
+        if "init" in prefixes:
+            prefixes.remove("init")
+        df = pd.DataFrame(
+            columns=["Method", f"avg. {metric}", f"batch avg. {metric2}"]
+        ).set_index("Method")
+
+        init_vals = tabulate_batch_samples(config, "init", silent=True, filter=False)
+        print(f"Baseline avg {metric2}: ", init_vals[metric2][1:].mean())
+
+        for prefix in prefixes:
+            indep_var = tabulate_batch_samples(config, prefix, silent=True, filter=True)
+            dep_var = tabulate_batch_samples(config, prefix, silent=True, filter=False)
+
+            y_series = dep_var[metric2]
+            if compare_init:
+                y_series -= init_vals[metric2]
+
+            df.loc[prefix] = [
+                indep_var[metric][:-1].mean(),
+                y_series[1:].mean(),
+            ]
+
+        print(df.sort_values(df.columns[0]))
+        linear_regression(df)

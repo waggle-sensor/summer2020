@@ -1,7 +1,6 @@
-import statistics as stats
 import math
-import csv
-import itertools
+
+import os
 import glob
 from tqdm import tqdm
 
@@ -9,169 +8,13 @@ import torch
 import pandas as pd
 import numpy as np
 from torch.utils.data import DataLoader
-from sklearn.metrics import confusion_matrix
+
 
 from yolov3 import evaluate
 from yolov3 import models
 from yolov3 import utils as yoloutils
 from retrain import utils
 from retrain.dataloader import LabeledSet
-
-
-def load_data(output, by_actual=True, add_all=True, filter=None, conf_thresh=0.5):
-    samples = dict()
-    all_data = list()
-
-    actual = list()
-    pred = list()
-
-    with open(output, newline="\n") as csvfile:
-        reader = csv.DictReader(csvfile)
-
-        if filter is not None:
-            filter_list = utils.get_lines(filter)
-
-        for row in reader:
-            if filter is not None and row["file"] not in filter_list:
-                continue
-            actual.append(row["actual"])
-            pred.append(row["detected"])
-            all_data.append(row)
-
-            key_val = (
-                row["actual"]
-                if by_actual or row["detected"] == str()
-                else row["detected"]
-            )
-
-            if key_val in samples.keys():
-                samples[key_val].append(row)
-            else:
-                samples[key_val] = [row]
-
-    samples = {k: samples[k] for k in sorted(samples)}
-    results = [ClassResults(k, v, conf_thresh=conf_thresh) for k, v in samples.items()]
-    mat = confusion_matrix(actual, pred, labels=list(samples.keys()) + [""])
-
-    if add_all:
-        results.append(ClassResults("All", all_data, conf_thresh=conf_thresh))
-
-    return results, mat
-
-
-def mean_conf(class_results):
-    """Computes mean average confidence for a list of classes"""
-    return stats.mean(stats.mean(res.get_confidences()) for res in class_results)
-
-
-def mean_precision(class_results):
-    """Computes mean precision for a list of classes, which shouldn't include All."""
-    return stats.mean([res.precision() for res in class_results])
-
-
-def mean_accuracy(class_results):
-    return stats.mean([res.accuracy() for res in class_results])
-
-
-def mean_recall(class_results):
-    return stats.mean([res.recall() for res in class_results])
-
-
-class ClassResults:
-    def __init__(self, name, output_rows, conf_thresh=0.5):
-        self.name = name
-        self.condition = ["pos", "neg"]
-        self.actual = ["true", "false"]
-        self.data = dict()
-        self.pop = 0
-
-        for actual in self.actual:
-            for cond in self.condition:
-                self.data[f"{actual}_{cond}"] = list()
-
-        for row in output_rows:
-            row["conf"] = float(row["conf"])
-            row["conf_std"] = float(row["conf_std"])
-            if row["conf"] >= conf_thresh:
-                if row["hit"] == "True":
-                    result = "true_pos"
-                else:
-                    result = "false_pos"
-            else:
-                if row["hit"] == "True" or row["detected"] == str():
-                    result = "false_neg"
-                else:
-                    result = "true_neg"
-            if result != "true_neg":
-                self.data[result].append(row)
-                self.pop += 1
-
-    def __len__(self):
-        files = set()
-        for row in self.get_all():
-            files.add(row["file"])
-        return len(files)
-
-    def precision(self):
-        predicted_cond_pos = (
-            len(self.data["true_pos"]) + len(self.data["false_pos"]) + 1e-16
-        )
-        return len(self.data["true_pos"]) / predicted_cond_pos
-
-    def recall(self):
-        return len(self.data["true_pos"]) / (
-            (len(self.data["true_pos"]) + len(self.data["false_neg"]) + 1e-16)
-        )
-
-    def accuracy(self):
-        return (len(self.data["true_pos"]) + len(self.data["true_neg"])) / self.pop
-
-    def hits_misses(self):
-        """Get a split list of hits and misses."""
-        all_results = [list(), list()]
-        for k, v in self.data.items():
-            if k in ("true_pos", "false_neg"):
-                all_results[0] += v
-            else:
-                all_results[1] += v
-        return all_results
-
-    def get_all(self):
-        return list(itertools.chain.from_iterable(self.data.values()))
-
-    def get_confidences(self, thresh=0.0):
-        return [result["conf"] for result in self.get_all() if result["conf"] >= thresh]
-
-    def generate_prec_distrib(self, output, delta=0.05):
-        """Generate a spreadsheet of confidence range vs. rolling precision."""
-        out = open(output, "w+")
-        out.write("conf,rolling precision\n")
-        x = delta / 2
-        while x < 1.00 + (delta / 2):
-            true_pos = len(
-                [
-                    d
-                    for d in self.data["true_pos"]
-                    if x + (delta / 2) > d["conf"] >= x - (delta / 2)
-                ]
-            )
-            false_pos = len(
-                [
-                    d
-                    for d in self.data["false_pos"]
-                    if x + (delta / 2) > d["conf"] >= x - (delta / 2)
-                ]
-            )
-
-            try:
-                precision = true_pos / (true_pos + false_pos)
-                out.write(f"{x},{precision},{true_pos+false_pos}\n")
-            except ZeroDivisionError:
-                x += delta
-                continue
-
-            x += delta
-        out.close()
 
 
 def get_checkpoint(folder, prefix, epoch):
@@ -408,3 +251,120 @@ def simple_benchmark_avg(img_folder, prefix, start, end, total, config, roll=Fal
             row["hit"] = False
 
     return results
+
+
+def series_benchmark(config, prefix, delta=2, avg=False, roll=None):
+    # 1. Find the number of batches for the given prefix
+    # 2. Find the starting/ending epochs of each split
+    # 3. Benchmark that itertion's test set with the average method
+    #    (Could plot this, but may not be meaningful due to differing test sets)
+    # 4. Benchmark the overall test set with the same average method (and save results)
+    #    4a. plot the overall test set performance as a function of epoch number
+    # 5. (optional) serialize results of the overall test set as JSON for improved speed
+    #    when using averages
+
+    out_dir = config["output"]
+    num_classes = len(utils.load_classes(config["class_list"]))
+    epoch_splits = utils.get_epoch_splits(config, prefix)
+
+    # Initial test set
+    init_test_set = f"{out_dir}/init_test.txt"
+    init_test_folder = LabeledSet(init_test_set, num_classes)
+
+    # Only data from the (combined) iteration test sets (75% sampling + 25% seen data)
+    iter_test_sets = [
+        f"{out_dir}/{prefix}{i}_test.txt" for i in range(len(epoch_splits))
+    ]
+    iter_img_files = list()
+    for file in iter_test_sets:
+        iter_img_files += utils.get_lines(file)
+    all_iter_sets = LabeledSet(iter_img_files, num_classes)
+
+    # Test sets filtered for only sampled images
+    sampled_imgs = [img for img in iter_img_files if config["sample_set"] in img]
+    sample_test = LabeledSet(sampled_imgs, num_classes)
+
+    # Data from all test sets
+    all_test = LabeledSet(sampled_imgs, num_classes)
+    all_test += init_test_folder
+
+    test_sets = {
+        "init": init_test_folder,
+        "all_iter": all_iter_sets,
+        "sample": sample_test,
+        "all": all_test,
+    }
+
+    epoch_splits = utils.get_epoch_splits(config, prefix, True)
+
+    # Begin benchmarking
+    out_folder = f"{out_dir}/{prefix}-series"
+    if avg or roll:
+        out_folder += "-roll-avg" if roll else "-avg"
+    os.makedirs(out_folder, exist_ok=True)
+    for i, split in enumerate(epoch_splits):
+        # Get specific iteration set
+        if i != 0:
+            test_sets[f"cur_iter{i}"] = LabeledSet(iter_test_sets[i - 1], num_classes)
+        elif prefix != "init":
+            continue
+
+        start = epoch_splits[i - 1] if i else 0
+
+        for epoch in tqdm(range(start, split + 1, delta)):
+            for name, img_folder in test_sets.items():
+                # Benchmark both iterations sets at the split mark
+                if not epoch or (epoch == start and "cur_iter" not in name):
+                    continue
+
+                out_name = f"{out_folder}/{name}_{epoch}.csv"
+
+                if not os.path.exists(out_name):
+                    if roll:
+                        result_df = benchmark_avg(
+                            img_folder, prefix, 1, epoch, roll, config, roll=True
+                        )
+                    elif avg:
+                        result_df = benchmark_avg(
+                            img_folder, prefix, 1, epoch, 5, config
+                        )
+                    else:
+                        result_df = benchmark(img_folder, prefix, epoch, config)
+                    save_results(result_df, out_name)
+        if i != 0:
+            test_sets.pop(f"cur_iter{i}")
+
+
+def benchmark_batch_set(prefix, config, roll=None):
+    """See initial training performance on batch splits."""
+    out_dir = config["output"]
+    num_classes = len(utils.load_classes(config["class_list"]))
+    batch_sets = sorted(glob.glob(f"{out_dir}/sample*.txt"), key=utils.get_sample)
+
+    epoch_splits = utils.get_epoch_splits(config, prefix, True)
+    if prefix == "init":
+        epoch_splits *= len(batch_sets)
+
+    for i, batch_set in enumerate(batch_sets):
+        batch_folder = LabeledSet(batch_set, num_classes)
+        if len(batch_folder) < config["sampling_batch"]:
+            break
+
+        end_epoch = epoch_splits[i]
+        num_ckpts = roll if roll is not None else config["conf_check_num"]
+        filename = f"{out_dir}/{prefix}{i}_benchmark_"
+        filename += "roll_" if roll else "avg_"
+        filename += f"1_{end_epoch}.csv"
+
+        if os.path.exists(filename):
+            continue
+        if roll is not None:
+            results = benchmark_avg(
+                batch_folder, prefix, 1, end_epoch, num_ckpts, config, roll=True
+            )
+        else:
+            results = benchmark_avg(
+                batch_folder, prefix, 1, end_epoch, num_ckpts, config,
+            )
+
+        save_results(results, filename)

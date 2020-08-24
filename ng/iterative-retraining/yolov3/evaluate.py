@@ -208,18 +208,18 @@ def evaluate(
     true_positives, pred_scores, pred_labels = [
         np.concatenate(x, 0) for x in list(zip(*sample_metrics))
     ]
-    precision, recall, AP, f1, ap_class = utils.ap_per_class(
+    precision, recall, ap, f1, ap_class = utils.ap_per_class(
         true_positives, pred_scores, pred_labels, labels
     )
 
-    return precision, recall, AP, f1, ap_class, total_loss
+    return precision, recall, ap, f1, ap_class, total_loss
 
 
 def get_results(
     model, img_folder, opt, class_names, logger=None, epoch=0, silent=False
 ):
 
-    precision, recall, AP, f1, ap_class, loss = evaluate(
+    precision, recall, ap, f1, ap_class, loss = evaluate(
         model,
         img_folder=img_folder,
         iou_thres=opt["iou_thres"],
@@ -232,7 +232,7 @@ def get_results(
     evaluation_metrics = [
         ("val_precision", precision.mean()),
         ("val_recall", recall.mean()),
-        ("val_mAP", AP.mean()),
+        ("val_map", ap.mean()),
         ("val_f1", f1.mean()),
         ("val_loss", loss),
     ]
@@ -241,11 +241,11 @@ def get_results(
         logger.list_of_scalars_summary(evaluation_metrics, epoch)
 
     if not silent:
-        # Print class APs and mAP
-        ap_table = [["Index", "Class name", "AP"]]
+        # Print class aps and map
+        ap_table = [["Index", "Class name", "ap"]]
         for i, c in enumerate(ap_class):
-            ap_table += [[c, class_names[c], "%.5f" % AP[i]]]
+            ap_table += [[c, class_names[c], "%.5f" % ap[i]]]
         print(AsciiTable(ap_table).table)
-        print(f"---- mAP {AP.mean()}")
+        print(f"---- map {ap.mean()}")
 
     return dict(evaluation_metrics)
