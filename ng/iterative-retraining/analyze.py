@@ -259,7 +259,7 @@ def benchmark_batch_set(prefix, config, roll=None):
     """See initial training performance on batch splits."""
     out_dir = config["output"]
     num_classes = len(utils.load_classes(config["class_list"]))
-    batch_sets = sorted(glob.glob(f"{out_dir}/sample*.txt"))
+    batch_sets = sorted(glob.glob(f"{out_dir}/sample*.txt"), key=utils.get_sample)
 
     epoch_splits = utils.get_epoch_splits(config, prefix, True)
     if prefix == "init":

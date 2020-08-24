@@ -1,13 +1,15 @@
-from retrain import sampling as sample
-from retrain import utils
-from retrain import train
 import os
 import copy
-from retrain.dataloader import LabeledSet, split_set
-import analysis.benchmark as bench
+import traceback
+
 import multiprocessing as mp
-import multiprocessing.pool
+import multiprocessing.pool as pool
+
+import analysis.benchmark as bench
 import userdefs
+from retrain import sampling as sample
+from retrain import utils, train
+from retrain.dataloader import LabeledSet, split_set
 
 
 def sample_retrain(
@@ -114,8 +116,23 @@ class NoDaemonProcess(mp.Process):
     daemon = property(_get_daemon, _set_daemon)
 
 
-class NoDaemonPool(multiprocessing.pool.Pool):
+class ExceptionLogger(object):
+    def __init__(self, callable):
+        self.__callable = callable
+
+    def __call__(self, *args, **kwargs):
+        try:
+            result = self.__callable(*args, **kwargs)
+        except Exception:
+            raise Exception(traceback.format_exc())
+        return result
+
+
+class NoDaemonPool(pool.Pool):
     Process = NoDaemonProcess
+
+    def starmap_async(self, func, iterable, **kwargs):
+        return pool.Pool.starmap_async(self, ExceptionLogger(func), iterable, **kwargs)
 
 
 def parallel_retrain(config, batched_samples, init_end_epoch, init_images):
@@ -141,3 +158,5 @@ def parallel_retrain(config, batched_samples, init_end_epoch, init_images):
             grouped_args.append(method_args)
 
         pool.starmap(sample_retrain, grouped_args)
+        pool.close()
+        pool.join()

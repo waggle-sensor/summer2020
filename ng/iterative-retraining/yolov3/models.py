@@ -272,6 +272,13 @@ class Darknet(nn.Module):
         self.seen = 0
         self.header_info = np.array([0, 0, 0, self.seen, 0], dtype=np.int32)
 
+    def to(self, *args, **kwargs):
+        self = super().to(*args, **kwargs)
+        for layer in self.yolo_layers:
+            layer.to(*args, **kwargs)
+        for module in self.module_list:
+            module.to(*args, **kwargs)
+
     def forward(self, x, targets=None):
         img_dim = x.shape[2]
         loss = 0

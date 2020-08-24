@@ -3,7 +3,6 @@ from __future__ import division
 import os
 import time
 import datetime
-from torchsummary import summary_string
 
 import torch
 from torch import cuda

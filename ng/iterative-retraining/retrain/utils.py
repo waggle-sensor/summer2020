@@ -35,6 +35,10 @@ def sort_by_epoch(pattern):
     return sorted(files, key=get_epoch)
 
 
+def get_sample(path):
+    return int(path.split("sample")[-1].split(".txt")[0])
+
+
 def parse_retrain_config(path):
     lines = [line for line in get_lines(path) if "=" in line]
 
