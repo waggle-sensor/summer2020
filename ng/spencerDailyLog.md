@@ -1014,3 +1014,23 @@ Current loss: 347.083483338356
   * Might want to look into measuring improvement as a function of bandwidth limit/sample batch size, to evaluate real-world tradeoffs
   * Could also augment seen images and sample images separately, such that we use as many different raw images as possible for the 75%/25% split
     * i.e. Augment a lot more sample images, fewer seen images
+* Fixed multiprocessing bugs
+
+## Week 11
+
+**Monday, August 24**
+
+* Analyzed results from overnight training
+  * Below median threshold method drastically improves performance
+  * Hard to compare others, as multiprocessing crashed in some subprocesses
+* Debugged multiprocessing code
+  * Need to relink tensors to the right device
+  * May not support non-CUDA devices right now
+* Began documenting and linting code in preparation for Dockerizing
+* Fixed parallelization bugs, now running all training methods overnight to analyze data
+* To do
+  * Finish linting/documenting code
+  * Write analysis tool usage in README
+  * Finish writing Sage website article
+  * Analyze results when retraining is complete
+  * Write a more technical paper with results
