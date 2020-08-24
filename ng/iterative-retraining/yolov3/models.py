@@ -401,10 +401,11 @@ class Darknet(nn.Module):
 
 
 def get_eval_model(model_def, img_size, weights_path):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = utils.get_device()
 
     # Set up model
     model = Darknet(model_def, img_size=img_size).to(device)
+    model.device = device
     model.load_state_dict(torch.load(weights_path, map_location=device))
     model.eval()  # Set in evaluation mode
 

@@ -174,7 +174,7 @@ def evaluate(
     )
 
     Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
-    device = utils.get_device()
+    device = model.device
 
     labels = []
     sample_metrics = []  # List of tuples (TP, confs, pred)

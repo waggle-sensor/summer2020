@@ -1,6 +1,6 @@
 from __future__ import division
 import torch
-import torch.nn as nn
+from torch import cuda, nn
 import numpy as np
 from retrain import utils
 

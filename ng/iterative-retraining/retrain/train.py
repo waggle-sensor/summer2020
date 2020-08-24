@@ -55,9 +55,10 @@ def train(img_folder, opt, load_weights=None, device=None):
     model.apply(yoloutils.weights_init_normal)
 
     if load_weights is not None:
-        model.load_state_dict(torch.load(load_weights))
+        model.load_state_dict(torch.load(load_weights, map_location="cpu"))
 
     model.to(device)
+    model.device = device
 
     class_names = utils.load_classes(opt["class_list"])
 
