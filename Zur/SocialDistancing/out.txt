@@ -1,68 +1,23 @@
-6 feet = 249 pixels.
+6 feet = 279 pixels.
 
-Current time: 2020-08-20 15:00:11
+Current time: 2020-08-21 14:58:28
 Pedestrians Detected: 4
-	Object ID: 1[369, 437]
-	Object ID: 2[599, 370]
-	Object ID: 3[911, 613]
-	Object ID: 4[684, 762]
-Safe Pedestrians: 2
-Violator Pedestrians: 2
-Social Distancing Ratio: 0.5
-
-Current time: 2020-08-20 15:00:16
-Pedestrians Detected: 4
-	Object ID: 1[411, 511]
-	Object ID: 2[600, 448]
-	Object ID: 3[939, 694]
-	Object ID: 4[677, 704]
-Safe Pedestrians: 2
-Violator Pedestrians: 2
-Social Distancing Ratio: 0.5
-
-Current time: 2020-08-20 15:00:21
-Pedestrians Detected: 5
-	Object ID: 1[405, 561]
-	Object ID: 2[581, 508]
-	Object ID: 3[927, 749]
-	Object ID: 4[729, 654]
-	Object ID: 5[747, 803]
+	Object ID: 1[362, 436]
+	Object ID: 2[589, 365]
+	Object ID: 3[901, 609]
+	Object ID: 4[674, 762]
 Safe Pedestrians: 0
-Violator Pedestrians: 5
-Social Distancing Ratio: 1.0
-
-Current time: 2020-08-20 15:00:27
-Pedestrians Detected: 5
-	Object ID: 1[451, 635]
-	Object ID: 2[545, 541]
-	Object ID: 3[811, 793]
-	Object ID: 4[588, 573]
-	Object ID: 5[818, 792]
-Safe Pedestrians: 0
-Violator Pedestrians: 5
-Social Distancing Ratio: 1.0
-
-Current time: 2020-08-20 15:00:32
-Pedestrians Detected: 6
-	Object ID: 1[448, 694]
-	Object ID: 3[708, 810]
-	Object ID: 4[566, 622]
-	Object ID: 6[771, 557]
-	Object ID: 7[807, 722]
-	Object ID: 8[184, 140]
-Safe Pedestrians: 1
-Violator Pedestrians: 5
-Social Distancing Ratio: 0.8333333333333334
-
-Current time: 2020-08-20 15:00:38
-Pedestrians Detected: 5
-	Object ID: 1[507, 766]
-	Object ID: 4[672, 717]
-	Object ID: 6[763, 511]
-	Object ID: 7[873, 662]
-	Object ID: 8[212, 242]
-Safe Pedestrians: 1
 Violator Pedestrians: 4
-Social Distancing Ratio: 0.8
+Social Distancing Ratio: 1.0
 
-Total Time Elapsed: 00:00:46.45
+Current time: 2020-08-21 14:58:34
+Pedestrians Detected: 4
+	Object ID: 1[404, 512]
+	Object ID: 2[588, 443]
+	Object ID: 3[928, 692]
+	Object ID: 4[665, 703]
+Safe Pedestrians: 0
+Violator Pedestrians: 4
+Social Distancing Ratio: 1.0
+
+Total Time Elapsed: 00:00:22.06
