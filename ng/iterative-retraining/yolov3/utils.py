@@ -320,7 +320,7 @@ def rescale_boxes(boxes, current_dim, original_shape):
     return boxes
 
 
-def build_targets(pred_boxes, pred_cls, target, anchors, ignore_thres):
+def build_targets(pred_boxes, pred_cls, target, anchors, ignore_thres, device):
 
     BoolTensor = torch.cuda.BoolTensor if pred_boxes.is_cuda else torch.BoolTensor
     FloatTensor = torch.cuda.FloatTensor if pred_boxes.is_cuda else torch.FloatTensor
@@ -331,15 +331,15 @@ def build_targets(pred_boxes, pred_cls, target, anchors, ignore_thres):
     nG = pred_boxes.size(2)
 
     # Output tensors
-    obj_mask = BoolTensor(nB, nA, nG, nG).fill_(0)
-    noobj_mask = BoolTensor(nB, nA, nG, nG).fill_(1)
-    class_mask = FloatTensor(nB, nA, nG, nG).fill_(0)
-    iou_scores = FloatTensor(nB, nA, nG, nG).fill_(0)
-    tx = FloatTensor(nB, nA, nG, nG).fill_(0)
-    ty = FloatTensor(nB, nA, nG, nG).fill_(0)
-    tw = FloatTensor(nB, nA, nG, nG).fill_(0)
-    th = FloatTensor(nB, nA, nG, nG).fill_(0)
-    tcls = FloatTensor(nB, nA, nG, nG, nC).fill_(0)
+    obj_mask = BoolTensor(nB, nA, nG, nG).cuda(device).fill_(0)
+    noobj_mask = BoolTensor(nB, nA, nG, nG).cuda(device).fill_(1)
+    class_mask = FloatTensor(nB, nA, nG, nG).cuda(device).fill_(0)
+    iou_scores = FloatTensor(nB, nA, nG, nG).cuda(device).fill_(0)
+    tx = FloatTensor(nB, nA, nG, nG).cuda(device).fill_(0)
+    ty = FloatTensor(nB, nA, nG, nG).cuda(device).fill_(0)
+    tw = FloatTensor(nB, nA, nG, nG).cuda(device).fill_(0)
+    th = FloatTensor(nB, nA, nG, nG).cuda(device).fill_(0)
+    tcls = FloatTensor(nB, nA, nG, nG, nC).cuda(device).fill_(0)
 
     # Convert to position relative to box
     target_boxes = target[:, 2:6] * nG

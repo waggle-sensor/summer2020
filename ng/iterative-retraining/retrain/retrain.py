@@ -124,6 +124,8 @@ class ExceptionLogger(object):
         try:
             result = self.__callable(*args, **kwargs)
         except Exception:
+            with open("error.err", "a+") as out:
+                out.write(traceback.format_exc())
             raise Exception(traceback.format_exc())
         return result
 
@@ -157,6 +159,6 @@ def parallel_retrain(config, batched_samples, init_end_epoch, init_images):
             )
             grouped_args.append(method_args)
 
-        pool.starmap(sample_retrain, grouped_args)
+        pool.starmap_async(sample_retrain, grouped_args)
         pool.close()
         pool.join()

@@ -286,13 +286,20 @@ class ListDataset(Dataset):
         #  Image
         # ---------
 
-        img_path = self.img_files[index % len(self.img_files)].rstrip()
+        img = None
 
         # Extract image as PyTorch tensor
-        try:
-            img = transforms.ToTensor()(Image.open(img_path).convert("RGB"))
-        except OSError:
-            raise Exception("Error in image", img_path)
+        i = 0
+        # Prevent corrupted augmentation images
+        while img is None and i < len(self.img_files):
+            try:
+                img_path = self.img_files[(index + i) % len(self.img_files)].rstrip()
+                img = transforms.ToTensor()(Image.open(img_path).convert("RGB"))
+            except OSError:
+                if os.path.exists(img_path):
+                    os.remove(img_path)
+                i += 1
+
         # Handle images with less than three channels
         if len(img.shape) != 3:
             img = img.unsqueeze(0)

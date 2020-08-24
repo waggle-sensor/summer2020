@@ -124,19 +124,19 @@ class YOLOLayer(nn.Module):
         self.img_dim = img_dim
         self.grid_size = 0  # grid size
 
-    def compute_grid_offsets(self, grid_size, cuda=True):
+    def compute_grid_offsets(self, grid_size, cuda):
         self.grid_size = grid_size
         g = self.grid_size
         FloatTensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
         self.stride = self.img_dim / self.grid_size
         # Calculate offsets for each grid
-        self.grid_x = torch.arange(g).repeat(g, 1).view([1, 1, g, g]).type(FloatTensor)
+        self.grid_x = torch.arange(g).repeat(g, 1).view([1, 1, g, g]).type(FloatTensor).cuda(self.device)
         self.grid_y = (
-            torch.arange(g).repeat(g, 1).t().view([1, 1, g, g]).type(FloatTensor)
+            torch.arange(g).repeat(g, 1).t().view([1, 1, g, g]).type(FloatTensor).cuda(self.device)
         )
         self.scaled_anchors = FloatTensor(
             [(a_w / self.stride, a_h / self.stride) for a_w, a_h in self.anchors]
-        )
+        ).cuda(self.device)
         self.anchor_w = self.scaled_anchors[:, 0:1].view((1, self.num_anchors, 1, 1))
         self.anchor_h = self.scaled_anchors[:, 1:2].view((1, self.num_anchors, 1, 1))
 
@@ -173,10 +173,10 @@ class YOLOLayer(nn.Module):
 
         # If grid size does not match current we compute new offsets
         if grid_size != self.grid_size:
-            self.compute_grid_offsets(grid_size, cuda=x.is_cuda)
+            self.compute_grid_offsets(grid_size, x.is_cuda)
 
         # Add offset and scale with anchors
-        pred_boxes = FloatTensor(prediction[..., :4].shape)
+        pred_boxes = FloatTensor(prediction[..., :4].shape).cuda(self.device)
         pred_boxes[..., 0] = x.data + self.grid_x
         pred_boxes[..., 1] = y.data + self.grid_y
         pred_boxes[..., 2] = torch.exp(w.data) * self.anchor_w
@@ -211,6 +211,7 @@ class YOLOLayer(nn.Module):
                 target=targets,
                 anchors=self.scaled_anchors,
                 ignore_thres=self.ignore_thres,
+                device=self.device
             )
 
             # Loss : Mask outputs to ignore non-existing objects (except with conf. loss)
@@ -276,8 +277,11 @@ class Darknet(nn.Module):
         self = super().to(*args, **kwargs)
         for layer in self.yolo_layers:
             layer.to(*args, **kwargs)
+            layer.device = args[0]
         for module in self.module_list:
             module.to(*args, **kwargs)
+            module.device = args[0]
+        return self
 
     def forward(self, x, targets=None):
         img_dim = x.shape[2]
