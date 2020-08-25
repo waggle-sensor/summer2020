@@ -21,7 +21,7 @@ def label_sample_set(img_path):
 
 def get_sample_methods():
     return {
-        # "median-below-thresh": (sample.median_below_thresh_sample, {"thresh": 0.0}),
+        "median-below-thresh": (sample.median_below_thresh_sample, {"thresh": 0.0}),
         "median-thresh": (sample.median_thresh_sample, {"thresh": 0.0}),
         "bin-quintile": (
             sample.bin_sample,

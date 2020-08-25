@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--avg", action="store_true", default=False)
     parser.add_argument("--roll_avg", type=int, default=None)
-    parser.add_argument("--delta", default=4)
+    parser.add_argument("--delta", type=int, default=4)
 
     parser.add_argument("--tabulate", action="store_true", default=False)
     parser.add_argument("--benchmark", action="store_true", default=False)
@@ -51,6 +51,7 @@ if __name__ == "__main__":
         "bin-quintile",
         "bin-normal",
         "random",
+        "true-random",
     ]
 
     if opt.benchmark and opt.prefix is None:
@@ -66,7 +67,7 @@ if __name__ == "__main__":
                 bench.series_benchmark(*series_args[-1])
         if config["parallel"]:
             parallelize.run_parallel(bench.benchmark_batch_set, batch_args)
-            parallelize.run_parallel(bench.series_benchmark, series_args)
+            parallelize.run_parallel(bench.series_benchmark, series_args, False)
 
     if opt.tabulate:
         if opt.prefix is not None:

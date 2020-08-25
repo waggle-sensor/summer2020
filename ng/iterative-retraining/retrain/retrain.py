@@ -7,6 +7,7 @@ from retrain import sampling as sample
 from retrain import utils, train
 from retrain.dataloader import LabeledSet, split_set
 from yolov3 import parallelize
+import analysis.results as resloader
 
 
 def sample_retrain(
@@ -52,7 +53,7 @@ def sample_retrain(
                 bench.save_results(results_df, bench_file)
 
             # Create samples from the benchmark
-            results, _ = bench.load_data(bench_file, by_actual=False)
+            results, _ = resloader.load_data(bench_file, by_actual=False)
 
             print(f"===== {name} ======")
             retrain_files = sample.create_sample(

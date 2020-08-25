@@ -36,11 +36,9 @@ def train(img_folder, opt, load_weights=None, device=None):
 
     free_gpus = get_free_gpus(opt, model)
 
-    if device is None:
-        device_str = "cuda" if len(free_gpus) != 0 else "cpu"
+    if device is None or device not in free_gpus:
+        device_str = f"cuda:{free_gpus[0]}" if len(free_gpus) != 0 else "cpu"
     else:
-        if device not in free_gpus:
-            device = free_gpus[0]
         device_str = f"cuda:{device}"
 
     device = torch.device(device_str)

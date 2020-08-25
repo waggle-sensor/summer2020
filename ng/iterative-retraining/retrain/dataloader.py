@@ -1,3 +1,10 @@
+"""
+Module containing data objects to extract and manipulate images and labels for training,
+sampling, and evaluation.
+
+Some code derived from loader module in the YOLOv3 Docker plugin.
+"""
+
 import os
 import math
 import random
@@ -9,41 +16,33 @@ from PIL import Image
 import torch
 from torch import nn
 from torch.utils.data import Dataset
-import torchvision.transforms as transforms
+from torchvision.transforms import transforms
 
-import retrain.sampling as sampling
+from retrain import sampling
 from retrain.augment import Augmenter
 from retrain.utils import get_label_path, get_lines
 
 
-def pad_to_square(img, pad_value):
-    c, h, w = img.shape
-    dim_diff = np.abs(h - w)
-    # (upper / left) padding and (lower / right) padding
-    pad1, pad2 = dim_diff // 2, dim_diff - dim_diff // 2
-    # Determine padding
-    pad = (0, 0, pad1, pad2) if h <= w else (pad1, pad2, 0, 0)
-    # Add padding
-    img = nn.functional.pad(img, pad, "constant", value=pad_value)
-
-    return img, pad
-
-
-def resize(image, size):
-    image = nn.functional.interpolate(
-        image.unsqueeze(0), size=size, mode="nearest"
-    ).squeeze(0)
-    return image
-
-
 class ImageFolder(Dataset):
+    """Dataset representation of a (potentially unlabeled) set of images.
+
+    Iterable provides an image path and an image tensor of the specified size.
+    """
+
     def __init__(self, src, img_size, prefix=str()):
+        """
+        Parameters:
+            src       source of the image folder. Can be a list or set of image paths,
+                      a text file of image paths, or a Darknet-labeled folder
+            img_size  square resolution to pad or downsize images to
+            prefix    string to represent the image folder. used in output filenames
+        """
         if isinstance(src, (list, set)):
             self.imgs = set(src)
         elif ".txt" in src and os.path.isfile(src):
             self.imgs = get_lines(src)
         elif os.path.isdir(src):
-            self.imgs = self.get_images(src)
+            self.imgs = get_images(src)
         else:
             raise TypeError("ImageFolder source must be file list or folder")
 
@@ -64,14 +63,8 @@ class ImageFolder(Dataset):
     def __len__(self):
         return len(self.imgs)
 
-    def get_images(self, path):
-        extensions = (".jpg", ".png", ".gif", ".bmp")
-        raw_imgs = sorted(glob.glob(f"{path}/images/**/*.*", recursive=True))
-        imgs = {file for file in raw_imgs if file[-4:].lower() in extensions}
-
-        return imgs
-
     def __iadd__(self, img_folder):
+        # Take the union of the two image sets
         self.imgs.update(img_folder.imgs)
 
     def to_dataset(self, **args):
@@ -83,6 +76,10 @@ class ImageFolder(Dataset):
             out.write("\n".join(self.imgs))
 
     def get_batch_splits(self, batch_size, output):
+        """Output text files lists of random image batches of the specified size.
+
+        Does not stratify by class, and the last batch may have fewer images than desired.
+        """
         batches = math.ceil(len(self) / batch_size)
         batch_files = [f"{output}/{self.prefix}{i}.txt" for i in range(batches)]
         if all(os.path.exists(path) for path in batch_files):
@@ -96,6 +93,7 @@ class ImageFolder(Dataset):
         return self.convert_splits(batch_splits)
 
     def convert_splits(self, splits):
+        """Convert image lists into a list of ImageFolders."""
         return [
             ImageFolder(img_list, self.img_size, prefix=f"{self.prefix}{i}")
             for i, img_list in enumerate(splits)
@@ -114,6 +112,13 @@ class ImageFolder(Dataset):
         return splits
 
     def label(self, classes, ground_truth_func):
+        """Label images in the folder in accordance to a provided ground truth function.
+
+        Ground truth function should return a list of labels, each in a tuple format with
+        class name and normalized bounding box dimensions in Darknet format.
+
+        The input class list should be ordered and consistent with the ground truth labels.
+        """
         for img in self.imgs:
             labels = ground_truth_func(img)
             if len(labels) == 0:
@@ -127,7 +132,18 @@ class ImageFolder(Dataset):
             text_label.close()
 
 
+def get_images(path):
+    """Recursively extract a list of images from a path."""
+    extensions = (".jpg", ".png", ".gif", ".bmp")
+    raw_imgs = sorted(glob.glob(f"{path}/images/**/*.*", recursive=True))
+    imgs = {file for file in raw_imgs if file[-4:].lower() in extensions}
+
+    return imgs
+
+
 class LabeledSet(ImageFolder):
+    """A Dataset object inheriting from ImageFolder containing labeled images only."""
+
     def __init__(self, src, num_classes, img_size=416, prefix=str(), **args):
         super().__init__(src, img_size, prefix, **args)
         self.num_classes = num_classes
@@ -137,6 +153,7 @@ class LabeledSet(ImageFolder):
         self.sets = ("train", "valid", "test")
 
     def filter_images(self):
+        """Remove non-labeled images from the folder."""
         labeled_imgs = set()
 
         for img in self.imgs:
@@ -152,9 +169,11 @@ class LabeledSet(ImageFolder):
         return [c for c in classes if c in range(self.num_classes)]
 
     def get_labels(self):
+        """Get a set of labels corresponding to images in the folder."""
         return {get_label_path(img) for img in self.imgs}
 
     def make_img_dict(self):
+        """Get a dictionary of image paths and their corresponding classes."""
         img_dict = dict()
         for img in self.imgs:
             classes = self.get_classes(get_label_path(img))
@@ -163,6 +182,8 @@ class LabeledSet(ImageFolder):
         return img_dict
 
     def group_by_class(self):
+        """Get a dictionary of classes for the folder's images, with a list of corresponding
+        images as labels."""
         class_dict = dict()
         for img, class_list in self.make_img_dict().items():
             for c in class_list:
@@ -172,6 +193,7 @@ class LabeledSet(ImageFolder):
         return class_dict
 
     def __iadd__(self, labeled_set):
+        """Add two labeled sets, creating a union of their train, test, and validation sets."""
         super().__iadd__(labeled_set)
         self.num_classes = max(self.num_classes, labeled_set.num_classes)
 
@@ -190,6 +212,7 @@ class LabeledSet(ImageFolder):
         return self
 
     def save_splits(self, folder):
+        """Save the train, test, and validation splits of the current folder into text files."""
         for name in self.sets:
             img_set = getattr(self, name, None)
             if img_set is not None:
@@ -197,6 +220,7 @@ class LabeledSet(ImageFolder):
                 img_set.save_img_list(filename)
 
     def load_splits(self, folder):
+        """Load previously-generated text file splits into the current folder."""
         split_paths = [f"{folder}/{self.prefix}_{name}.txt" for name in self.sets]
         if all(os.path.exists(path) for path in split_paths):
             file_lists = [get_lines(path) for path in split_paths]
@@ -260,9 +284,59 @@ class LabeledSet(ImageFolder):
         return self.convert_splits(splits)
 
     def augment(self, imgs_per_class, compose=True):
+        """Augment the images in the current folder by a specified factor."""
         aug = Augmenter(self)
         aug.augment(imgs_per_class, compose)
         self.img_dict = self.make_img_dict()
+
+
+def split_set(labeled_set, output, train_prop, valid_prop, save=True, sample_dir=None):
+    print(f"Getting splits for {labeled_set.prefix}")
+
+    if labeled_set.load_splits(output):
+        train_imgs = sum(
+            round(train_prop * len(v)) for v in labeled_set.group_by_class().values()
+        )
+        train_len = len(labeled_set.train)
+
+        # Case where we use load splits from the mixed set of sampled
+        # and known images
+        if sample_dir is not None:
+            train_imgs = (
+                len(labeled_set.valid) + train_len + len(labeled_set.test)
+            ) * train_prop
+
+        if abs(train_len - train_imgs) <= 10:
+            print("Previous splits found and validated")
+            return False
+
+        print("Train list mismatch found... Ignoring....")
+
+    print("Generating new splits")
+    labeled_set.split_img_set(train_prop, valid_prop)
+    if save:
+        labeled_set.save_splits(output)
+    return True
+
+
+def pad_to_square(img, pad_value):
+    _, h, w = img.shape
+    dim_diff = np.abs(h - w)
+    # (upper / left) padding and (lower / right) padding
+    pad1, pad2 = dim_diff // 2, dim_diff - dim_diff // 2
+    # Determine padding
+    pad = (0, 0, pad1, pad2) if h <= w else (pad1, pad2, 0, 0)
+    # Add padding
+    img = nn.functional.pad(img, pad, "constant", value=pad_value)
+
+    return img, pad
+
+
+def resize(image, size):
+    image = nn.functional.interpolate(
+        image.unsqueeze(0), size=size, mode="nearest"
+    ).squeeze(0)
+    return image
 
 
 class ListDataset(Dataset):
@@ -275,7 +349,6 @@ class ListDataset(Dataset):
         self.label_files = [get_label_path(path) for path in self.img_files]
 
         self.img_size = img_size
-        self.max_objects = 100
         self.multiscale = multiscale
         self.normalized_labels = normalized_labels
         self.min_size = self.img_size - 3 * 32
@@ -283,15 +356,10 @@ class ListDataset(Dataset):
         self.batch_count = 0
 
     def __getitem__(self, index):
-
-        # ---------
-        #  Image
-        # ---------
-
         img = None
 
-        # Extract image as PyTorch tensor
         i = 0
+
         # Prevent corrupted augmentation images
         while img is None and i < len(self.img_files):
             try:
@@ -309,13 +377,10 @@ class ListDataset(Dataset):
 
         _, h, w = img.shape
         h_factor, w_factor = (h, w) if self.normalized_labels else (1, 1)
+
         # Pad to square resolution
         img, pad = pad_to_square(img, 0)
         _, padded_h, padded_w = img.shape
-
-        # ---------
-        #  Label
-        # ---------
 
         label_path = self.label_files[index % len(self.img_files)].rstrip()
 
@@ -362,32 +427,3 @@ class ListDataset(Dataset):
 
     def __len__(self):
         return len(self.img_files)
-
-
-def split_set(labeled_set, output, train_prop, valid_prop, save=True, sample_dir=None):
-    print(f"Getting splits for {labeled_set.prefix}")
-
-    if labeled_set.load_splits(output):
-        train_imgs = sum(
-            round(train_prop * len(v)) for v in labeled_set.group_by_class().values()
-        )
-        train_len = len(labeled_set.train)
-
-        # Case where we use load splits from the mixed set of sampled
-        # and known images
-        if sample_dir is not None:
-            train_imgs = (
-                len(labeled_set.valid) + train_len + len(labeled_set.test)
-            ) * train_prop
-
-        if abs(train_len - train_imgs) <= 10:
-            print("Previous splits found and validated")
-            return False
-
-        print("Train list mismatch found... Ignoring....")
-
-    print("Generating new splits")
-    labeled_set.split_img_set(train_prop, valid_prop)
-    if save:
-        labeled_set.save_splits(output)
-    return True

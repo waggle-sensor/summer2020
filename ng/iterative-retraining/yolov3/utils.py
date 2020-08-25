@@ -102,7 +102,7 @@ def get_batch_statistics(outputs, targets, iou_threshold):
     batch_metrics = []
     for i, output in enumerate(outputs):
 
-        if outputs is None:
+        if output is None:
             continue
 
         pred_boxes = output[:, :4]

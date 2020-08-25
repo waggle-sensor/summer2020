@@ -45,7 +45,7 @@ def save_images(imgs, img_detections, opt, best_label_only=False):
 def get_most_conf(detections):
     most_conf = None
     for detection in detections:
-        if most_conf is None or d[5] > most_conf[5]:
+        if most_conf is None or detection[5] > most_conf[5]:
             most_conf = detection
     return most_conf
 
@@ -234,7 +234,7 @@ def get_results(
     evaluation_metrics = [
         ("val_precision", precision.mean()),
         ("val_recall", recall.mean()),
-        ("val_map", ap.mean()),
+        ("val_mAP", ap.mean()),
         ("val_f1", f1.mean()),
         ("val_loss", loss),
     ]
@@ -244,10 +244,10 @@ def get_results(
 
     if not silent:
         # Print class aps and map
-        ap_table = [["Index", "Class name", "ap"]]
+        ap_table = [["Index", "Class name", "AP"]]
         for i, c in enumerate(ap_class):
             ap_table += [[c, class_names[c], "%.5f" % ap[i]]]
         print(AsciiTable(ap_table).table)
-        print(f"---- map {ap.mean()}")
+        print(f"---- mAP {ap.mean()}")
 
     return dict(evaluation_metrics)
