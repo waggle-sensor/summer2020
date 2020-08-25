@@ -28,6 +28,10 @@ def get_sample_methods():
             {"stratify": False, "num_bins": 5, "curve": sample.const, "thresh": 0.0},
         ),
         "random": (sample.in_range_sample, {"min_val": 0.0, "max_val": 1.0}),
+        "true-random": (
+            sample.in_range_sample,
+            {"stratify": False, "min_val": 0.0, "max_val": 1.0},
+        ),
         "bin-normal": (
             sample.bin_sample,
             {

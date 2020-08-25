@@ -7,16 +7,18 @@ import os
 from glob import glob
 from retrain import utils
 
-import analysis.benchmark as bench
+import analysis.results as rload
 
 
 def linear_regression(df):
     x = df.iloc[:, 0].values.reshape(-1, 1)
     y = df.iloc[:, 1].values.reshape(-1, 1)
+
     linear_regressor = LinearRegression()
     linear_regressor.fit(x, y)
     print("R^2:", linear_regressor.score(x, y))
     y_pred = linear_regressor.predict(x)
+
     plt.scatter(x, y)
     plt.xlabel(f"sample {df.columns[0]}")
     plt.ylabel(f"next iteration benchmark {df.columns[1]}")
@@ -47,8 +49,8 @@ def make_conf_histogram(results, filename):
         axs[i][2].hist(hit_miss, bins=15, color=colors, stacked=True, range=(0, 1))
 
         if res.name == "All":
-            acc = round(bench.mean_accuracy(results[:-1]), 3)
-            prec = round(bench.mean_precision(results[:-1]), 3)
+            acc = round(rload.mean_accuracy(results[:-1]), 3)
+            prec = round(rload.mean_precision(results[:-1]), 3)
         else:
             acc = round(res.accuracy(), 3)
             prec = round(res.precision(), 3)
@@ -102,8 +104,8 @@ def get_conf_data(result_list):
 
 
 def show_overall_hist(results):
-    acc = round(bench.mean_accuracy(results[:-1]), 3)
-    prec = round(bench.mean_precision(results[:-1]), 3)
+    acc = round(rload.mean_accuracy(results[:-1]), 3)
+    prec = round(rload.mean_precision(results[:-1]), 3)
     hit_miss = [get_conf_data(data) for data in results[-1].hits_misses()]
 
     colors = ["lightgreen", "red"]
@@ -155,16 +157,16 @@ def aggregate_results(config, prefix, metric, delta=2, avg=False, roll=None):
             if not os.path.exists(out_name):
                 continue
 
-            epoch_res, _ = bench.load_data(
+            epoch_res, _ = rload.load_data(
                 out_name, by_actual=False, conf_thresh=config["pos_thres"]
             )
             new_row = {
                 "test_set": name,
                 "epoch": i,
-                "prec": bench.mean_precision(epoch_res),
-                "acc": bench.mean_accuracy(epoch_res),
-                "conf": bench.mean_conf(epoch_res),
-                "recall": bench.mean_recall(epoch_res),
+                "prec": rload.mean_precision(epoch_res),
+                "acc": rload.mean_accuracy(epoch_res),
+                "conf": rload.mean_conf(epoch_res),
+                "recall": rload.mean_recall(epoch_res),
             }
             results = results.append(new_row, ignore_index=True)
 
@@ -195,7 +197,7 @@ def visualize_conf(prefix, benchmark, sample_filter=False, pos_thres=0.5):
         sampled_imgs = glob(f"{folder}/{prefix}*_sample_{epoch}.txt")[0]
         kwargs["filter"] = sampled_imgs
 
-    results, conf_mat = bench.load_data(
+    results, conf_mat = rload.load_data(
         benchmark, by_actual=False, conf_thresh=pos_thres, **kwargs
     )
 
@@ -226,7 +228,7 @@ def tabulate_batch_samples(config, prefix, silent=False, filter=False, roll=Fals
         if filter and prefix != "init":
             sampled_imgs = glob(f"{config['output']}/{prefix}{i}_sample*")[0]
             kwargs["filter"] = sampled_imgs
-        results, _ = bench.load_data(
+        results, _ = rload.load_data(
             benchmark,
             by_actual=False,
             add_all=False,
@@ -241,10 +243,10 @@ def tabulate_batch_samples(config, prefix, silent=False, filter=False, roll=Fals
 
         data.loc[i] = [
             i,
-            bench.mean_precision(results),
-            bench.mean_accuracy(results),
-            bench.mean_conf(results),
-            bench.mean_recall(results),
+            rload.mean_precision(results),
+            rload.mean_accuracy(results),
+            rload.mean_conf(results),
+            rload.mean_recall(results),
             train_len,
         ]
 

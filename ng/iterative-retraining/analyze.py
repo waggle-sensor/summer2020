@@ -7,7 +7,9 @@ performance, and more. Refer to the README for usage.
 
 import argparse
 
-from userdefs import get_sampling_methods
+from userdefs import get_sample_methods
+from yolov3 import parallelize
+
 from retrain import utils
 import analysis.benchmark as bench
 from analysis import charts
@@ -15,10 +17,13 @@ from analysis import charts
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--prefix", default=None, help="prefix of model to test")
     parser.add_argument("--config", required=True)
+    parser.add_argument("--prefix", default=None, help="prefix of model to test")
+
     parser.add_argument("--avg", action="store_true", default=False)
     parser.add_argument("--roll_avg", type=int, default=None)
+    parser.add_argument("--delta", default=4)
+
     parser.add_argument("--tabulate", action="store_true", default=False)
     parser.add_argument("--benchmark", action="store_true", default=False)
     parser.add_argument("--visualize_conf", default=None)
@@ -26,11 +31,12 @@ if __name__ == "__main__":
     parser.add_argument("--compare_init", action="store_true", default=False)
     parser.add_argument("--metric", default="prec")
     parser.add_argument("--metric2", default=None)
+
     opt = parser.parse_args()
 
     config = utils.parse_retrain_config(opt.config)
 
-    prefixes = ["init"] + list(get_sampling_methods.keys())
+    prefixes = ["init"] + list(get_sample_methods().keys())
 
     # Delete this array for production; used for easy analysis purposes only
     prefixes = [
@@ -49,9 +55,18 @@ if __name__ == "__main__":
 
     if opt.benchmark and opt.prefix is None:
         # Benchmark the inference results before the start of each sample batch
+        batch_args = list()
+        series_args = list()
         for prefix in prefixes:
-            bench.benchmark_batch_set(prefix, config, opt.roll_avg)
-            bench.series_benchmark(config, prefix, avg=opt.avg, roll=opt.roll_avg)
+            batch_args.append((prefix, config, opt.roll_avg))
+            series_args.append((config, prefix, opt.delta, opt.avg, opt.roll_avg))
+
+            if not config["parallel"]:
+                bench.benchmark_batch_set(*batch_args[-1])
+                bench.series_benchmark(*series_args[-1])
+        if config["parallel"]:
+            parallelize.run_parallel(bench.benchmark_batch_set, batch_args)
+            parallelize.run_parallel(bench.series_benchmark, series_args)
 
     if opt.tabulate:
         if opt.prefix is not None:

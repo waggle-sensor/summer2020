@@ -23,7 +23,7 @@ from yolov3 import utils
 def detect(input_imgs, conf_thres, model, nms_thres=0.5):
     # Configure input
     Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
-    input_imgs = Variable(input_imgs.type(Tensor))
+    input_imgs = Variable(input_imgs.type(Tensor)).to(model.device)
 
     with torch.no_grad():
         detections = model(input_imgs)
