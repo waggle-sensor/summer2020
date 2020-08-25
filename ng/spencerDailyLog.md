@@ -1034,3 +1034,26 @@ Current loss: 347.083483338356
   * Finish writing Sage website article
   * Analyze results when retraining is complete
   * Write a more technical paper with results
+  * Prettify CLI outputs
+
+**Tuesday, August 25**
+
+* Had ML scrum meeting
+  * Discussed creating a baseline model with the sample set, adjusting badwidth parameters, putting code into production
+* Running various tasks on compute nodes:
+  * lambda1
+    * Training a baseline model with the sample set (15k images per class for augmentations, like the original) in `~/veri-baseline`
+  * lambda2
+    * BW limit of 900 (30% instead of 60% of batch size) in `~/car-retrain-bw` - need to benchmark when finished
+  * lambda3
+    * Test series benchmark (now in parallel) - need to rerun once lambda4 is complete
+    * Retraining using only with new `true-random` method (no stratification by inferred class) in `~/stanford-car-cleanup`
+  * lambda4
+    * Continuing the original retraining in parallel, some sampling methods have finished
+* Creating a common test set for the baseline model is an interesting problem
+  * Iteratively train with batch sets again? 
+  * Created one model with the entire sample set, another with a batch training method
+    * Entire sample set yields mAP of 0.755531 on the test set, not a particularly meaningful metric for comparison
+* Continued linting/documenting code
+* Updated website article based on progress thus far
+* To do remains same as yesterday
