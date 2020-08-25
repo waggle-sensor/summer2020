@@ -13,15 +13,17 @@ from multiprocessing.pool import Pool
 from yolov3 import utils
 
 
-def run_parallel(func, args_list):
+def run_parallel(func, args_list, init=True):
     """Run a function multiple times in parallel, with a pool size determined
     by the number of free GPUs.
 
     func      - function to call
     args_list - a list containing a tuple (or other iterable) of arguments
+    init      - specify if this is the first time running paralllel code within the process
     """
-    os.environ["MKL_THREADING_LAYER"] = "GNU"
-    mp.set_start_method("spawn")
+    if init:
+        os.environ["MKL_THREADING_LAYER"] = "GNU"
+        mp.set_start_method("spawn")
     with NoDaemonPool(len(utils.get_free_gpus()) * 10) as pool:
         pool.starmap_async(func, args_list)
         pool.close()
