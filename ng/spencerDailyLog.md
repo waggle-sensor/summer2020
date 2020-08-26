@@ -1057,3 +1057,16 @@ Current loss: 347.083483338356
 * Continued linting/documenting code
 * Updated website article based on progress thus far
 * To do remains same as yesterday
+
+**Wednesday, August 26**
+
+* Continuing to revise webisite article
+* Refactored large portion of the code, condensing long functions
+* Analyzing results as they come in on Lambda nodes
+  * Significant correlations between epoch training time and next batch precision/accuracy
+  * Lowered bandwidth seems to follow similar trends (except in the random case), though increases in performance are lower
+  * We now see a *positive* correlation between sample precision and resultant precision
+  * Baseline (batch training using all VeRi data) gives around 0.88 mAP for a batch, compared to IQR's peak of 0.85 mAP at the last batch
+    * mid-thresh also yields good improvements
+* Need to analyze the confidence distributions further
+* Started Overleaf template with Bibtex for tracking references
