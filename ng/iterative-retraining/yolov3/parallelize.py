@@ -22,8 +22,11 @@ def run_parallel(func, args_list, init=True):
     init      - specify if this is the first time running paralllel code within the process
     """
     if init:
-        os.environ["MKL_THREADING_LAYER"] = "GNU"
-        mp.set_start_method("spawn")
+        try:
+            os.environ["MKL_THREADING_LAYER"] = "GNU"
+            mp.set_start_method("spawn")
+        except RuntimeError:
+            pass
     with NoDaemonPool(len(utils.get_free_gpus()) * 10) as pool:
         pool.starmap_async(func, args_list)
         pool.close()

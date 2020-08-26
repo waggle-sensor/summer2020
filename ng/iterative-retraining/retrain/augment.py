@@ -11,63 +11,10 @@ from collections import Counter
 import cv2
 import numpy as np
 import albumentations as alb
-import albumentations.augmentations.transforms as trans
 from tqdm import tqdm
 
 from retrain.utils import get_label_path
-
-
-def get_augmentations():
-    """Get a list of 'major' and 'minor' augmentation functions for the pipeline in a dictionary."""
-    return {
-        "major": {
-            "shift-scale-rot": trans.ShiftScaleRotate(
-                shift_limit=0.05,
-                rotate_limit=35,
-                border_mode=cv2.BORDER_REPLICATE,
-                always_apply=True,
-            ),
-            "crop": trans.RandomResizedCrop(
-                100, 100, scale=(0.8, 0.95), ratio=(0.8, 1.2), always_apply=True
-            ),
-            # "elastic": trans.ElasticTransform(
-            #     alpha=0.8,
-            #     alpha_affine=10,
-            #     sigma=40,
-            #     border_mode=cv2.BORDER_REPLICATE,
-            #     always_apply=True,
-            # ),
-            "distort": trans.OpticalDistortion(0.2, always_apply=True),
-        },
-        "minor": {
-            "blur": trans.GaussianBlur(7, always_apply=True),
-            "noise": trans.GaussNoise((20.0, 40.0), always_apply=True),
-            "bright-contrast": trans.RandomBrightnessContrast(
-                0.4, 0.4, always_apply=True
-            ),
-            "hsv": trans.HueSaturationValue(30, 40, 50, always_apply=True),
-            "rgb": trans.RGBShift(always_apply=True),
-            "flip": trans.HorizontalFlip(always_apply=True),
-        },
-    }
-
-
-def multi_aug(augs, major=True, bbox_params=None):
-    """Get a composite augmentation function incorporation 'major' and 'minor' transformations.
-
-    Modify this function as needed.
-    """
-    major_augs = list(augs["major"].values())
-    minor_augs = list(augs["minor"].values())
-    return alb.Compose(
-        [
-            alb.OneOf(major_augs, p=0.9 if major else 0.0),
-            alb.OneOf(minor_augs, p=1.0,),
-            alb.OneOf(minor_augs, p=0.2,),
-        ],
-        p=1.0,
-        bbox_params=bbox_params,
-    )
+from userdefs import multi_aug, get_augmentations
 
 
 class Augmenter:

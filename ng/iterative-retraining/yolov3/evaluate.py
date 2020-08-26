@@ -43,14 +43,14 @@ def save_images(imgs, img_detections, opt, best_label_only=False):
 
 
 def get_most_conf(detections):
-    most_conf = None
+    most_conf = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
     for detection in detections:
-        if most_conf is None or detection[5] > most_conf[5]:
+        if detection[5] > most_conf[5]:
             most_conf = detection
     return most_conf
 
 
-def match_detections(model, img_folder, detections, config):
+def match_detections(img_folder, detections, config):
     """Match the labels for an image with its bounding boxes"""
     dataset = img_folder.to_dataset()
 
@@ -128,7 +128,7 @@ def save_image(detections, path, opt, classes, best_label_only=False):
     if best_label_only:
         detections = [get_most_conf(detections)]
 
-    for x1, y1, x2, y2, conf, cls_conf, cls_pred in detections:
+    for x1, y1, x2, y2, _, cls_conf, cls_pred in detections:
 
         print("\t+ Label: %s, Conf: %.5f" % (classes[int(cls_pred)], cls_conf.item()))
 

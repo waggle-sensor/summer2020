@@ -1,12 +1,12 @@
-import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
-import statsmodels.api as sm
-import pandas as pd
-
 import os
 from glob import glob
-from retrain import utils
 
+import matplotlib.pyplot as plt
+import statsmodels.api as sm
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+
+from retrain import utils
 import analysis.results as rload
 
 
@@ -49,8 +49,8 @@ def make_conf_histogram(results, filename):
         axs[i][2].hist(hit_miss, bins=15, color=colors, stacked=True, range=(0, 1))
 
         if res.name == "All":
-            acc = round(rload.mean_accuracy(results[:-1]), 3)
-            prec = round(rload.mean_precision(results[:-1]), 3)
+            acc = round(rload.mean_metric(results[:-1], "accuracy"), 3)
+            prec = round(rload.mean_metric(results[:-1], "precision"), 3)
         else:
             acc = round(res.accuracy(), 3)
             prec = round(res.precision(), 3)
@@ -104,21 +104,21 @@ def get_conf_data(result_list):
 
 
 def show_overall_hist(results):
-    acc = round(rload.mean_accuracy(results[:-1]), 3)
-    prec = round(rload.mean_precision(results[:-1]), 3)
+    acc = round(rload.mean_metric(results[:-1], "accuracy"), 3)
+    prec = round(rload.mean_metric(results[:-1], "precision"), 3)
     hit_miss = [get_conf_data(data) for data in results[-1].hits_misses()]
 
     colors = ["lightgreen", "red"]
     plt.hist(hit_miss[0], bins=10, color=colors[0], range=(0.0, 1.0))
     plt.show()
-    title = f"Misses on Sample Batch 0"
+    title = "Misses"
     plt.title(title)
     plt.xlabel("Confidence")
     plt.ylabel("Count")
     plt.hist(hit_miss[1], bins=20, color=colors[1], range=(0.0, 1.0))
     plt.show()
     title = (
-        f"Confidence Distribution on Sample Batch 0 (Old Method)\n(acc={acc}, "
+        f"Confidence Distribution on Sample Batch\n(acc={acc}, "
         + f"prec={prec}, n={results[-1].pop})"
     )
     plt.title(title)
@@ -145,7 +145,7 @@ def aggregate_results(config, prefix, metric, delta=2, avg=False, roll=None):
     names += [f"cur_iter{i}" for i in range(len(epoch_splits))]
 
     results = pd.DataFrame(
-        columns=["test_set", "epoch", "prec", "acc", "conf", "recall"]
+        columns=["test_set", "epoch", "prec", "acc", "conf", "conf_std", "recall"]
     )
 
     out_folder = f"{config['output']}/{prefix}-series"
@@ -163,10 +163,11 @@ def aggregate_results(config, prefix, metric, delta=2, avg=False, roll=None):
             new_row = {
                 "test_set": name,
                 "epoch": i,
-                "prec": rload.mean_precision(epoch_res),
-                "acc": rload.mean_accuracy(epoch_res),
-                "conf": rload.mean_conf(epoch_res),
-                "recall": rload.mean_recall(epoch_res),
+                "prec": rload.mean_metric(epoch_res, "precision"),
+                "acc": rload.mean_metric(epoch_res, "accuracy"),
+                "conf": rload.mean_avg_conf(epoch_res),
+                "conf_std": rload.mean_avg_conf_std(epoch_res),
+                "recall": rload.mean_metric(epoch_res, "recall"),
             }
             results = results.append(new_row, ignore_index=True)
 
@@ -211,7 +212,7 @@ def visualize_conf(prefix, benchmark, sample_filter=False, pos_thres=0.5):
     show_overall_hist(results)
 
 
-def tabulate_batch_samples(config, prefix, silent=False, filter=False, roll=False):
+def tabulate_batch_samples(config, prefix, silent=False, filter_samp=False, roll=False):
     """Analyze accuracy/precision relationships and training duration
     for each batched sample using existing testing data."""
     bench_str = f"{config['output']}/{prefix}*_benchmark"
@@ -220,12 +221,12 @@ def tabulate_batch_samples(config, prefix, silent=False, filter=False, roll=Fals
     benchmarks = utils.sort_by_epoch(bench_str)
     checkpoints = utils.sort_by_epoch(f"{config['checkpoints']}/{prefix}*.pth")
     data = pd.DataFrame(
-        columns=["batch", "prec", "acc", "conf", "recall", "epochs trained"]
+        columns=["batch", "prec", "acc", "conf", "conf_std", "recall", "epochs_trained"]
     )
 
     for i, benchmark in enumerate(benchmarks):
         kwargs = dict()
-        if filter and prefix != "init":
+        if filter_samp and prefix != "init":
             sampled_imgs = glob(f"{config['output']}/{prefix}{i}_sample*")[0]
             kwargs["filter"] = sampled_imgs
         results, _ = rload.load_data(
@@ -243,10 +244,11 @@ def tabulate_batch_samples(config, prefix, silent=False, filter=False, roll=Fals
 
         data.loc[i] = [
             i,
-            rload.mean_precision(results),
-            rload.mean_accuracy(results),
-            rload.mean_conf(results),
-            rload.mean_recall(results),
+            rload.mean_metric(results, "precision"),
+            rload.mean_metric(results, "accuracy"),
+            rload.mean_avg_conf(results),
+            rload.mean_avg_conf_std(results),
+            rload.mean_metric(results, "recall"),
             train_len,
         ]
 
@@ -271,7 +273,7 @@ def compare_benchmarks(
     print("Avg.", metric)
     for prefix in prefixes:
         results = tabulate_batch_samples(
-            config, prefix, silent=True, filter=filter_sample, roll=roll
+            config, prefix, silent=True, filter_samp=filter_sample, roll=roll
         )[metric]
         if prefix != "init" and compare_init:
             df[prefix] = results - df["init"]
@@ -286,12 +288,18 @@ def compare_benchmarks(
             columns=["Method", f"avg. {metric}", f"batch avg. {metric2}"]
         ).set_index("Method")
 
-        init_vals = tabulate_batch_samples(config, "init", silent=True, filter=False)
+        init_vals = tabulate_batch_samples(
+            config, "init", silent=True, filter_samp=False
+        )
         print(f"Baseline avg {metric2}: ", init_vals[metric2][1:].mean())
 
         for prefix in prefixes:
-            indep_var = tabulate_batch_samples(config, prefix, silent=True, filter=True)
-            dep_var = tabulate_batch_samples(config, prefix, silent=True, filter=False)
+            indep_var = tabulate_batch_samples(
+                config, prefix, silent=True, filter_samp=True
+            )
+            dep_var = tabulate_batch_samples(
+                config, prefix, silent=True, filter_samp=False
+            )
 
             y_series = dep_var[metric2]
             if compare_init:

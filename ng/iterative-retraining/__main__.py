@@ -15,6 +15,7 @@ Ensure the ground truth mapping function in userdefs.py is also accurate before 
 
 import argparse
 
+import userdefs
 from retrain.train import train_initial
 from retrain.dataloader import LabeledSet, ImageFolder, split_set
 from retrain import retrain, utils
@@ -60,6 +61,7 @@ if __name__ == "__main__":
 
     retrain.retrain(
         config,
+        userdefs.get_sample_methods(),
         batched_samples,
         init_end_epoch,
         init_images,

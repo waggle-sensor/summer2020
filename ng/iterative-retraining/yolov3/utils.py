@@ -137,8 +137,7 @@ def get_batch_statistics(outputs, targets, iou_threshold):
     return batch_metrics
 
 
-def group_average_bb(detections, num_ckpts, iou_thres=0.1):
-    # Identify overlapping regions and make list of BBs
+def make_regions(detections, iou_thres):
     regions = list()
     for detection in detections.squeeze(0):
         merged = False
@@ -149,7 +148,12 @@ def group_average_bb(detections, num_ckpts, iou_thres=0.1):
                 break
         if not merged:
             regions.append(detection.unsqueeze(0))
+    return regions
 
+
+def group_average_bb(detections, num_ckpts, iou_thres=0.1):
+    # Identify overlapping regions and make list of BBs
+    regions = make_regions(detections, iou_thres)
     regions_std = dict()
 
     for i, region in enumerate(regions):
@@ -166,6 +170,8 @@ def group_average_bb(detections, num_ckpts, iou_thres=0.1):
         # To average, we divide either by the largest number of bounding boxes for a region
         # or by the number of checkpoints
         max_detections = max(num_ckpts, np.amax(list(map(len, obj_conf))))
+
+        # Append zeroes to account for misses on a particular class for some checkpoints
         for j in range(num_classes):
             for _ in range(max_detections - len(obj_conf[j])):
                 obj_conf[j].append(0.0)
@@ -184,11 +190,11 @@ def group_average_bb(detections, num_ckpts, iou_thres=0.1):
         best_bbox = best_bbox.squeeze(0)
 
         best_bbox[4] = np.mean(obj_conf[best_class], dtype=np.float64)
-
         best_bbox[5] = np.mean(class_conf[best_class], dtype=np.float64)
 
         obj_std = np.std(obj_conf[best_class], dtype=np.float64, ddof=1)
         class_std = np.std(obj_conf[best_class], dtype=np.float64, ddof=1)
+        # Identify a region by its mean class confidence - should be unique enough
         regions_std[round(float(best_bbox[5]), 3)] = (obj_std, class_std)
 
         regions[i] = best_bbox.unsqueeze(0)
@@ -389,6 +395,10 @@ def get_device():
     device_str = f"cuda:{free_gpus[0]}" if len(free_gpus) != 0 else "cpu"
     device = torch.device(device_str)
     return device
+
+
+def get_memory_needed(config):
+    return config["img_size"] ** 2 * config["batch_size"] * 3 * 4 * 160
 
 
 def get_free_gpus(bytes_needed=0):

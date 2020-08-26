@@ -7,8 +7,9 @@ from torch.utils.tensorboard import SummaryWriter
 class Logger:
     """Custom logger wrapper for scalars."""
 
-    def __init__(self, log_dir, title):
+    def __init__(self, log_dir, title, log_interval):
         self.writer = SummaryWriter(log_dir=f"{log_dir}/{title}")
+        self.log_interval = log_interval
 
     def scalar_summary(self, tag, value, step):
         """Add a value to a timeseries metric."""

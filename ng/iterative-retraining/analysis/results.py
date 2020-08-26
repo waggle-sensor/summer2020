@@ -1,6 +1,8 @@
+from math import sqrt
+
 import csv
-import statistics as stats
 import itertools
+import statistics as stats
 from sklearn.metrics import confusion_matrix
 
 from retrain import utils
@@ -47,22 +49,32 @@ def load_data(output, by_actual=True, add_all=True, filter=None, conf_thresh=0.5
     return results, mat
 
 
-def mean_conf(class_results):
-    """Computes mean average confidence for a list of classes"""
+def mean_avg_conf(class_results):
+    """Compute mean average confidence for a list of classes."""
+    if len(class_results) == 0:
+        return None
     return stats.mean(stats.mean(res.get_confidences()) for res in class_results)
 
 
-def mean_precision(class_results):
-    """Computes mean precision for a list of classes, which shouldn't include All."""
-    return stats.mean([res.precision() for res in class_results])
+def mean_avg_conf_std(class_results):
+    """Compute the mean average standard deviation for each class."""
+    if len(class_results) == 0:
+        return None
+    mean_class_vars = list()
+    for res in class_results:
+        class_var = [conf ** 2 for conf in res.get_conf_stds()]
+        mean_class_vars.append(stats.mean(class_var))
+    return sqrt(stats.mean(mean_class_vars))
 
 
-def mean_accuracy(class_results):
-    return stats.mean([res.accuracy() for res in class_results])
+def mean_metric(class_results, metric):
+    """Computes the mean of a given metric for a list of classes.
 
-
-def mean_recall(class_results):
-    return stats.mean([res.recall() for res in class_results])
+    Metric strings include precision, accuracy, and recall.
+    """
+    if len(class_results) == 0:
+        return None
+    return stats.mean([getattr(res, metric)() for res in class_results])
 
 
 class ClassResults:
@@ -130,6 +142,9 @@ class ClassResults:
     def get_confidences(self, thresh=0.0):
         return [result["conf"] for result in self.get_all() if result["conf"] >= thresh]
 
+    def get_conf_stds(self):
+        return [result["conf_std"] for result in self.get_all()]
+
     def generate_prec_distrib(self, output, delta=0.05):
         """Generate a spreadsheet of confidence range vs. rolling precision."""
         out = open(output, "w+")
@@ -151,12 +166,9 @@ class ClassResults:
                 ]
             )
 
-            try:
+            if true_pos + false_pos != 0:
                 precision = true_pos / (true_pos + false_pos)
                 out.write(f"{x},{precision},{true_pos+false_pos}\n")
-            except ZeroDivisionError:
-                x += delta
-                continue
 
             x += delta
         out.close()

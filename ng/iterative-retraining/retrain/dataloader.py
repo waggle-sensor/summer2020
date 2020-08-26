@@ -120,7 +120,7 @@ class ImageFolder(Dataset):
         The input class list should be ordered and consistent with the ground truth labels.
         """
         for img in self.imgs:
-            labels = ground_truth_func(img)
+            labels = ground_truth_func(img, classes)
             if len(labels) == 0:
                 return
             text_label = open(get_label_path(img), "w+")

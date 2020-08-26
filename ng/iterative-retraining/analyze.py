@@ -15,7 +15,7 @@ import analysis.benchmark as bench
 from analysis import charts
 
 
-if __name__ == "__main__":
+def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", required=True)
     parser.add_argument("--prefix", default=None, help="prefix of model to test")
@@ -33,8 +33,29 @@ if __name__ == "__main__":
     parser.add_argument("--metric2", default=None)
 
     opt = parser.parse_args()
-
     config = utils.parse_retrain_config(opt.config)
+    return opt, config
+
+
+def benchmark_all(prefixes, config, opt):
+    # Benchmark the inference results before the start of each sample batch
+    # and as a time series
+    batch_args = list()
+    series_args = list()
+    for prefix in prefixes:
+        batch_args.append((prefix, config, opt.roll_avg))
+        series_args.append((config, prefix, opt.delta, opt.avg, opt.roll_avg))
+
+        if not config["parallel"]:
+            bench.benchmark_batch_set(*batch_args[-1])
+            bench.series_benchmark(*series_args[-1])
+    if config["parallel"]:
+        parallelize.run_parallel(bench.benchmark_batch_set, batch_args)
+        parallelize.run_parallel(bench.series_benchmark, series_args, False)
+
+
+if __name__ == "__main__":
+    opt, config = get_args()
 
     prefixes = ["init"] + list(get_sample_methods().keys())
 
@@ -55,26 +76,14 @@ if __name__ == "__main__":
     ]
 
     if opt.benchmark and opt.prefix is None:
-        # Benchmark the inference results before the start of each sample batch
-        batch_args = list()
-        series_args = list()
-        for prefix in prefixes:
-            batch_args.append((prefix, config, opt.roll_avg))
-            series_args.append((config, prefix, opt.delta, opt.avg, opt.roll_avg))
-
-            if not config["parallel"]:
-                bench.benchmark_batch_set(*batch_args[-1])
-                bench.series_benchmark(*series_args[-1])
-        if config["parallel"]:
-            parallelize.run_parallel(bench.benchmark_batch_set, batch_args)
-            parallelize.run_parallel(bench.series_benchmark, series_args, False)
+        benchmark_all(prefixes, config, opt)
 
     if opt.tabulate:
         if opt.prefix is not None:
             # Specify a sampling prefix to view all metrics (conf, prec, acc, recall train length)
             # on a per-batch basis
             charts.tabulate_batch_samples(
-                config, opt.prefix, filter=opt.filter_sample, roll=opt.roll_avg
+                config, opt.prefix, filter_samp=opt.filter_sample, roll=opt.roll_avg
             )
         else:
             # View the specified metric (with precision as default) for each batch,

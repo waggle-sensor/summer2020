@@ -1,26 +1,50 @@
+"""
+Module with functions for the retraining and sampling steps in the pipeline
+"""
+
 import os
 import copy
 
-import analysis.benchmark as bench
 import userdefs
 from retrain import sampling as sample
 from retrain import utils, train
 from retrain.dataloader import LabeledSet, split_set
+import yolov3.utils as yoloutils
 from yolov3 import parallelize
+import analysis.benchmark as bench
 import analysis.results as resloader
 
 
+def benchmark_sample(sample_method, imgs, config, batch_num, last_epoch):
+    """Simulate benchmarking and sampling at the edge, returning a list of samples."""
+    name, (sample_func, kwargs) = sample_method
+    bench_file = (
+        f"{config['output']}/{name}{batch_num}_benchmark_avg_1_{last_epoch}.csv"
+    )
+
+    if not os.path.exists(bench_file):
+        results_df = bench.benchmark_avg(
+            imgs, name, 1, last_epoch, config["conf_check_num"], config,
+        )
+
+        bench.save_results(results_df, bench_file)
+
+    # Create samples from the benchmark
+    results, _ = resloader.load_data(bench_file, by_actual=False)
+
+    print(f"===== {name} ======")
+    sample_files = sample.create_sample(
+        results, config["bandwidth"], sample_func, **kwargs
+    )
+
+    return sample_files
+
+
 def sample_retrain(
-    name,
-    batches,
-    config,
-    last_epoch,
-    seen_images,
-    label_func,
-    sample_func,
-    kwargs,
-    device=None,
+    sample_method, batches, config, last_epoch, seen_images, label_func, device=None,
 ):
+    """Run the sampling and retraining pipeline for a particular sampling function."""
+    name, _ = sample_method
     classes = utils.load_classes(config["class_list"])
     seen_images = copy.deepcopy(seen_images)
     for i, sample_folder in enumerate(batches):
@@ -35,31 +59,9 @@ def sample_retrain(
             retrain_files = open(sample_filename, "r").read().split("\n")
 
         else:
-            # Benchmark data at the edge
-            bench_file = (
-                f"{config['output']}/{name}{i}_benchmark_avg_1_{last_epoch}.csv"
+            retrain_files = benchmark_sample(
+                sample_method, sample_labeled, config, i, last_epoch
             )
-
-            if not os.path.exists(bench_file):
-                results_df = bench.benchmark_avg(
-                    sample_labeled,
-                    name,
-                    1,
-                    last_epoch,
-                    config["conf_check_num"],
-                    config,
-                )
-
-                bench.save_results(results_df, bench_file)
-
-            # Create samples from the benchmark
-            results, _ = resloader.load_data(bench_file, by_actual=False)
-
-            print(f"===== {name} ======")
-            retrain_files = sample.create_sample(
-                results, config["bandwidth"], sample_func, **kwargs
-            )
-
             with open(sample_filename, "w+") as out:
                 out.write("\n".join(retrain_files))
 
@@ -104,22 +106,22 @@ def sample_retrain(
         last_epoch = train.train(retrain_obj, config, checkpoint, device=device)
 
 
-def retrain(config, batched_samples, init_end_epoch, init_images, parallel=False):
-    sample_methods = userdefs.get_sample_methods()
-    free_gpus = train.get_free_gpus(config)
+def retrain(
+    config, sample_methods, sample_batches, base_epoch, init_imgs, parallel=False
+):
+    """Sample images and retrain for all sample methods given."""
+    free_gpus = yoloutils.get_free_gpus(yoloutils.get_memory_needed(config))
 
     grouped_args = list()
-    for i, (name, (func, kwargs)) in enumerate(sample_methods.items()):
+    for i, sample_method in enumerate(sample_methods.items()):
         device = free_gpus[i % len(free_gpus)]
         method_args = (
-            name,
-            batched_samples,
+            sample_method,
+            sample_batches,
             config,
-            init_end_epoch,
-            init_images,
+            base_epoch,
+            init_imgs,
             userdefs.label_sample_set,
-            func,
-            kwargs,
             device,
         )
         grouped_args.append(method_args)

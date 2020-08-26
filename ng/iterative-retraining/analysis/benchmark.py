@@ -30,29 +30,14 @@ def benchmark(img_folder, prefix, epoch, config):
     return benchmark_avg(img_folder, prefix, epoch, epoch, 1, config)
 
 
-def benchmark_avg(img_folder, prefix, start, end, total, config, roll=False):
-    loader = DataLoader(
-        img_folder, batch_size=1, shuffle=False, num_workers=config["n_cpu"],
-    )
-
-    if roll:
-        checkpoints_i = [i for i in range(max(1, end - total + 1), end + 1)]
-    else:
-        checkpoints_i = list(
-            sorted(set(np.linspace(start, end, total, dtype=np.dtype(np.int16))))
-        )
-
-    single = total == 1
-    if not single:
-        print("Benchmarking on epochs", checkpoints_i)
-
+def get_img_detections(checkpoints, prefix, config, loader, silent):
     detections_by_img = dict()
+    model_def = yoloutils.parse_model_config(config["model_config"])
+    model = models.get_eval_model(model_def, config["img_size"], checkpoints[0])
 
-    for n in tqdm(checkpoints_i, "Benchmarking epochs", disable=single):
+    for n in tqdm(checkpoints, "Benchmarking epochs", disable=silent):
         ckpt = get_checkpoint(config["checkpoints"], prefix, n)
-
-        model_def = yoloutils.parse_model_config(config["model_config"])
-        model = models.get_eval_model(model_def, config["img_size"], ckpt)
+        model.load_state_dict(torch.load(ckpt, map_location=model.device))
 
         for (img_paths, input_imgs) in loader:
             path = img_paths[0]
@@ -74,7 +59,10 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, roll=False):
                 detections_by_img[path] = torch.cat(
                     (detections_by_img[path], detections), 1
                 )
+    return detections_by_img
 
+
+def make_results_df(config, img_folder, detections_by_img, total_epochs):
     metrics = [
         "file",
         "actual",
@@ -92,7 +80,7 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, roll=False):
         detection_pairs = list()
         if detections is not None:
             region_detections, regions_std = yoloutils.group_average_bb(
-                detections, total, config["iou_thres"]
+                detections, total_epochs, config["iou_thres"]
             )
 
             # evaluate.save_image(region_detections, path, config, classes)
@@ -108,7 +96,7 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, roll=False):
             else:
                 test_img = LabeledSet([path], len(classes))
                 detection_pairs = evaluate.match_detections(
-                    model, test_img, region_detections.unsqueeze(0), config
+                    test_img, region_detections.unsqueeze(0), config
                 )
 
         for (truth, box) in detection_pairs:
@@ -143,7 +131,30 @@ def benchmark_avg(img_folder, prefix, start, end, total, config, roll=False):
             }
 
             results = results.append(row, ignore_index=True)
+    return results
 
+
+def benchmark_avg(img_folder, prefix, start, end, total_epochs, config, roll=False):
+    loader = DataLoader(
+        img_folder, batch_size=1, shuffle=False, num_workers=config["n_cpu"],
+    )
+
+    if roll:
+        checkpoints_i = list(range(max(1, end - total_epochs + 1), end + 1))
+    else:
+        checkpoints_i = list(
+            sorted(set(np.linspace(start, end, total_epochs, dtype=np.dtype(np.int16))))
+        )
+
+    single = total_epochs == 1
+    if not single:
+        print("Benchmarking on epochs", checkpoints_i)
+
+    detections_by_img = get_img_detections(
+        checkpoints_i, prefix, config, loader, single
+    )
+
+    results = make_results_df(config, img_folder, detections_by_img, total_epochs)
     results.sort_values(by="file", inplace=True)
     return results
 
@@ -173,7 +184,9 @@ def series_benchmark_loss(img_folder, prefix, start, end, delta, config, filenam
     out.close()
 
 
-def simple_benchmark_avg(img_folder, prefix, start, end, total, config, roll=False):
+def simple_benchmark_avg(
+    img_folder, prefix, start, end, total_epochs, config, roll=False
+):
     """Deprecated version of benchmark averaging, meant for single object
     detection within an image. Used for a fair comparison baseline on old models
     """
@@ -190,13 +203,13 @@ def simple_benchmark_avg(img_folder, prefix, start, end, total, config, roll=Fal
     classes = utils.load_classes(config["class_list"])
 
     if roll:
-        checkpoints_i = [i for i in range(max(1, end - total + 1), end + 1)]
+        checkpoints_i = list(range(max(1, end - total_epochs + 1), end + 1))
     else:
         checkpoints_i = list(
-            sorted(set(np.linspace(start, end, total, dtype=np.dtype(np.int16))))
+            sorted(set(np.linspace(start, end, total_epochs, dtype=np.dtype(np.int16))))
         )
 
-    single = total == 1
+    single = total_epochs == 1
 
     if not single:
         print("Benchmarking on epochs", checkpoints_i)
