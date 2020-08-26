@@ -228,7 +228,9 @@ def tabulate_batch_samples(config, prefix, silent=False, filter_samp=False, roll
         kwargs = dict()
         if filter_samp and prefix != "init":
             sampled_imgs = glob(f"{config['output']}/{prefix}{i}_sample*")[0]
-            kwargs["filter"] = sampled_imgs
+            if len(sampled_imgs) == 0:
+                continue
+            kwargs["filter"] = sampled_imgs[0]
         results, _ = rload.load_data(
             benchmark,
             by_actual=False,
