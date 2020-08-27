@@ -26,7 +26,7 @@ def get_args():
 
     parser.add_argument("--tabulate", action="store_true", default=False)
     parser.add_argument("--benchmark", action="store_true", default=False)
-    parser.add_argument("--test_set", type=str, default=None)
+    parser.add_argument("--batch_test", type=int, default=None)
     parser.add_argument("--visualize_conf", default=None)
     parser.add_argument("--filter_sample", action="store_true", default=False)
     parser.add_argument("--compare_init", action="store_true", default=False)
@@ -54,8 +54,26 @@ def benchmark_all(prefixes, config, opt):
         parallelize.run_parallel(bench.benchmark_batch_set, batch_args)
         parallelize.run_parallel(bench.series_benchmark, series_args, False)
 
-def benchmark_test_set(prefixes, config, opt):
-    pass
+
+def benchmark_batch_test(prefixes, config, opt, num_batches):
+    batch_args = list()
+    for prefix in prefixes:
+        batch_args.append((prefix, config, 2))
+        if not config["parallel"]:
+            bench.benchmark_batch_test_set(*batch_args[-1])
+    if config["parallel"]:
+        parallelize.run_parallel(bench.benchmark_batch_test_set, batch_args)
+
+    charts.compare_benchmarks(
+        config,
+        prefixes,
+        opt.metric,
+        opt.metric2,
+        "_test*.csv",
+        compare_init=opt.compare,
+        filter_sample=opt.filter_sample,
+    )
+
 
 if __name__ == "__main__":
     opt, config = get_args()
@@ -79,10 +97,10 @@ if __name__ == "__main__":
     ]
 
     if opt.benchmark and opt.prefix is None:
-        if opt.test_set is None:
+        if opt.batch_test is None:
             benchmark_all(prefixes, config, opt)
         else:
-            benchmark_test_set(prefixes, config, opt)
+            benchmark_batch_test(prefixes, config, opt, opt.batch_test)
 
     if opt.tabulate:
         if opt.prefix is not None:

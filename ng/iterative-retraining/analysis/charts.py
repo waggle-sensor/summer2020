@@ -212,11 +212,16 @@ def visualize_conf(prefix, benchmark, sample_filter=False, pos_thres=0.5):
     show_overall_hist(results)
 
 
-def tabulate_batch_samples(config, prefix, silent=False, filter_samp=False, roll=False):
+def tabulate_batch_samples(
+    config, prefix, bench_suffix=None, silent=False, filter_samp=False, roll=False
+):
     """Analyze accuracy/precision relationships and training duration
     for each batched sample using existing testing data."""
     bench_str = f"{config['output']}/{prefix}*_benchmark"
-    bench_str += "_roll*.csv" if roll else "_avg*.csv"
+    if bench_suffix is not None:
+        bench_str += "_roll*.csv" if roll else "_avg*.csv"
+    else:
+        bench_str += bench_suffix
 
     benchmarks = utils.sort_by_epoch(bench_str)
     checkpoints = utils.sort_by_epoch(f"{config['checkpoints']}/{prefix}*.pth")
@@ -266,6 +271,7 @@ def compare_benchmarks(
     prefixes,
     metric,
     metric2=None,
+    bench_suffix=None,
     roll=False,
     compare_init=False,
     filter_sample=False,
@@ -275,7 +281,12 @@ def compare_benchmarks(
     print("Avg.", metric)
     for prefix in prefixes:
         results = tabulate_batch_samples(
-            config, prefix, silent=True, filter_samp=filter_sample, roll=roll
+            config,
+            prefix,
+            bench_suffix=bench_suffix,
+            silent=True,
+            filter_samp=filter_sample,
+            roll=roll,
         )[metric]
         if prefix != "init" and compare_init:
             df[prefix] = results - df["init"]
@@ -291,16 +302,20 @@ def compare_benchmarks(
         ).set_index("Method")
 
         init_vals = tabulate_batch_samples(
-            config, "init", silent=True, filter_samp=False
+            config, "init", bench_suffix=bench_suffix, silent=True, filter_samp=False
         )
         print(f"Baseline avg {metric2}: ", init_vals[metric2][1:].mean())
 
         for prefix in prefixes:
             indep_var = tabulate_batch_samples(
-                config, prefix, silent=True, filter_samp=True
+                config, prefix, bench_suffix=bench_suffix, silent=True, filter_samp=True
             )
             dep_var = tabulate_batch_samples(
-                config, prefix, silent=True, filter_samp=False
+                config,
+                prefix,
+                bench_suffix=bench_suffix,
+                silent=True,
+                filter_samp=False,
             )
 
             y_series = dep_var[metric2]

@@ -385,7 +385,10 @@ def benchmark_batch_set(prefix, config, roll=None):
 
         save_results(results, filename)
 
-def benchmark_test_set(prefix, config, test_path):
+
+def benchmark_batch_test_set(prefix, config, reserve_batches=0, roll=10):
+    """Benchmark against a test set created from a specified number of batch sets,
+    using a rolling average of epochs."""
     out_dir = config["output"]
     num_classes = len(utils.load_classes(config["class_list"]))
     batch_sets = sorted(glob.glob(f"{out_dir}/sample*.txt"), key=utils.get_sample)
@@ -394,27 +397,29 @@ def benchmark_test_set(prefix, config, test_path):
     if prefix == "init":
         epoch_splits *= len(batch_sets)
 
-    for i, batch_set in enumerate(batch_sets):
-        batch_folder = LabeledSet(batch_set, num_classes)
-        if len(batch_folder) < config["sampling_batch"]:
-            break
+    test_imgs = list()
+    batches_removed = 0
+    for batch_set in reversed(batch_sets):
+        imgs = utils.get_lines(batch_set)
+        if len(imgs) < config["sampling_batch"] or reserve_batches != 0:
+            test_imgs += imgs
+            batches_removed += 1
+            if reserve_batches != 0:
+                reserve_batches -= 1
 
-        end_epoch = epoch_splits[i]
-        num_ckpts = roll if roll is not None else config["conf_check_num"]
-        filename = f"{out_dir}/{prefix}{i}_benchmark_"
-        filename += "roll_" if roll else "avg_"
-        filename += f"1_{end_epoch}.csv"
+    epoch_splits = epoch_splits[:-batches_removed]
+    print(epoch_splits)
+    test_folder = LabeledSet(test_imgs, num_classes)
+
+    for i, end_epoch in enumerate(epoch_splits):
+        filename = f"{out_dir}/{prefix}{i}_benchmark_test_"
+        filename += f"{end_epoch}.csv"
 
         if os.path.exists(filename):
             continue
-        if roll is not None:
-            results = benchmark_avg(
-                batch_folder, prefix, 1, end_epoch, num_ckpts, config, roll=True
-            )
-        else:
-            results = benchmark_avg(
-                batch_folder, prefix, 1, end_epoch, num_ckpts, config,
-            )
+
+        results = benchmark_avg(
+            test_folder, prefix, 1, end_epoch, roll, config, roll=True
+        )
 
         save_results(results, filename)
-
