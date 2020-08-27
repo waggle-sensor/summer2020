@@ -394,8 +394,6 @@ def benchmark_batch_test_set(prefix, config, reserve_batches=0, roll=10):
     batch_sets = sorted(glob.glob(f"{out_dir}/sample*.txt"), key=utils.get_sample)
 
     epoch_splits = utils.get_epoch_splits(config, prefix, True)
-    if prefix == "init":
-        epoch_splits *= len(batch_sets)
 
     test_imgs = list()
     batches_removed = 0
@@ -404,7 +402,7 @@ def benchmark_batch_test_set(prefix, config, reserve_batches=0, roll=10):
         if len(imgs) < config["sampling_batch"] or reserve_batches != 0:
             test_imgs += imgs
             batches_removed += 1
-            if reserve_batches != 0:
+            if not (len(imgs) < config["sampling_batch"]):
                 reserve_batches -= 1
 
     epoch_splits = epoch_splits[:-batches_removed]

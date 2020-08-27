@@ -98,13 +98,12 @@ class ClassResults:
                 else:
                     result = "false_pos"
             else:
-                if row["hit"] == "True" or row["detected"] == str():
+                if row["hit"] == "True":
                     result = "false_neg"
                 else:
                     result = "true_neg"
-            if result != "true_neg":
-                self.data[result].append(row)
-                self.pop += 1
+            self.data[result].append(row)
+            self.pop += 1
 
     def __len__(self):
         files = set()

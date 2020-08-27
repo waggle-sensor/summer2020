@@ -58,7 +58,7 @@ def benchmark_all(prefixes, config, opt):
 def benchmark_batch_test(prefixes, config, opt, num_batches):
     batch_args = list()
     for prefix in prefixes:
-        batch_args.append((prefix, config, 2))
+        batch_args.append((prefix, config, num_batches))
         if not config["parallel"]:
             bench.benchmark_batch_test_set(*batch_args[-1])
     if config["parallel"]:
