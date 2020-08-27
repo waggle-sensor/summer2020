@@ -9,6 +9,7 @@ from yolov3 import utils
 
 def get_modules_filters(module_def, output_filters, hyperparams):
     new_modules = list()
+    filters = None
     if module_def["type"] == "convolutional":
         bn = int(module_def["batch_normalize"])
         filters = int(module_def["filters"])
@@ -84,7 +85,8 @@ def create_modules(module_defs):
 
         # Register module list and number of output filters
         module_list.append(modules)
-        output_filters.append(filters)
+        if filters is not None:
+            output_filters.append(filters)
 
     return hyperparams, module_list
 

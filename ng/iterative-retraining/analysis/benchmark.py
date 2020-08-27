@@ -384,3 +384,37 @@ def benchmark_batch_set(prefix, config, roll=None):
             )
 
         save_results(results, filename)
+
+def benchmark_test_set(prefix, config, test_path):
+    out_dir = config["output"]
+    num_classes = len(utils.load_classes(config["class_list"]))
+    batch_sets = sorted(glob.glob(f"{out_dir}/sample*.txt"), key=utils.get_sample)
+
+    epoch_splits = utils.get_epoch_splits(config, prefix, True)
+    if prefix == "init":
+        epoch_splits *= len(batch_sets)
+
+    for i, batch_set in enumerate(batch_sets):
+        batch_folder = LabeledSet(batch_set, num_classes)
+        if len(batch_folder) < config["sampling_batch"]:
+            break
+
+        end_epoch = epoch_splits[i]
+        num_ckpts = roll if roll is not None else config["conf_check_num"]
+        filename = f"{out_dir}/{prefix}{i}_benchmark_"
+        filename += "roll_" if roll else "avg_"
+        filename += f"1_{end_epoch}.csv"
+
+        if os.path.exists(filename):
+            continue
+        if roll is not None:
+            results = benchmark_avg(
+                batch_folder, prefix, 1, end_epoch, num_ckpts, config, roll=True
+            )
+        else:
+            results = benchmark_avg(
+                batch_folder, prefix, 1, end_epoch, num_ckpts, config,
+            )
+
+        save_results(results, filename)
+

@@ -26,6 +26,7 @@ def get_args():
 
     parser.add_argument("--tabulate", action="store_true", default=False)
     parser.add_argument("--benchmark", action="store_true", default=False)
+    parser.add_argument("--test_set", type=str, default=None)
     parser.add_argument("--visualize_conf", default=None)
     parser.add_argument("--filter_sample", action="store_true", default=False)
     parser.add_argument("--compare_init", action="store_true", default=False)
@@ -53,6 +54,8 @@ def benchmark_all(prefixes, config, opt):
         parallelize.run_parallel(bench.benchmark_batch_set, batch_args)
         parallelize.run_parallel(bench.series_benchmark, series_args, False)
 
+def benchmark_test_set(prefixes, config, opt):
+    pass
 
 if __name__ == "__main__":
     opt, config = get_args()
@@ -76,7 +79,10 @@ if __name__ == "__main__":
     ]
 
     if opt.benchmark and opt.prefix is None:
-        benchmark_all(prefixes, config, opt)
+        if opt.test_set is None:
+            benchmark_all(prefixes, config, opt)
+        else:
+            benchmark_test_set(prefixes, config, opt)
 
     if opt.tabulate:
         if opt.prefix is not None:
