@@ -1070,3 +1070,13 @@ Current loss: 347.083483338356
     * mid-thresh also yields good improvements
 * Need to analyze the confidence distributions further
 * Started Overleaf template with Bibtex for tracking references
+
+**Thursday, August 27**
+
+* Attended scrum meeting
+* At the suggestion of Sean/Nicola, created new test set from the 3k image pool of batches 11-12, plus the leftover (~900) images from batch 13
+  * This means we can only benchmark up to batch 10, but this should provide sufficient results
+* Modified analysis tool to allow for this, for any given number of complete batches
+  * Need to refactor code to make it a bit less hackish
+* Continuing parameter sweep, with 15% and 45% bandwidth limits
+* Continued writing article on website
