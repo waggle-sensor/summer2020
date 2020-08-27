@@ -33,11 +33,14 @@ def benchmark(img_folder, prefix, epoch, config):
 def get_img_detections(checkpoints, prefix, config, loader, silent):
     detections_by_img = dict()
     model_def = yoloutils.parse_model_config(config["model_config"])
-    model = models.get_eval_model(model_def, config["img_size"], checkpoints[0])
+    model = None
 
     for n in tqdm(checkpoints, "Benchmarking epochs", disable=silent):
         ckpt = get_checkpoint(config["checkpoints"], prefix, n)
-        model.load_state_dict(torch.load(ckpt, map_location=model.device))
+        if model is None:
+            model = models.get_eval_model(model_def, config["img_size"], ckpt)
+        else:
+            model.load_state_dict(torch.load(ckpt, map_location=model.device))
 
         for (img_paths, input_imgs) in loader:
             path = img_paths[0]
