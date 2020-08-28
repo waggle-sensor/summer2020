@@ -1080,3 +1080,45 @@ Current loss: 347.083483338356
   * Need to refactor code to make it a bit less hackish
 * Continuing parameter sweep, with 15% and 45% bandwidth limits
 * Continued writing article on website
+
+**Friday, August 28**
+
+* Examined epoch benchmarks
+
+VeRi baseline (sample 100%; rolling avg. of 10 epochs):
+
+```
+   batch      prec       acc      conf  conf_std    recall  epochs_trained
+0    0.0  0.809589  0.755719  0.674711  0.431388  0.908734            30.0
+1    1.0  0.852310  0.788701  0.657602  0.409036  0.899350             8.0
+2    2.0  0.854484  0.793635  0.668532  0.416112  0.909814            18.0
+3    3.0  0.854563  0.801074  0.692672  0.413303  0.919199            14.0
+4    4.0  0.840208  0.794706  0.675294  0.411692  0.926882             8.0
+5    5.0  0.859341  0.802571  0.668046  0.408447  0.915760            12.0
+6    6.0  0.870879  0.814936  0.681441  0.415694  0.918452            10.0
+7    7.0  0.868996  0.812889  0.681499  0.412335  0.916710            28.0
+8    8.0  0.866795  0.812255  0.690918  0.406877  0.920445            12.0
+9    9.0  0.854600  0.796927  0.675109  0.411986  0.909902           120.0
+```
+
+VeRi baseline, linear average:
+
+```
+   batch      prec       acc      conf  conf_std    recall  epochs_trained
+0    0.0  0.803675  0.715160  0.515056  0.472486  0.809336            30.0
+1    1.0  0.809075  0.719986  0.554214  0.468466  0.834157             8.0
+2    2.0  0.834892  0.742666  0.574752  0.460996  0.846629            18.0
+3    3.0  0.859589  0.769147  0.581723  0.462675  0.859838            14.0
+4    4.0  0.857281  0.754984  0.574996  0.459691  0.842253             8.0
+5    5.0  0.853002  0.738999  0.539765  0.459104  0.819639            12.0
+6    6.0  0.886881  0.795085  0.596742  0.462855  0.871441            10.0
+7    7.0  0.846512  0.757801  0.589958  0.461536  0.861282            28.0
+8    8.0  0.883353  0.778890  0.581738  0.459638  0.851829            12.0
+9    9.0  0.871066  0.768009  0.565899  0.451512  0.846519           120.0
+```
+
+* Finished writing website article
+* Modifying pipeline for more flexibility with the universal test set method, including the option for linearly-spaced and instantaneous averaging for test set
+  * Benchmarking with the test set over the weekend
+* Started an Overleaf version of the paper
+* Continued documenting code
