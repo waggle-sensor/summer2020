@@ -1,3 +1,7 @@
+"""
+Training functions used for inital training and retraining.
+"""
+
 from __future__ import division
 
 import os
@@ -105,7 +109,15 @@ def train_epoch(dataloader, epoch, end_epoch, model, optimizer, metrics, logger,
 def train(img_folder, opt, load_weights=None, device=None):
     """Trains a given image set, with an early stop.
 
-    Precondition: img_folder has been split into train, test, and validation sets.
+    Args:
+        img_folder (ImageFolder): Data wrapper that must have been split into train, test,
+            and validation sets.
+        opt (dict): Configuration dictionary with hyperparameters for training
+        load_weights (str): Path of initial weights, if training is resumed from a checkpoint.
+        device (str): PyTorch CUDA string of a GPU device. Looks for available devices if
+            none is provided.
+    Returns:
+        last_epoch: the epoch number where training was ended
     """
     os.makedirs(opt["checkpoints"], exist_ok=True)
     os.makedirs(opt["output"], exist_ok=True)

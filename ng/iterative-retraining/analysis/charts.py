@@ -213,15 +213,11 @@ def visualize_conf(prefix, benchmark, sample_filter=False, pos_thres=0.5):
 
 
 def tabulate_batch_samples(
-    config, prefix, bench_suffix=None, silent=False, filter_samp=False, roll=False
+    config, prefix, bench_suffix=None, silent=False, filter_samp=False
 ):
     """Analyze accuracy/precision relationships and training duration
     for each batched sample using existing testing data."""
-    bench_str = f"{config['output']}/{prefix}*_benchmark"
-    if bench_suffix is not None:
-        bench_str += "_roll*.csv" if roll else "_avg*.csv"
-    else:
-        bench_str += bench_suffix
+    bench_str = f"{config['output']}/{prefix}*_benchmark" + bench_suffix
 
     benchmarks = utils.sort_by_epoch(bench_str)
     checkpoints = utils.sort_by_epoch(f"{config['checkpoints']}/{prefix}*.pth")
@@ -272,7 +268,6 @@ def compare_benchmarks(
     metric,
     metric2=None,
     bench_suffix=None,
-    roll=False,
     compare_init=False,
     filter_sample=False,
 ):
@@ -286,7 +281,6 @@ def compare_benchmarks(
             bench_suffix=bench_suffix,
             silent=True,
             filter_samp=filter_sample,
-            roll=roll,
         )[metric]
         if prefix != "init" and compare_init:
             df[prefix] = results - df["init"]

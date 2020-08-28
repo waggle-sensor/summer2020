@@ -1,3 +1,9 @@
+"""
+Functions to create samples from a ClassResults object.
+
+Add new sampling functions here as needed, or add them to userdefs.py.
+"""
+
 import random
 
 import statistics as stats

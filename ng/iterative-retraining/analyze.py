@@ -70,13 +70,25 @@ def benchmark_batch_test(prefixes, config, opt, num_batches):
         opt.metric,
         opt.metric2,
         "_test*.csv",
-        compare_init=opt.compare,
+        compare_init=opt.compare_init,
         filter_sample=opt.filter_sample,
     )
 
 
+def get_benchmark_suffix(opt):
+    bench_suffix = "*.csv"
+    if opt.batch_test:
+        bench_suffix = "_test" + bench_suffix
+    if opt.roll:
+        bench_suffix = "_roll" + bench_suffix
+    elif opt.avg:
+        bench_suffix = "_avg" + bench_suffix
+    return bench_suffix
+
+
 if __name__ == "__main__":
     opt, config = get_args()
+    bench_suffix = get_benchmark_suffix(opt)
 
     prefixes = ["init"] + list(get_sample_methods().keys())
 
@@ -107,7 +119,10 @@ if __name__ == "__main__":
             # Specify a sampling prefix to view all metrics (conf, prec, acc, recall train length)
             # on a per-batch basis
             charts.tabulate_batch_samples(
-                config, opt.prefix, filter_samp=opt.filter_sample, roll=opt.roll_avg
+                config,
+                opt.prefix,
+                filter_samp=opt.filter_sample,
+                bench_suffix=bench_suffix,
             )
         else:
             # View the specified metric (with precision as default) for each batch,
@@ -117,7 +132,6 @@ if __name__ == "__main__":
                 prefixes,
                 opt.metric,
                 opt.metric2,
-                roll=opt.roll_avg,
                 compare_init=opt.compare_init,
                 filter_sample=opt.filter_sample,
             )
@@ -132,7 +146,7 @@ if __name__ == "__main__":
         # Benchmark a batch set and display its results, both in a tabular form
         # and as an interactive line graph
         bench.benchmark_batch_set(opt.prefix, config, opt.roll_avg)
-        charts.tabulate_batch_samples(config, opt.prefix, roll=opt.roll_avg)
+        charts.tabulate_batch_samples(config, opt.prefix, bench_suffix=bench_suffix)
         if opt.prefix != "init":
             bench.series_benchmark(config, opt.prefix, avg=opt.avg, roll=opt.roll_avg)
             charts.aggregate_results(

@@ -3,6 +3,7 @@ import torch
 from torch import cuda, nn
 import numpy as np
 from retrain import utils
+import gpustat
 
 
 def weights_init_normal(m):
@@ -325,10 +326,32 @@ def rescale_boxes(boxes, current_dim, original_shape):
     return boxes
 
 
+def pad_to_square(img, pad_value):
+    """Pad an image to a square."""
+    _, h, w = img.shape
+    dim_diff = np.abs(h - w)
+    # (upper / left) padding and (lower / right) padding
+    pad1, pad2 = dim_diff // 2, dim_diff - dim_diff // 2
+    # Determine padding
+    pad = (0, 0, pad1, pad2) if h <= w else (pad1, pad2, 0, 0)
+    # Add padding
+    img = nn.functional.pad(img, pad, "constant", value=pad_value)
+
+    return img, pad
+
+
+def resize(image, size):
+    """Resize an image."""
+    image = nn.functional.interpolate(
+        image.unsqueeze(0), size=size, mode="nearest"
+    ).squeeze(0)
+    return image
+
+
 def build_targets(pred_boxes, pred_cls, target, anchors, ignore_thres, device):
 
-    BoolTensor = torch.cuda.BoolTensor if pred_boxes.is_cuda else torch.BoolTensor
-    FloatTensor = torch.cuda.FloatTensor if pred_boxes.is_cuda else torch.FloatTensor
+    BoolTensor = cuda.BoolTensor if pred_boxes.is_cuda else torch.BoolTensor
+    FloatTensor = cuda.FloatTensor if pred_boxes.is_cuda else torch.FloatTensor
 
     n_b = pred_boxes.size(0)
     n_a = pred_boxes.size(1)
@@ -403,10 +426,9 @@ def get_memory_needed(config):
 
 def get_free_gpus(bytes_needed=0):
     free_gpus = dict()
+    gpu_stats = gpustat.new_query()
     for i in range(cuda.device_count()):
-        bytes_free = cuda.get_device_properties(i).total_memory - cuda.memory_allocated(
-            i
-        )
+        bytes_free = gpu_stats[i]["memory.total"] - gpu_stats[i]["memory.used"]
         if bytes_free > bytes_needed:
             free_gpus[i] = bytes_free
     free_gpus = dict(sorted(free_gpus.items(), key=lambda gpu: gpu[1], reverse=True))

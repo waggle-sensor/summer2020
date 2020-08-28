@@ -1,7 +1,7 @@
 """
 Module to augment a set of labeled images, with bounding box transformations.
 
-Modify get_augmentations() and multi_aug() as necessary for your specific
+Modify get_augmentations() and multi_aug() in userdefs.py as necessary for your specific
 deployment needs with the albumentations library.
 """
 

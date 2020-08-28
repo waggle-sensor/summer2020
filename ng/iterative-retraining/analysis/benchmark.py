@@ -405,12 +405,12 @@ def benchmark_batch_test_set(prefix, config, reserve_batches=0, roll=10):
             if not (len(imgs) < config["sampling_batch"]):
                 reserve_batches -= 1
 
-    epoch_splits = epoch_splits[:-batches_removed]
-    print(epoch_splits)
+    if prefix != "init":
+        epoch_splits = epoch_splits[:-batches_removed]
     test_folder = LabeledSet(test_imgs, num_classes)
 
     for i, end_epoch in enumerate(epoch_splits):
-        filename = f"{out_dir}/{prefix}{i}_benchmark_test_"
+        filename = f"{out_dir}/{prefix}{i}_avg_benchmark_test_"
         filename += f"{end_epoch}.csv"
 
         if os.path.exists(filename):

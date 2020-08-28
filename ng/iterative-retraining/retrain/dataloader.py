@@ -14,13 +14,13 @@ import numpy as np
 from PIL import Image
 
 import torch
-from torch import nn
 from torch.utils.data import Dataset
 from torchvision.transforms import transforms
 
 from retrain import sampling
 from retrain.augment import Augmenter
 from retrain.utils import get_label_path, get_lines
+from yolov3.utils import pad_to_square, resize
 
 
 class ImageFolder(Dataset):
@@ -211,6 +211,37 @@ class LabeledSet(ImageFolder):
 
         return self
 
+    def load_or_split(self, output, train_prop, valid_prop, save=True, sample_dir=None):
+        """Split a LabeledSet into test, train, and validation sets if and only if existing
+        splits do not exist as text files.
+
+        Returns a boolean value indicating if new splits were generated.
+        """
+        print(f"Getting splits for {self.prefix}")
+
+        if self.load_splits(output):
+            train_imgs = sum(
+                round(train_prop * len(v)) for v in self.group_by_class().values()
+            )
+            train_len = len(self.train)
+
+            # Case where we use load splits from the mixed set of sampled
+            # and known images
+            if sample_dir is not None:
+                train_imgs = (len(self.valid) + train_len + len(self.test)) * train_prop
+
+            if abs(train_len - train_imgs) <= 10:
+                print("Previous splits found and validated")
+                return False
+
+            print("Train list mismatch found... Ignoring....")
+
+        print("Generating new splits")
+        self.split_img_set(train_prop, valid_prop)
+        if save:
+            self.save_splits(output)
+        return True
+
     def save_splits(self, folder):
         """Save the train, test, and validation splits of the current folder into text files."""
         for name in self.sets:
@@ -220,7 +251,10 @@ class LabeledSet(ImageFolder):
                 img_set.save_img_list(filename)
 
     def load_splits(self, folder):
-        """Load previously-generated text file splits into the current folder."""
+        """Load previously-generated text file splits into the current folder if found.
+
+        Returns a boolean value indicating if the operation was successful.
+        """
         split_paths = [f"{folder}/{self.prefix}_{name}.txt" for name in self.sets]
         if all(os.path.exists(path) for path in split_paths):
             file_lists = [get_lines(path) for path in split_paths]
@@ -264,7 +298,7 @@ class LabeledSet(ImageFolder):
         ]
 
     def split_batch(self, batch_size):
-        """Split an LabeledDataset into multiple batches of a finite size.
+        """Split an LabeledSet into multiple batches of a finite size.
 
         This function is meant to be used for simulations at the inferencing/sampling stage.
         It does not support stratified splitting at the train, validation, and
@@ -290,56 +324,9 @@ class LabeledSet(ImageFolder):
         self.img_dict = self.make_img_dict()
 
 
-def split_set(labeled_set, output, train_prop, valid_prop, save=True, sample_dir=None):
-    print(f"Getting splits for {labeled_set.prefix}")
-
-    if labeled_set.load_splits(output):
-        train_imgs = sum(
-            round(train_prop * len(v)) for v in labeled_set.group_by_class().values()
-        )
-        train_len = len(labeled_set.train)
-
-        # Case where we use load splits from the mixed set of sampled
-        # and known images
-        if sample_dir is not None:
-            train_imgs = (
-                len(labeled_set.valid) + train_len + len(labeled_set.test)
-            ) * train_prop
-
-        if abs(train_len - train_imgs) <= 10:
-            print("Previous splits found and validated")
-            return False
-
-        print("Train list mismatch found... Ignoring....")
-
-    print("Generating new splits")
-    labeled_set.split_img_set(train_prop, valid_prop)
-    if save:
-        labeled_set.save_splits(output)
-    return True
-
-
-def pad_to_square(img, pad_value):
-    _, h, w = img.shape
-    dim_diff = np.abs(h - w)
-    # (upper / left) padding and (lower / right) padding
-    pad1, pad2 = dim_diff // 2, dim_diff - dim_diff // 2
-    # Determine padding
-    pad = (0, 0, pad1, pad2) if h <= w else (pad1, pad2, 0, 0)
-    # Add padding
-    img = nn.functional.pad(img, pad, "constant", value=pad_value)
-
-    return img, pad
-
-
-def resize(image, size):
-    image = nn.functional.interpolate(
-        image.unsqueeze(0), size=size, mode="nearest"
-    ).squeeze(0)
-    return image
-
-
 class ListDataset(Dataset):
+    """Final wrapper Dataset object for loading images into the Darknet model."""
+
     def __init__(
         self, img_list, img_size=416, multiscale=True, normalized_labels=True,
     ):

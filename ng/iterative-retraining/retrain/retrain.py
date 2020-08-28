@@ -8,7 +8,7 @@ import copy
 import userdefs
 from retrain import sampling as sample
 from retrain import utils, train
-from retrain.dataloader import LabeledSet, split_set
+from retrain.dataloader import LabeledSet
 import yolov3.utils as yoloutils
 from yolov3 import parallelize
 import analysis.benchmark as bench
@@ -71,8 +71,7 @@ def sample_retrain(
             retrain_files, len(classes), config["img_size"], prefix=f"{name}{i}"
         )
 
-        new_splits = split_set(
-            retrain_obj,
+        new_splits_made = retrain_obj.load_or_split(
             config["output"],
             config["train_sample"],
             config["valid_sample"],
@@ -80,7 +79,7 @@ def sample_retrain(
             sample_dir=config["sample_set"],
         )
 
-        if new_splits:
+        if new_splits_made:
             # If reloaded, splits have old images already incorporated
             for set_name in retrain_obj.sets:
                 # Calculate proportion of old examples needed
@@ -106,9 +105,7 @@ def sample_retrain(
         last_epoch = train.train(retrain_obj, config, checkpoint, device=device)
 
 
-def retrain(
-    config, sample_methods, sample_batches, base_epoch, init_imgs, parallel=False
-):
+def retrain(config, sample_methods, sample_batches, base_epoch, init_imgs):
     """Sample images and retrain for all sample methods given."""
     free_gpus = yoloutils.get_free_gpus(yoloutils.get_memory_needed(config))
 
@@ -126,8 +123,8 @@ def retrain(
         )
         grouped_args.append(method_args)
 
-        if not parallel:
+        if not config["parallel"]:
             sample_retrain(*method_args)
 
-    if parallel:
+    if config["parallel"]:
         parallelize.run_parallel(sample_retrain, grouped_args)

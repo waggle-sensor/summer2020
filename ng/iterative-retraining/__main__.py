@@ -17,7 +17,7 @@ import argparse
 
 import userdefs
 from retrain.train import train_initial
-from retrain.dataloader import LabeledSet, ImageFolder, split_set
+from retrain.dataloader import LabeledSet, ImageFolder
 from retrain import retrain, utils
 
 
@@ -38,7 +38,9 @@ if __name__ == "__main__":
         config["initial_set"], len(classes), config["img_size"], prefix="init"
     )
 
-    split_set(init_images, config["output"], config["train_init"], config["valid_init"])
+    init_images.load_or_split(
+        config["output"], config["train_init"], config["valid_init"]
+    )
 
     # Run initial training
     if opt.reload_baseline is None:
@@ -65,5 +67,4 @@ if __name__ == "__main__":
         batched_samples,
         init_end_epoch,
         init_images,
-        parallel=config["parallel"],
     )

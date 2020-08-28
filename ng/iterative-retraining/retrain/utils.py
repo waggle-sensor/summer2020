@@ -1,3 +1,12 @@
+"""
+Utility functions pertaining to file manipulation and processing during the
+training, sampling, and retraining process.
+
+Functions related to training, tensors, and image manipulation should be written
+in the yolov3 package.
+"""
+
+
 import sys
 import os
 import glob
