@@ -106,7 +106,7 @@ Sampling methods that incoporate this approach include:
 * `bin-quintile`: intervals of 0.2 are created, with a uniform PDF. This aims to collect equal numbers of each bin
 * `bin-normal`: a normal PDF centered at 0.5 with a standard deviation of 0.25 is used. This attempts to eliminate the slight skews in the sample (propagated from the original confidence distribution) that can be present in the mid-normal method, as images with confidences slightly deviating from 0.5 still have a very high chance of being selected.
 
-### Adding & Modifying Sampling Methods
+### Adding Sampling Methods
 
 In [the `userdefs` module](./userdefs.py), a dictionary of sampling methods are returned from `get_sample_methods()`. Each entry contains a function-argument pairing, where the sampling function returns a list of image paths to sample, given a [`ClassResult`](./analysis/results.py#L80) object as the first argument. This data object contains an ordered dictionary for each bounding box in either a particular class or the entire sample set (as denoted by its `name` attribute), with entries for its ground truth, confidence, predicted class, and image path.
 
@@ -128,6 +128,8 @@ def custom_sample(result, params ...):
 ```
 
 If the function returns more images than the number specified in the configuration `bandwidth`, `create_sample()` will randomly remove images to enforce the limit, stratifying by class if specified.
+
+### Extending Sampling Methods
 
 
 
