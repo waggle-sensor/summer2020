@@ -27,16 +27,12 @@ else:
 
 
 def detect(input_imgs, conf_thres, model, nms_thres=0.5):
-    try:
-        # Configure input
-        input_imgs = Variable(input_imgs.type(FloatTensor)).to(model.device)
+    # Configure input
+    input_imgs = Variable(input_imgs.type(FloatTensor)).to(model.device)
 
-        with torch.no_grad():
-            detections = model(input_imgs)
-            detections = utils.non_max_suppression(detections, conf_thres, nms_thres)
-    except RuntimeError:
-        model.to(utils.get_device())
-        detections = detect(input_imgs, conf_thres, model, nms_thres)
+    with torch.no_grad():
+        detections = model(input_imgs)
+        detections = utils.non_max_suppression(detections, conf_thres, nms_thres)
     return detections
 
 

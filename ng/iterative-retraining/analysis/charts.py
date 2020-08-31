@@ -276,8 +276,9 @@ def compare_benchmarks(
     filter_sample=False,
 ):
     """Compares benchmarks on sample sets (before retraining) for sample methods."""
-    df = pd.DataFrame()
+    sample_results = dict()
     print("Avg.", metric)
+
     for prefix in prefixes:
         results = tabulate_batch_samples(
             config,
@@ -286,15 +287,20 @@ def compare_benchmarks(
             silent=True,
             filter_samp=filter_sample,
         )[metric]
-        if prefix != "init":
-            if len(df["init"]) != len(results):
-                df["init"] = pd.Series(list(df["init"]) * len(results))
-            if compare_init:
-                df[prefix] = results - df["init"]
-        else:
-            df[prefix] = results
 
-    print(df.transpose())
+        if prefix == "init":
+            sample_results[prefix] = results
+            continue
+        if len(sample_results["init"]) == 1 and len(results) != 1:
+            sample_results["init"] = pd.Series(
+                list(sample_results["init"]) * len(results)
+            )
+        if compare_init:
+            sample_results[prefix] = results - sample_results["init"]
+        else:
+            sample_results[prefix] = results
+    df = pd.DataFrame.from_dict(sample_results, orient="index")
+    print(df)
 
     if metric2 is not None:
         if "init" in prefixes:

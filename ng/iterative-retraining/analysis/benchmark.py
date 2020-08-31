@@ -45,9 +45,17 @@ def get_img_detections(checkpoints, prefix, config, loader, silent):
             if path not in detections_by_img.keys():
                 detections_by_img[path] = None
 
-            detections = evaluate.detect(
-                input_imgs, config["conf_thres"], model, config["nms_thres"]
-            )
+            while True:
+                try:
+                    detections = evaluate.detect(
+                        input_imgs, config["conf_thres"], model, config["nms_thres"]
+                    )
+                    break
+                except RuntimeError:
+                    # Cuda out of memory
+                    model.to(yoloutils.get_device())
+                    yoloutils.clear_vram()
+
             detections = [d for d in detections if d is not None]
 
             if len(detections) == 0:
