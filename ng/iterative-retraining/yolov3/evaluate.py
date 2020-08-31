@@ -35,7 +35,7 @@ def detect(input_imgs, conf_thres, model, nms_thres=0.5):
             detections = model(input_imgs)
             detections = utils.non_max_suppression(detections, conf_thres, nms_thres)
     except RuntimeError:
-        model.to(utils.get_device()[0])
+        model.to(utils.get_device())
         detections = detect(input_imgs, conf_thres, model, nms_thres)
     return detections
 

@@ -286,12 +286,13 @@ def compare_benchmarks(
             silent=True,
             filter_samp=filter_sample,
         )[metric]
-        if prefix != "init" and compare_init:
-            df[prefix] = results - df["init"]
+        if prefix != "init":
+            if len(df["init"]) != len(results):
+                df["init"] = pd.Series(list(df["init"]) * len(results))
+            if compare_init:
+                df[prefix] = results - df["init"]
         else:
             df[prefix] = results
-    if "test" in bench_suffix:
-        df["init"] = df["init"] * prefix
 
     print(df.transpose())
 
