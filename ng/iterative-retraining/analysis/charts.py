@@ -256,11 +256,12 @@ def tabulate_batch_samples(
         new_row = get_avg_metric_dict(results)
         new_row["batch"] = i
         new_row["epochs_trained"] = train_len
-        data = data.append(new_row)
+        data = data.append(new_row, ignore_index=True)
+    data.set_index("batch")
 
     if not silent:
         print("=== Metrics on Batch ===")
-        print(data)
+        print(data.to_string(index=False))
 
     return data
 
@@ -289,6 +290,9 @@ def compare_benchmarks(
             df[prefix] = results - df["init"]
         else:
             df[prefix] = results
+    if "test" in bench_suffix:
+        df["init"] = df["init"] * prefix
+
     print(df.transpose())
 
     if metric2 is not None:

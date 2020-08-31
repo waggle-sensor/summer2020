@@ -67,12 +67,12 @@ def benchmark_batch_test(prefixes, config, opt, num_batches):
 
 def get_benchmark_suffix(opt):
     bench_suffix = "*.csv"
-    if opt.avg:
-        bench_suffix = "_avg" + bench_suffix
     if opt.batch_test:
         bench_suffix = "_test" + bench_suffix
     elif opt.roll_avg:
         bench_suffix = "_roll" + bench_suffix
+    if opt.avg:
+        bench_suffix = "_avg" + bench_suffix
     return bench_suffix
 
 
@@ -125,6 +125,7 @@ if __name__ == "__main__":
                 prefixes,
                 opt.metric,
                 opt.metric2,
+                bench_suffix,
                 compare_init=opt.compare_init,
                 filter_sample=opt.filter_sample,
             )

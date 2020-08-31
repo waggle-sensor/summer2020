@@ -62,7 +62,7 @@ def parse_retrain_config(path):
             except ValueError:
                 options[key] = value
     if "inherit" in options.keys():
-        for option, val in parse_retrain_config(options["inherit"]):
+        for option, val in parse_retrain_config(options["inherit"]).items():
             if option not in options.keys():
                 options[option] = val
     return options
