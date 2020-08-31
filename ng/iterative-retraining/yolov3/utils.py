@@ -18,12 +18,12 @@ def weights_init_normal(m):
 def ap_per_class(tp, conf, pred_cls, target_cls):
     """ Compute the average precision, given the recall and precision curves.
     Source: https://github.com/rafaelpadilla/Object-Detection-Metrics.
-    # Arguments
+    Arguments
         tp:    True positives (list).
         conf:  Objectness value from 0-1 (list).
         pred_cls: Predicted object classes (list).
         target_cls: True object classes (list).
-    # Returns
+    Return
         The average precision as computed in py-faster-rcnn.
     """
 
@@ -428,7 +428,9 @@ def get_free_gpus(bytes_needed=0):
     free_gpus = dict()
     gpu_stats = gpustat.new_query()
     for i in range(cuda.device_count()):
-        bytes_free = gpu_stats[i]["memory.total"] - gpu_stats[i]["memory.used"]
+        bytes_free = 2 ** 20 * (
+            gpu_stats[i]["memory.total"] - gpu_stats[i]["memory.used"]
+        )
         if bytes_free > bytes_needed:
             free_gpus[i] = bytes_free
     free_gpus = dict(sorted(free_gpus.items(), key=lambda gpu: gpu[1], reverse=True))

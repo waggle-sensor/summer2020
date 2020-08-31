@@ -18,6 +18,7 @@ from retrain.dataloader import LabeledSet
 
 
 def get_checkpoint(folder, prefix, epoch):
+    """Retrieve the checkpoint file corresponding to the given prefix and epoch."""
     ckpts = glob.glob(f"{folder}/{prefix}*_ckpt_{epoch}.pth")
 
     if len(ckpts) == 0:
@@ -33,14 +34,11 @@ def benchmark(img_folder, prefix, epoch, config):
 def get_img_detections(checkpoints, prefix, config, loader, silent):
     detections_by_img = dict()
     model_def = yoloutils.parse_model_config(config["model_config"])
-    model = None
+    model = models.get_eval_model(model_def, config["img_size"])
 
-    for n in tqdm(checkpoints, "Benchmarking epochs", disable=silent):
-        ckpt = get_checkpoint(config["checkpoints"], prefix, n)
-        if model is None:
-            model = models.get_eval_model(model_def, config["img_size"], ckpt)
-        else:
-            model.load_state_dict(torch.load(ckpt, map_location=model.device))
+    for epoch in tqdm(checkpoints, "Benchmarking epochs", disable=silent):
+        ckpt = get_checkpoint(config["checkpoints"], prefix, epoch)
+        model.load_state_dict(torch.load(ckpt, map_location=model.device))
 
         for (img_paths, input_imgs) in loader:
             path = img_paths[0]
@@ -177,10 +175,12 @@ def series_benchmark_loss(img_folder, prefix, start, end, delta, config, filenam
     out = open(f"{config['output']}/{filename}", "w+")
     out.write("epoch,loss,mAP,precision\n")
 
+    model_def = yoloutils.parse_model_config(config["model_config"])
+    model = models.get_eval_model(model_def, config["img_size"])
+
     for epoch in tqdm(range(start, end + 1, delta), "Benchmarking epochs"):
         ckpt = get_checkpoint(config["checkpoints"], prefix, epoch)
-        model_def = yoloutils.parse_model_config(config["model_config"])
-        model = models.get_eval_model(model_def, config["img_size"], ckpt)
+        model.load_state_dict(torch.load(ckpt, map_location=model.device))
 
         results = evaluate.get_results(model, img_folder, config, list(), silent=True)
         out.write(f"{epoch},{results['val_loss']},{results['val_mAP']}\n")
@@ -386,7 +386,7 @@ def benchmark_batch_set(prefix, config, roll=None):
         save_results(results, filename)
 
 
-def benchmark_batch_test_set(prefix, config, reserve_batches=0, roll=10):
+def benchmark_batch_test_set(prefix, config, reserve_batches=0, roll=None):
     """Benchmark against a test set created from a specified number of batch sets,
     using a rolling average of epochs."""
     out_dir = config["output"]
@@ -410,14 +410,19 @@ def benchmark_batch_test_set(prefix, config, reserve_batches=0, roll=10):
     test_folder = LabeledSet(test_imgs, num_classes)
 
     for i, end_epoch in enumerate(epoch_splits):
-        filename = f"{out_dir}/{prefix}{i}_avg_benchmark_test_"
-        filename += f"{end_epoch}.csv"
+        filename = f"{out_dir}/{prefix}{i}_benchmark_"
+        if roll is None:
+            filename += "avg_"
+        filename += f"test_{end_epoch}.csv"
 
         if os.path.exists(filename):
             continue
 
-        results = benchmark_avg(
-            test_folder, prefix, 1, end_epoch, roll, config, roll=True
-        )
+        if roll is not None:
+            results = benchmark_avg(
+                test_folder, prefix, 1, end_epoch, roll, config, roll=True
+            )
+        else:
+            results = benchmark_avg(test_folder, prefix, 1, end_epoch, 10, config)
 
         save_results(results, filename)

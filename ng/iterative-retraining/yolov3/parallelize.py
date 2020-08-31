@@ -17,9 +17,10 @@ def run_parallel(func, args_list, init=True):
     """Run a function multiple times in parallel, with a pool size determined
     by the number of free GPUs.
 
-    func      - function to call
-    args_list - a list containing a tuple (or other iterable) of arguments
-    init      - specify if this is the first time running paralllel code within the process
+    Arguments
+        func       function to call
+        args_list  list containing a tuple (or other iterable) of arguments
+        init       specify if this is the first time running paralllel code within the process
     """
     if init:
         try:

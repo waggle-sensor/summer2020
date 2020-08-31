@@ -134,27 +134,30 @@ def make_conf_matrix(conf_mat, classes, filename):
     df.to_csv(filename)
 
 
-def aggregate_results(config, prefix, metric, delta=2, avg=False, roll=None):
+def display_series(config, opt):
     names = [
         "init",
         "sample",
         "all_iter",
         "all",
     ]
-    epoch_splits = utils.get_epoch_splits(config, prefix, True)
+    epoch_splits = utils.get_epoch_splits(config, opt.prefix, True)
     names += [f"cur_iter{i}" for i in range(len(epoch_splits))]
 
     results = pd.DataFrame(
         columns=["test_set", "epoch", "prec", "acc", "conf", "conf_std", "recall"]
     )
 
-    out_folder = f"{config['output']}/{prefix}-series"
-    if avg or roll:
-        out_folder += "-roll-avg" if roll else "-avg"
+    out_folder = f"{config['output']}/{opt.prefix}-series"
+    if opt.avg or opt.roll:
+        out_folder += "-roll-avg" if opt.roll else "-avg"
     for name in names:
-        for i in range(0, epoch_splits[-1], delta):
+        start_epoch = 1 if opt.prefix == "init" else epoch_splits[0]
+        for i in range(start_epoch, epoch_splits[-1], opt.delta):
             out_name = f"{out_folder}/{name}_{i}.csv"
+
             if not os.path.exists(out_name):
+                print(f"Skipping epoch {i} due to missing benchmark")
                 continue
 
             epoch_res, _ = rload.load_data(
@@ -171,11 +174,12 @@ def aggregate_results(config, prefix, metric, delta=2, avg=False, roll=None):
             }
             results = results.append(new_row, ignore_index=True)
 
-    results.to_csv(f"{out_folder}/{prefix}-series-stats.csv")
+    results.to_csv(f"{out_folder}/{opt.prefix}-series-stats.csv")
 
     xy_pairs = list()
     for name in names:
         if "cur_iter" in name:
+            # Combine the current iteration sets into one line
             if name == "cur_iter0":
                 filtered_data = results[results["test_set"].str.contains("cur_iter")]
                 name = "cur_iter"
@@ -183,10 +187,10 @@ def aggregate_results(config, prefix, metric, delta=2, avg=False, roll=None):
                 continue
         else:
             filtered_data = results[results["test_set"] == name]
-        xy_pairs.append((filtered_data["epoch"], filtered_data[metric], name))
+        xy_pairs.append((filtered_data["epoch"], filtered_data[opt.metric], name))
 
     plot_multiline(
-        xy_pairs, xlab="Epoch", ylab=f"Avg. {metric}", vert_lines=epoch_splits
+        xy_pairs, xlab="Epoch", ylab=f"Avg. {opt.metric}", vert_lines=epoch_splits
     )
 
 

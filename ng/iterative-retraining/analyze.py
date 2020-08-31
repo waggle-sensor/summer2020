@@ -58,18 +58,22 @@ def benchmark_all(prefixes, config, opt):
 def benchmark_batch_test(prefixes, config, opt, num_batches):
     batch_args = list()
     for prefix in prefixes:
-        batch_args.append((prefix, config, num_batches))
+        batch_args.append((prefix, config, num_batches, opt.roll_avg))
         if not config["parallel"]:
             bench.benchmark_batch_test_set(*batch_args[-1])
     if config["parallel"]:
         parallelize.run_parallel(bench.benchmark_batch_test_set, batch_args)
+
+    suffix = "_test*.csv"
+    if opt.roll_avg is None:
+        suffix = "_avg" + suffix
 
     charts.compare_benchmarks(
         config,
         prefixes,
         opt.metric,
         opt.metric2,
-        "_test*.csv",
+        suffix,
         compare_init=opt.compare_init,
         filter_sample=opt.filter_sample,
     )
@@ -79,7 +83,7 @@ def get_benchmark_suffix(opt):
     bench_suffix = "*.csv"
     if opt.batch_test:
         bench_suffix = "_test" + bench_suffix
-    if opt.roll:
+    if opt.roll_avg:
         bench_suffix = "_roll" + bench_suffix
     elif opt.avg:
         bench_suffix = "_avg" + bench_suffix
@@ -108,8 +112,11 @@ if __name__ == "__main__":
         "true-random",
     ]
 
-    if opt.benchmark and opt.prefix is None:
-        if opt.batch_test is None:
+    if opt.benchmark:
+        if opt.prefix is not None:
+            bench.benchmark_batch_set(opt.prefix, config, opt.roll_avg)
+            bench.series_benchmark(config, opt.prefix, avg=opt.avg, roll=opt.roll_avg)
+        elif opt.batch_test is None:
             benchmark_all(prefixes, config, opt)
         else:
             benchmark_batch_test(prefixes, config, opt, opt.batch_test)
@@ -143,12 +150,5 @@ if __name__ == "__main__":
         )
 
     elif opt.prefix is not None:
-        # Benchmark a batch set and display its results, both in a tabular form
-        # and as an interactive line graph
-        bench.benchmark_batch_set(opt.prefix, config, opt.roll_avg)
         charts.tabulate_batch_samples(config, opt.prefix, bench_suffix=bench_suffix)
-        if opt.prefix != "init":
-            bench.series_benchmark(config, opt.prefix, avg=opt.avg, roll=opt.roll_avg)
-            charts.aggregate_results(
-                config, opt.prefix, opt.metric, avg=opt.avg, roll=opt.roll_avg
-            )
+        charts.display_series(config, opt)

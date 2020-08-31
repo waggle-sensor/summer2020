@@ -68,11 +68,10 @@ def get_modules_filters(module_def, output_filters, hyperparams):
     return new_modules, filters
 
 
-def create_modules(module_defs):
+def create_modules(hyperparams, module_defs):
     """
     Constructs module list of layer blocks from module configuration in module_defs
     """
-    hyperparams = module_defs.pop(0)
     output_filters = [int(hyperparams["channels"])]
     module_list = nn.ModuleList()
     for module_i, module_def in enumerate(module_defs):
@@ -88,7 +87,7 @@ def create_modules(module_defs):
         if filters is not None:
             output_filters.append(filters)
 
-    return hyperparams, module_list
+    return module_list
 
 
 class Upsample(nn.Module):
@@ -277,8 +276,9 @@ class Darknet(nn.Module):
 
     def __init__(self, model_def, img_size=416):
         super(Darknet, self).__init__()
-        self.module_defs = model_def
-        self.hyperparams, self.module_list = create_modules(self.module_defs)
+        self.hyperparams = model_def[0]
+        self.module_defs = model_def[1:]
+        self.module_list = create_modules(self.hyperparams, self.module_defs)
         self.yolo_layers = [
             layer[0] for layer in self.module_list if hasattr(layer[0], "metrics")
         ]
@@ -422,13 +422,14 @@ class Darknet(nn.Module):
         fp.close()
 
 
-def get_eval_model(model_def, img_size, weights_path):
+def get_eval_model(model_def, img_size, weights_path=None):
     device = utils.get_device()
 
     # Set up model
     model = Darknet(model_def, img_size=img_size).to(device)
     model.device = device
-    model.load_state_dict(torch.load(weights_path, map_location=device))
+    if weights_path is not None:
+        model.load_state_dict(torch.load(weights_path, map_location=device))
     model.eval()  # Set in evaluation mode
 
     return model
