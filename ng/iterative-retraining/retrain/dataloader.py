@@ -32,10 +32,10 @@ class ImageFolder(Dataset):
     def __init__(self, src, img_size, prefix=str()):
         """
         Parameters:
-            src       source of the image folder. Can be a list or set of image paths,
-                      a text file of image paths, or a Darknet-labeled folder
-            img_size  square resolution to pad or downsize images to
-            prefix    string to represent the image folder. used in output filenames
+            src (str): source of the image folder. Can be a list or set of image paths,
+                a text file of image paths, or a Darknet-labeled folder
+            img_size (int): square resolution to pad or downsize images to
+            prefix (str): string to represent the image folder. used in output filenames
         """
         if isinstance(src, (list, set)):
             self.imgs = set(src)

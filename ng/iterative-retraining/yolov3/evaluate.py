@@ -7,6 +7,7 @@ from __future__ import division
 import random
 from PIL import Image
 from tqdm import tqdm
+
 import torch
 from torch.autograd import Variable
 import numpy as np
@@ -19,14 +20,22 @@ from terminaltables import AsciiTable
 
 from yolov3 import utils
 
+if torch.cuda.is_available():
+    from torch.cuda import FloatTensor
+else:
+    from torch import FloatTensor
+
 
 def detect(input_imgs, conf_thres, model, nms_thres=0.5):
     # Configure input
-    Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
-    input_imgs = Variable(input_imgs.type(Tensor)).to(model.device)
+    input_imgs = Variable(input_imgs.type(FloatTensor)).to(model.device)
 
     with torch.no_grad():
-        detections = model(input_imgs)
+        try:
+            detections = model(input_imgs)
+        except RuntimeError:
+            model.to(utils.get_device()[0])
+            return detect(input_imgs, conf_thres, model, nms_thres)
         detections = utils.non_max_suppression(detections, conf_thres, nms_thres)
     return detections
 
@@ -63,11 +72,10 @@ def match_detections(img_folder, detections, config):
     )
 
     device = utils.get_device()
-    Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
     boxes = list()
     for (_, imgs, targets) in dataloader:
 
-        imgs = Variable(imgs.to(device).type(Tensor), requires_grad=False)
+        imgs = Variable(imgs.to(device).type(FloatTensor), requires_grad=False)
 
         # Rescale target
         targets[:, 2:] = utils.xywh2xyxy(targets[:, 2:])
@@ -175,7 +183,6 @@ def evaluate(
         collate_fn=dataset.collate_fn,
     )
 
-    Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
     device = model.device
 
     labels = []
@@ -189,7 +196,7 @@ def evaluate(
         # Extract labels
         labels += targets[:, 1].tolist()
 
-        imgs = Variable(imgs.to(device).type(Tensor), requires_grad=False)
+        imgs = Variable(imgs.to(device).type(FloatTensor), requires_grad=False)
 
         loss, outputs = model(imgs, Variable(targets.to(device)))
         total_loss += loss.item()

@@ -1,9 +1,16 @@
 from __future__ import division
 import torch
 from torch import cuda, nn
+
 import numpy as np
-from retrain import utils
 import gpustat
+
+from retrain import utils
+
+if cuda.is_available():
+    from torch.cuda import FloatTensor, BoolTensor
+else:
+    from torch import FloatTensor, BoolTensor
 
 
 def weights_init_normal(m):
@@ -18,7 +25,7 @@ def weights_init_normal(m):
 def ap_per_class(tp, conf, pred_cls, target_cls):
     """ Compute the average precision, given the recall and precision curves.
     Source: https://github.com/rafaelpadilla/Object-Detection-Metrics.
-    Arguments
+    Args
         tp:    True positives (list).
         conf:  Objectness value from 0-1 (list).
         pred_cls: Predicted object classes (list).
@@ -349,9 +356,6 @@ def resize(image, size):
 
 
 def build_targets(pred_boxes, pred_cls, target, anchors, ignore_thres, device):
-
-    BoolTensor = cuda.BoolTensor if pred_boxes.is_cuda else torch.BoolTensor
-    FloatTensor = cuda.FloatTensor if pred_boxes.is_cuda else torch.FloatTensor
 
     n_b = pred_boxes.size(0)
     n_a = pred_boxes.size(1)

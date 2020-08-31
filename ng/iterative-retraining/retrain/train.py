@@ -117,7 +117,7 @@ def train(img_folder, opt, load_weights=None, device=None):
         device (str): PyTorch CUDA string of a GPU device. Looks for available devices if
             none is provided.
     Returns:
-        last_epoch: the epoch number where training was ended
+        last_epoch (int): the epoch number where training was ended
     """
     os.makedirs(opt["checkpoints"], exist_ok=True)
     os.makedirs(opt["output"], exist_ok=True)

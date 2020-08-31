@@ -6,7 +6,6 @@ Functions related to training, tensors, and image manipulation should be written
 in the yolov3 package.
 """
 
-
 import sys
 import os
 import glob
@@ -62,6 +61,10 @@ def parse_retrain_config(path):
                 options[key] = float(value)
             except ValueError:
                 options[key] = value
+    if "inherit" in options.keys():
+        for option, val in parse_retrain_config(options["inherit"]):
+            if option not in options.keys():
+                options[option] = val
     return options
 
 

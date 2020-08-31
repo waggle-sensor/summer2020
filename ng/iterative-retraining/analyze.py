@@ -64,29 +64,15 @@ def benchmark_batch_test(prefixes, config, opt, num_batches):
     if config["parallel"]:
         parallelize.run_parallel(bench.benchmark_batch_test_set, batch_args)
 
-    suffix = "_test*.csv"
-    if opt.roll_avg is None:
-        suffix = "_avg" + suffix
-
-    charts.compare_benchmarks(
-        config,
-        prefixes,
-        opt.metric,
-        opt.metric2,
-        suffix,
-        compare_init=opt.compare_init,
-        filter_sample=opt.filter_sample,
-    )
-
 
 def get_benchmark_suffix(opt):
     bench_suffix = "*.csv"
+    if opt.avg:
+        bench_suffix = "_avg" + bench_suffix
     if opt.batch_test:
         bench_suffix = "_test" + bench_suffix
-    if opt.roll_avg:
+    elif opt.roll_avg:
         bench_suffix = "_roll" + bench_suffix
-    elif opt.avg:
-        bench_suffix = "_avg" + bench_suffix
     return bench_suffix
 
 

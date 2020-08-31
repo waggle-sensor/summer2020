@@ -6,6 +6,11 @@ import numpy as np
 
 from yolov3 import utils
 
+if torch.cuda.is_available():
+    from torch.cuda import FloatTensor
+else:
+    from torch import FloatTensor
+
 
 def get_modules_filters(module_def, output_filters, hyperparams):
     new_modules = list()
@@ -130,7 +135,6 @@ class YOLOLayer(nn.Module):
     def compute_grid_offsets(self, grid_size, cuda):
         self.grid_size = grid_size
         g = self.grid_size
-        FloatTensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
         self.stride = self.img_dim / self.grid_size
         # Calculate offsets for each grid
         self.grid_x = (
@@ -155,10 +159,6 @@ class YOLOLayer(nn.Module):
         self.anchor_h = self.scaled_anchors[:, 1:2].view((1, self.num_anchors, 1, 1))
 
     def forward(self, x, targets=None, img_dim=None):
-
-        # Tensors for cuda support
-        FloatTensor = torch.cuda.FloatTensor if x.is_cuda else torch.FloatTensor
-
         self.img_dim = img_dim
         num_samples = x.size(0)
         grid_size = x.size(2)

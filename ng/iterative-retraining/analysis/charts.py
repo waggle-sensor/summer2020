@@ -134,6 +134,16 @@ def make_conf_matrix(conf_mat, classes, filename):
     df.to_csv(filename)
 
 
+def get_avg_metric_dict(results):
+    return {
+        "prec": rload.mean_metric(results, "precision"),
+        "acc": rload.mean_metric(results, "accuracy"),
+        "conf": rload.mean_avg_conf(results),
+        "conf_std": rload.mean_avg_conf_std(results),
+        "recall": rload.mean_metric(results, "recall"),
+    }
+
+
 def display_series(config, opt):
     names = [
         "init",
@@ -163,15 +173,9 @@ def display_series(config, opt):
             epoch_res, _ = rload.load_data(
                 out_name, by_actual=False, conf_thresh=config["pos_thres"]
             )
-            new_row = {
-                "test_set": name,
-                "epoch": i,
-                "prec": rload.mean_metric(epoch_res, "precision"),
-                "acc": rload.mean_metric(epoch_res, "accuracy"),
-                "conf": rload.mean_avg_conf(epoch_res),
-                "conf_std": rload.mean_avg_conf_std(epoch_res),
-                "recall": rload.mean_metric(epoch_res, "recall"),
-            }
+            new_row = get_avg_metric_dict(epoch_res)
+            new_row["test_set"] = name
+            new_row["epoch"] = i
             results = results.append(new_row, ignore_index=True)
 
     results.to_csv(f"{out_folder}/{opt.prefix}-series-stats.csv")
@@ -249,15 +253,10 @@ def tabulate_batch_samples(
         else:
             train_len = utils.get_epoch(benchmarks[i + 1]) - utils.get_epoch(benchmark)
 
-        data.loc[i] = [
-            i,
-            rload.mean_metric(results, "precision"),
-            rload.mean_metric(results, "accuracy"),
-            rload.mean_avg_conf(results),
-            rload.mean_avg_conf_std(results),
-            rload.mean_metric(results, "recall"),
-            train_len,
-        ]
+        new_row = get_avg_metric_dict(results)
+        new_row["batch"] = i
+        new_row["epochs_trained"] = train_len
+        data = data.append(new_row)
 
     if not silent:
         print("=== Metrics on Batch ===")
