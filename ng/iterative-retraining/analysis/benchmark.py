@@ -36,7 +36,7 @@ def get_img_detections(checkpoints, prefix, config, loader, silent):
     model_def = yoloutils.parse_model_config(config["model_config"])
     model = models.get_eval_model(model_def, config["img_size"])
     yoloutils.clear_vram()
-    
+
     for epoch in tqdm(checkpoints, "Benchmarking epochs", disable=silent):
         ckpt = get_checkpoint(config["checkpoints"], prefix, epoch)
         model.load_state_dict(torch.load(ckpt, map_location=model.device))

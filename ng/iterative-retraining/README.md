@@ -1,6 +1,6 @@
 # Iterative Retraining
 
-This folder collects several disjoint scripts from other folders into one module. The goal of this pipeline is to simulate the original training of a machine learning model (based on Darknet/YOLOv3), followed by several batch iterations of training and resampling on a sample set. 
+The goal of this pipeline is to simulate the original training of a machine learning model (based on Darknet/YOLOv3), followed by several batch iterations of training and resampling on a sample set. 
 
 ## Process
 
@@ -79,6 +79,35 @@ Parameters for basic YOLOv3 models, used for initial training, retraining, and b
 * `conf_thres`
 * `nms_thres`
 
+## Ground Truth Function
+
+**TODO** describe modification here
+
+## Training Output
+
+* Checkpoints: model weight state dictionaries from training models across all sampling methods, with an output frequency specified by `checkpoint_interval`. 
+  * Located in the specified checkpoint directory, with a file format of `<prefix>_ckpt_<epoch number>.pth`. The prefix is `init` if training a model without a starting baseline, and prefixes take on the name of their sampling method (provided in `userdefs.py`) when retraining. 
+  * Epoch numbers are *continuous* from the baseline epoch number, such that if we reload from `init_ckpt_50.pth` with the median threshold sampling method, `median-thresh_ckpt_51.pth` will be the next generated checkpoint.
+  * Checkpoints must be properly named for the analysis tool and benchmarking for sampling to work as expected
+* Batch splits: splits 
+* Train/validation/test splits
+* Sample sets
+* Benchmarks
+
+
+
+## Analyzing Results
+
+The exported benchmark `.csv` files on each batch set can be interpreted with any standard spreadsheet software, while the generated checkpoints can be loaded with PyTorch with the given Darknet model parameters and used for reference.
+
+For instructions on how to use the provided `analysis.py` module, please [refer to this document](./README-analysis.md). 
+
+## Augmentation Pipeline
+
+The augmentation and sampling piplines may be modified via functions in `userdefs.py`.
+
+**TODO**: describe existing ones and modification here
+
 ## Sampling Algorithm
 
 Various sampling approaches are defined in [`sampling.py`](./retrain/sampling.py) and can be used to create your own sampling functions. These functions take an input `ClassResult` (after running inference on a batch of images) and return a list of images that are sent back from the edge for training and testing (called the sample set). The included methods use the confidence of an image's inferred label(s) as the basis of its selection into the sample set.
@@ -131,14 +160,6 @@ If the function returns more images than the number specified in the configurati
 
 ### Extending Sampling Methods
 
+The arguments 
 
 
-
-## Training Output
-
-* Checkpoints
-* Batch splits
-* Sample sets
-* Benchmarks
-
-## Analyzing Results
