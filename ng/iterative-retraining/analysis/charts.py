@@ -4,6 +4,7 @@ from glob import glob
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
 import pandas as pd
+import numpy as np
 from sklearn.linear_model import LinearRegression
 
 from retrain import utils
@@ -159,8 +160,8 @@ def display_series(config, opt):
     )
 
     out_folder = f"{config['output']}/{opt.prefix}-series"
-    if opt.avg or opt.roll:
-        out_folder += "-roll-avg" if opt.roll else "-avg"
+    if opt.avg or opt.roll_avg:
+        out_folder += "-roll-avg" if opt.roll_avg else "-avg"
     for name in names:
         start_epoch = 1 if opt.prefix == "init" else epoch_splits[0]
         for i in range(start_epoch, epoch_splits[-1], opt.delta):
@@ -277,8 +278,16 @@ def compare_benchmarks(
 ):
     """Compares benchmarks on sample sets (before retraining) for sample methods."""
     sample_results = dict()
-    print("Avg.", metric)
+    print(metric)
 
+    if "init" in prefixes:
+        prefixes.remove("init")
+
+    sample_results["init"] = tabulate_batch_samples(
+        config, "init", bench_suffix=bench_suffix, silent=True, filter_samp=False
+    )
+
+    max_len = 0
     for prefix in prefixes:
         results = tabulate_batch_samples(
             config,
@@ -288,35 +297,36 @@ def compare_benchmarks(
             filter_samp=filter_sample,
         )[metric]
 
-        if prefix == "init":
-            sample_results[prefix] = results
-            continue
-        if len(sample_results["init"]) == 1 and len(results) != 1:
-            sample_results["init"] = pd.Series(
-                list(sample_results["init"]) * len(results)
-            )
-        if compare_init:
-            sample_results[prefix] = results - sample_results["init"]
-        else:
-            sample_results[prefix] = results
+        max_len = max(max_len, len(results))
+        sample_results[prefix] = results
+
+    init_vals = pd.DataFrame(np.repeat(sample_results["init"].values, max_len, axis=0))
+    init_vals.columns = sample_results["init"].columns
+    sample_results["init"] = init_vals[metric]
+
+    if compare_init:
+        for prefix, result in sample_results.items():
+            if prefix == "init":
+                continue
+            sample_results[prefix] = result - sample_results["init"]
+
     df = pd.DataFrame.from_dict(sample_results, orient="index")
     print(df)
 
     if metric2 is not None:
-        if "init" in prefixes:
-            prefixes.remove("init")
         df = pd.DataFrame(
             columns=["Method", f"avg. {metric}", f"batch avg. {metric2}"]
         ).set_index("Method")
 
-        init_vals = tabulate_batch_samples(
-            config, "init", bench_suffix=bench_suffix, silent=True, filter_samp=False
-        )
         print(f"Baseline avg {metric2}: ", init_vals[metric2][1:].mean())
 
         for prefix in prefixes:
             indep_var = tabulate_batch_samples(
-                config, prefix, bench_suffix=bench_suffix, silent=True, filter_samp=True
+                config,
+                prefix,
+                bench_suffix="_avg_1_*.csv",
+                silent=True,
+                filter_samp=True,
             )
             dep_var = tabulate_batch_samples(
                 config,

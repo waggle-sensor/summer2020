@@ -66,14 +66,17 @@ def benchmark_batch_test(prefixes, config, opt, num_batches):
 
 
 def get_benchmark_suffix(opt):
-    bench_suffix = "*.csv"
+    bench_suffix = "_*.csv"
     if opt.batch_test:
         bench_suffix = "_test" + bench_suffix
     elif opt.roll_avg:
         bench_suffix = "_roll" + bench_suffix
-    if opt.avg:
+    elif opt.avg:
         bench_suffix = "_avg" + bench_suffix
+    else:
+        bench_suffix = "_avg_1" + bench_suffix
     return bench_suffix
+
 
 def main():
     opt, config = get_args()
@@ -138,6 +141,7 @@ def main():
     elif opt.prefix is not None:
         charts.tabulate_batch_samples(config, opt.prefix, bench_suffix=bench_suffix)
         charts.display_series(config, opt)
+
 
 if __name__ == "__main__":
     main()
