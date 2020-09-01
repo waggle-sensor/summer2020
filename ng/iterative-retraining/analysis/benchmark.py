@@ -395,7 +395,9 @@ def benchmark_batch_set(prefix, config, roll=None):
         save_results(results, filename)
 
 
-def benchmark_batch_test_set(prefix, config, reserve_batches=0, roll=None):
+def benchmark_batch_test_set(
+    prefix, config, reserve_batches=0, roll=None, num_epochs=10
+):
     """Benchmark against a test set created from a specified number of batch sets,
     using a rolling average of epochs."""
     out_dir = config["output"]
@@ -432,6 +434,8 @@ def benchmark_batch_test_set(prefix, config, reserve_batches=0, roll=None):
                 test_folder, prefix, 1, end_epoch, roll, config, roll=True
             )
         else:
-            results = benchmark_avg(test_folder, prefix, 1, end_epoch, 10, config)
+            results = benchmark_avg(
+                test_folder, prefix, 1, end_epoch, num_epochs, config
+            )
 
         save_results(results, filename)

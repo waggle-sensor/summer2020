@@ -361,13 +361,13 @@ def display_benchmark(file, config):
     ).set_index("Class")
     for result in results:
         df.loc[result.name] = [
-            result.name,
             len(result),
             result.precision(),
+            result.accuracy(),
             result.recall(),
             np.mean(result.get_confidences()),
             np.std(result.get_confidences(), ddof=1),
         ]
-    df.loc["Overall"] = ["Overall", df["N"].sum()] + df.iloc[:, 2:].mean()
 
+    df.loc["Overall"] = [df["N"].sum(), *df.loc[:, "Prec":"Conf Std"].mean(axis=0)]
     print(df)

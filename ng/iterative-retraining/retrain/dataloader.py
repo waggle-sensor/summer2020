@@ -39,8 +39,11 @@ class ImageFolder(Dataset):
         """
         if isinstance(src, (list, set)):
             self.imgs = set(src)
-        elif ".txt" in src and os.path.isfile(src):
-            self.imgs = get_lines(src)
+        elif ".txt" in src:
+            if os.path.isfile(src):
+                self.imgs = get_lines(src)
+            else:
+                print(f"{src} is an invalid file. Ignoring...")
         elif os.path.isdir(src):
             self.imgs = get_images(src)
         else:

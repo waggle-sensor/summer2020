@@ -1,10 +1,20 @@
-# Iterative Retraining
+# Iterative Bandwidth Aware Learning
 
-The goal of this pipeline is to simulate the original training of a machine learning model (based on Darknet/YOLOv3), followed by several batch iterations of training and resampling on a sample set. 
+This PyTorch-based pipeline simulates the original training of a machine learning model (with Darknet/YOLOv3 as the built-in architecture), followed by several batch iterations of continued learning on a sample set of images. The goal of this pipeline is to experimentally determine the most effective methods to sample images on the edge for retraining machine learning models, given limited bandwidth. It is currently configured to simulate this process, without actually deploying code on edge devices, though its components can be easily modified for production.
 
-## Process
+To run the main module for sampling and retraining (and optionally training an initial model), execute the following:
 
-User-defined parts of this process (formalized in the parameters section) are italicized
+```
+python3 . --config <config file> [--reload <checkpoint model>]
+```
+
+A [configuration file](#configuration-parameters) with various parameters (see below) must be created and specified with `--config`. 
+
+If the `--reload` option is passed in with checkpoint model weights (matching the given model), the initial training process will be skipped, and sampling/training will begin immediately. Note that checkpoint model should follow the appropriate [naming scheme](#training-output) to prevent errors.
+
+## Process Overview
+
+User-defined parts of this pipeline (formalized in the parameters section) are italicized
 
 1. An *initial data set* labeled with bounding boxes in the Darknet format is provided, based on a *provided class list*. This is separated into `data/images` and `data/labels` folders.
 2. This data set is randomly split into training, validation, and test sets, stratified by class with *a certain proportion*
@@ -22,7 +32,7 @@ User-defined parts of this process (formalized in the parameters section) are it
 
 ## Configuration Parameters
 
-These are stored in [`retrain.cfg`](./config/retrain.cfg) and should remain consistent for a given training and sample set
+These are stored in [`retrain.cfg`](./config/retrain.cfg) (or moved to the file of your choice) and should remain consistent for a given training and sample set
 
 **Overall Parameters**
 
@@ -51,6 +61,7 @@ High-level parameters affecting both initial training and retraining
 * `train_sample`: propotion of images in sample batch set to use for training.
 * `valid_sample`: as above, but for validation. The rest will be used for testing.
 * `retrain_new`: proportion of images in the revised training/test sets that will be from the sampling batch. The rest will be randomly selected from old training/test data
+* `parallel`: boolean value to determine if GPU parallelization and multithreading will be used when running the sampling/retraining and benchmarking pipelines, with multiple sampling methods in parallel. 
 
 **Output Folders**
 
@@ -76,12 +87,15 @@ Parameters for basic YOLOv3 models, used for initial training, retraining, and b
 * `multiscale`
 * `n_cpu`
 * `iou_thres`
-* `conf_thres`
 * `nms_thres`
+* `conf_thres`: minimum class confidence for a single detection to be counted when performing non-max suppression
+* `pos_thres`: minimum confidence (object and class predictions multiplied) for a detection to be considered a positive result. Modify this as needed based on confidence score distributions in benchmarks.
 
 ## Ground Truth Function
 
-**TODO** describe modification here
+Aside from the configuration file, the [`label_sample_set(img_path)` function in `userdefs.py`](./userdefs.py#L16) must be correctly completed for the pipeline to work as expected. Because the pipeline is meant to simulate benchmarking and sampling at the edge alongside labeling and retraining on a cloud server, it is not assumed that sample images are already labeled with the ground truth. The `label_sample_set` function thus returns a list of labels in [Darknet format](https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custom-objects), given an image path.
+
+If your dataset is already cleaned and labeled, with labels having a `.txt` extension instead of an image extension and located in a `labels` folder, there is no need to modify the function.
 
 ## Training Output
 
@@ -89,10 +103,18 @@ Parameters for basic YOLOv3 models, used for initial training, retraining, and b
   * Located in the specified checkpoint directory, with a file format of `<prefix>_ckpt_<epoch number>.pth`. The prefix is `init` if training a model without a starting baseline, and prefixes take on the name of their sampling method (provided in `userdefs.py`) when retraining. 
   * Epoch numbers are *continuous* from the baseline epoch number, such that if we reload from `init_ckpt_50.pth` with the median threshold sampling method, `median-thresh_ckpt_51.pth` will be the next generated checkpoint.
   * Checkpoints must be properly named for the analysis tool and benchmarking for sampling to work as expected
-* Batch splits: splits 
-* Train/validation/test splits
-* Sample sets
-* Benchmarks
+* Batch splits: batches of images from the sample set used for benchmarking and retraining, with a size based on `sampling_batch`
+  * Splits are plain text lists of image paths, with a file format of `sample<batch number>.txt`. The split number starts from 0
+  * If the sample set contains leftover images (i.e. `sampling_batch` doesn't evenly divide the number of labeled images), the last batch split with fewer images will be generated but will not be used for sampling
+  * Batches are randomly generated, without stratifying by class
+* Benchmarks: CSV files containing the inferencing results from averaging a set of linearly-spaced models generated prior to the batch split we are inferencing on. This file is named `<sampling method><batch number>_benchmark_avg_1_<last epoch>.csv`.
+  * Columns contain the image path for an inference, the detected label, the ground truth label (if available), output confidence as an average of all detections, standard deviation of the confidences when taking the average, and if the detection was a "hit" (true positive or false negative, in contrast to FP/TN)
+  * If the ground truth bounding box doesn't overlap with the detected box by more than `iou_thres`, the ground truth and inferred label will be listed in two separate rows
+  * Different types of benchmarks may be generated with the analysis tool, aside from the one output by training
+* Sample sets: unlabeled lists of images that are "sent back" from the edge based on benchmark results, named as `<sampling method><batch number>_sample_<epoch number>.txt`. These are later split into train/validation/test sets
+* Train/validation/test splits: plain text files of image paths containing splits, generated after ground truth is known, with a file format of `<sampling method><batch number>_{test,train,valid}.txt`.
+  * Note that images from the same batch may appear in the validation set of one sampling method but the training set of another sampling method due to the pseudo-random nature of sampling and the iterative stratification algorithm
+  * Within the same sampling method, images will never appear in two sets, even across batches
 
 
 
@@ -104,9 +126,11 @@ For instructions on how to use the provided `analysis.py` module, please [refer 
 
 ## Augmentation Pipeline
 
-The augmentation and sampling piplines may be modified via functions in `userdefs.py`.
+The augmentation and sampling piplines may be modified via functions in `userdefs.py`, similar to the ground truth function. The current pipeline relies on the [Albumentations library](https://github.com/albumentations-team/albumentations) for augmenting images for (re)training, as it provides a flexible way to transform bounding boxes alongside images. 
 
-**TODO**: describe existing ones and modification here
+A "minor" augmentation is applied on each image, with a probability of a "major" one. These can be modified in `get_augmentations()`. Note that the current transforms rely on a [fork of the library](https://github.com/spencerng/albumentations) to provide some bounding box transformation functions.
+
+If you want to modify the entire augmentation pipeline with your own functions, feel free to modify [`augment()` and `augment_img()` in `augment.py`](./retrain/augment.py#L51).
 
 ## Sampling Algorithm
 
@@ -160,6 +184,19 @@ If the function returns more images than the number specified in the configurati
 
 ### Extending Sampling Methods
 
-The arguments 
+The arguments in the functions provided in `sampling.py` also allow for flexibility without needing to create your own sampling methods from scratch. For example, the function `in_range_sample(results, min_val, max_val)` allows you to create simple cutoffs, which you can place in the dictionary returned in `get_sample_methods()`.
+
+The function `prob_sample(result, desired, prob_func, *func_args, **func_kwargs)` also allows you to define your own probability curve `prob_func`, which takes in an input confidence in [0, 1) and returns the probability of choosing that image. By listing `prob_sample` in the dictionary along with the appropriate arguments, you can easily sample along any probability density function.
 
 
+## Architecture Modifications
+
+Many of the pipeline's scripts rely on a modified [PyTorch implementation of YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) included in the `yolov3` package. However, if you want to expand it to other image network architectures, you may want to modify [`benchmark_avg()` in `benchmark.py`](./analysis/benchmark.py#L147) and its related functions to create a similar dataframe of results with inferred labels and confidences. Training functions in the [main module](./__main__.py) and [`retrain.py`](./retrain/retrain.py) would also have to be substituted, though sampling functions could remain unchanged.
+
+For sampling other types of data beyond images, you will need to modify the `ImageFolder` and `LabeledSet` class objects in [`dataloader.py`](./retrain/dataloader.py) to generate splits and fetch data.
+
+## Further Information
+
+For more scientific background on this learning pipeline and how its various aspects were conceived, check out [this article on the Sage website](https://sagecontinuum.org/science/bandwidth-aware-learning/).
+
+Feel free to also contact me at spencerng [at] uchicago [dot] edu with any questions or comments!

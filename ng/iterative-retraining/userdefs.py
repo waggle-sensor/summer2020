@@ -13,6 +13,24 @@ import albumentations.augmentations.transforms as trans
 import retrain.sampling as sample
 
 
+def label_sample_set(img_path, classes):
+    """Sample function to label an image path with its ground truth with a list of labels.
+
+    This function should be customized (e.g. including a GUI to annotate) according to
+    your data and its existing annotations, if any.
+    It should return a list of tuples, with each tuple representing a label with the values
+    (class_label, bounding_box_x_center, bb_y_center, bb_width, bb_height).
+    These coordinates should also be normalized according to the image's width and height.
+    """
+    path = img_path.replace("images", "labels")[:-4] + ".txt"
+    if os.path.exists(path):
+        labels = map(lambda x: map(float, x.split(" ")), open(path).read().split("\n"))
+        for label in labels:
+            label[0] = classes[int(label[0])]
+        return labels
+    return []
+
+
 def get_augmentations():
     """Get a list of 'major' and 'minor' augmentation functions for the pipeline in a dictionary."""
     return {
@@ -61,23 +79,6 @@ def multi_aug(augs, major=True, bbox_params=None):
         p=1.0,
         bbox_params=bbox_params,
     )
-
-
-def label_sample_set(img_path, classes):
-    """Sample function to label an image path with its ground truth with a list of labels.
-
-    This function is customizable (e.g. including a GUI to annotate) depending on your needs.
-    It should return a list of tuples, with each tuple representing a label with the values
-    (class_label, bounding_box_x_center, bb_y_center, bb_width, bb_height)
-    These coordinates should also be normalized according to the image's width and height.
-    """
-    path = img_path.replace("images", "classes")[:-4] + ".txt"
-    if os.path.exists(path):
-        labels = map(lambda x: map(float, x.split(" ")), open(path).read().split("\n"))
-        for label in labels:
-            label[0] = classes[int(label[0])]
-        return labels
-    return []
 
 
 def get_sample_methods():
