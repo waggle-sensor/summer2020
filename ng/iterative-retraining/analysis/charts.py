@@ -198,9 +198,9 @@ def display_series(config, opt):
     )
 
 
-def visualize_conf(prefix, benchmark, sample_filter=False, pos_thres=0.5):
+def visualize_conf(prefix, benchmark, filter_sample=False, pos_thres=0.5):
     kwargs = dict()
-    if sample_filter:
+    if filter_sample:
         folder = "/".join(benchmark.split("/")[:-1])
         epoch = utils.get_epoch(benchmark)
         sampled_imgs = glob(f"{folder}/{prefix}*_sample_{epoch}.txt")[0]
@@ -351,13 +351,9 @@ def compare_benchmarks(
         linear_regression(df)
 
 
-def display_benchmark(file, config, filter_sample=False):
+def display_benchmark(file, config):
     results, _ = rload.load_data(
-        file,
-        by_actual=False,
-        add_all=False,
-        filter=filter_sample,
-        conf_thresh=config["pos_thres"],
+        file, by_actual=False, add_all=False, conf_thresh=config["pos_thres"],
     )
 
     df = pd.DataFrame(

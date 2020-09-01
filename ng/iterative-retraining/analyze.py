@@ -28,6 +28,8 @@ def get_args():
     parser.add_argument("--benchmark", action="store_true", default=False)
     parser.add_argument("--batch_test", type=int, default=None)
     parser.add_argument("--visualize_conf", default=None)
+    parser.add_argument("--view_benchmark", default=None)
+
     parser.add_argument("--filter_sample", action="store_true", default=False)
     parser.add_argument("--compare_init", action="store_true", default=False)
     parser.add_argument("--metric", default="prec")
@@ -138,7 +140,7 @@ def main():
             opt.prefix, opt.visualize_conf, opt.filter_sample, config["pos_thres"]
         )
     elif opt.view_benchmark is not None:
-        charts.display_benchmark(opt.view_benchmark, config, opt.filter_sample)
+        charts.display_benchmark(opt.view_benchmark, config)
 
     elif opt.prefix is not None:
         charts.tabulate_batch_samples(config, opt.prefix, bench_suffix=bench_suffix)
