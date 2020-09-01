@@ -67,9 +67,9 @@ def benchmark_batch_test(prefixes, config, opt, num_batches):
 
 def get_benchmark_suffix(opt):
     bench_suffix = "_*.csv"
-    if opt.batch_test:
+    if opt.batch_test is not None:
         bench_suffix = "_test" + bench_suffix
-    elif opt.roll_avg:
+    elif opt.roll_avg is not None:
         bench_suffix = "_roll" + bench_suffix
     elif opt.avg:
         bench_suffix = "_avg" + bench_suffix
@@ -137,6 +137,8 @@ def main():
         charts.visualize_conf(
             opt.prefix, opt.visualize_conf, opt.filter_sample, config["pos_thres"]
         )
+    elif opt.view_benchmark is not None:
+        charts.display_benchmark(opt.view_benchmark, config, opt.filter_sample)
 
     elif opt.prefix is not None:
         charts.tabulate_batch_samples(config, opt.prefix, bench_suffix=bench_suffix)

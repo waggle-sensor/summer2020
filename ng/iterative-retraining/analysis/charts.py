@@ -140,7 +140,8 @@ def get_avg_metric_dict(results):
         "prec": rload.mean_metric(results, "precision"),
         "acc": rload.mean_metric(results, "accuracy"),
         "conf": rload.mean_avg_conf(results),
-        "conf_std": rload.mean_avg_conf_std(results),
+        "conf_std": rload.mean_conf_std(results),
+        "detect_conf_std": rload.mean_avg_detect_conf_std(results),
         "recall": rload.mean_metric(results, "recall"),
     }
 
@@ -155,9 +156,7 @@ def display_series(config, opt):
     epoch_splits = utils.get_epoch_splits(config, opt.prefix, True)
     names += [f"cur_iter{i}" for i in range(len(epoch_splits))]
 
-    results = pd.DataFrame(
-        columns=["test_set", "epoch", "prec", "acc", "conf", "conf_std", "recall"]
-    )
+    results = list()
 
     out_folder = f"{config['output']}/{opt.prefix}-series"
     if opt.avg or opt.roll_avg:
@@ -174,10 +173,10 @@ def display_series(config, opt):
             epoch_res, _ = rload.load_data(
                 out_name, by_actual=False, conf_thresh=config["pos_thres"]
             )
-            new_row = get_avg_metric_dict(epoch_res)
-            new_row["test_set"] = name
-            new_row["epoch"] = i
-            results = results.append(new_row, ignore_index=True)
+            new_row = {"test_set": name, "epoch": i, **get_avg_metric_dict(epoch_res)}
+            results.append(new_row)
+
+    results = pd.DataFrame.from_dict(results, orient="columns")
 
     results.to_csv(f"{out_folder}/{opt.prefix}-series-stats.csv")
 
@@ -230,10 +229,8 @@ def tabulate_batch_samples(
 
     benchmarks = utils.sort_by_epoch(bench_str)
     checkpoints = utils.sort_by_epoch(f"{config['checkpoints']}/{prefix}*.pth")
-    data = pd.DataFrame(
-        columns=["batch", "prec", "acc", "conf", "conf_std", "recall", "epochs_trained"]
-    )
 
+    data = list()
     for i, benchmark in enumerate(benchmarks):
         kwargs = dict()
         if filter_samp and prefix != "init":
@@ -254,10 +251,14 @@ def tabulate_batch_samples(
         else:
             train_len = utils.get_epoch(benchmarks[i + 1]) - utils.get_epoch(benchmark)
 
-        new_row = get_avg_metric_dict(results)
-        new_row["batch"] = i
-        new_row["epochs_trained"] = train_len
-        data = data.append(new_row, ignore_index=True)
+        new_row = {
+            "batch": i,
+            **get_avg_metric_dict(results),
+            "epochs_trained": train_len,
+        }
+
+        data.append(new_row)
+    data = pd.DataFrame.from_dict(data, orient="columns")
     data.set_index("batch")
 
     if not silent:
@@ -287,7 +288,7 @@ def compare_benchmarks(
         config, "init", bench_suffix=bench_suffix, silent=True, filter_samp=False
     )
 
-    max_len = 0
+    max_len = 1
     for prefix in prefixes:
         results = tabulate_batch_samples(
             config,
@@ -297,7 +298,8 @@ def compare_benchmarks(
             filter_samp=filter_sample,
         )[metric]
 
-        max_len = max(max_len, len(results))
+        if "test" in bench_suffix:
+            max_len = max(max_len, len(results))
         sample_results[prefix] = results
 
     init_vals = pd.DataFrame(np.repeat(sample_results["init"].values, max_len, axis=0))
@@ -347,3 +349,29 @@ def compare_benchmarks(
 
         print(df.sort_values(df.columns[0]))
         linear_regression(df)
+
+
+def display_benchmark(file, config, filter_sample=False):
+    results, _ = rload.load_data(
+        file,
+        by_actual=False,
+        add_all=False,
+        filter=filter_sample,
+        conf_thresh=config["pos_thres"],
+    )
+
+    df = pd.DataFrame(
+        columns=["Class", "N", "Prec", "Acc", "Recall", "Avg. Conf", "Conf Std"]
+    ).set_index("Class")
+    for result in results:
+        df.loc[result.name] = [
+            result.name,
+            len(result),
+            result.precision(),
+            result.recall(),
+            np.mean(result.get_confidences()),
+            np.std(result.get_confidences(), ddof=1),
+        ]
+    df.loc["Overall"] = ["Overall", df["N"].sum()] + df.iloc[:, 2:].mean()
+
+    print(df)

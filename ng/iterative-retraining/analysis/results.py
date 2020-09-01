@@ -56,8 +56,17 @@ def mean_avg_conf(class_results):
     return stats.mean(stats.mean(res.get_confidences()) for res in class_results)
 
 
-def mean_avg_conf_std(class_results):
-    """Compute the mean average standard deviation for each class."""
+def mean_conf_std(class_results):
+    """Compute the mean standard deviation of the confidences of each class."""
+    if len(class_results) == 0:
+        return None
+    class_vars = [stats.variance(res.get_confidences()) for res in class_results]
+    return sqrt(stats.mean(class_vars))
+
+
+def mean_avg_detect_conf_std(class_results):
+    """Compute the mean average standard deviation for each class, based on the standard
+    deviations of each image's bounding boxes confidence."""
     if len(class_results) == 0:
         return None
     mean_class_vars = list()
