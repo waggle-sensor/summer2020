@@ -62,6 +62,9 @@ def sample_retrain(
             retrain_files = benchmark_sample(
                 sample_method, sample_labeled, config, i, last_epoch
             )
+
+            # When deploying at the edge, this would be where data is
+            # sent from nodes to the Beehive, along with the benchmark file
             with open(sample_filename, "w+") as out:
                 out.write("\n".join(retrain_files))
 

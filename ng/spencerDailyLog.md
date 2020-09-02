@@ -1287,3 +1287,16 @@ true-random          0.334889  0.370553  0.353503  0.614575  0.644407  0.669578 
   * Created a new measurement, average `conf_std`, to measure the spread of confidences for a particular sampling method
     * There's a weak to moderate positive correlation between this and precision improvement
   * Sticking with the rolling average benchmarks due to higher recall (~90%) compared to linear average (~75%)
+
+**Wednesday, September 2**
+
+* Continued benchmarking on data, particularly the 75% bandwidth training
+* Discussed my project with Rick
+* Continued documenting analysis tool and overall program
+* Read over federated learning papers, particularly those referencing bandwidth limitations
+* Added dockerfile - needs testing
+* TODO
+  * Need to make batch test set series function 
+  * Compile bandwidth graphs from data - hold one sampling method constant?
+  * Finish writing analysis documentation
+  * Continue writing paper

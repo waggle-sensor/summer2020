@@ -1,4 +1,4 @@
-# Iterative Bandwidth Aware Learning
+# Iterative Bandwidth-Aware Learning
 
 This PyTorch-based pipeline simulates the original training of a machine learning model (with Darknet/YOLOv3 as the built-in architecture), followed by several batch iterations of continued learning on a sample set of images. The goal of this pipeline is to experimentally determine the most effective methods to sample images on the edge for retraining machine learning models, given limited bandwidth. It is currently configured to simulate this process, without actually deploying code on edge devices, though its components can be easily modified for production.
 
@@ -86,8 +86,8 @@ Parameters for basic YOLOv3 models, used for initial training, retraining, and b
 * `checkpoint_interval`
 * `multiscale`
 * `n_cpu`
-* `iou_thres`
-* `nms_thres`
+* `iou_thres`: minimum overlap threshold (as calculated by intersect over union) for bounding box detections to be merged and/or counted as an accurate detection when averaging the results of inferencing with multple models
+* `nms_thres`: minimum IOU threshold for overlapping bounding boxes to be removed when inferencing with a single model
 * `conf_thres`: minimum class confidence for a single detection to be counted when performing non-max suppression
 * `pos_thres`: minimum confidence (object and class predictions multiplied) for a detection to be considered a positive result. Modify this as needed based on confidence score distributions in benchmarks.
 

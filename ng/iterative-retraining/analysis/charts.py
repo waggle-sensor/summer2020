@@ -306,7 +306,7 @@ def compare_benchmarks(
     init_vals.columns = sample_results["init"].columns
     sample_results["init"] = init_vals[metric]
 
-    if compare_init:
+    if compare_init and metric2 is None:
         for prefix, result in sample_results.items():
             if prefix == "init":
                 continue

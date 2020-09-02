@@ -15,25 +15,34 @@ import analysis.benchmark as bench
 from analysis import charts
 
 
-def get_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--config", required=True)
-    parser.add_argument("--prefix", default=None, help="prefix of model to test")
+def get_args(prefixes):
+    parser = argparse.ArgumentParser(description="Analyze training output data")
+    parser.add_argument(
+        "--config", required=True, help="configuration file for output data"
+    )
+    parser.add_argument(
+        "--prefix", choices=prefixes, default=None, help="prefix of model to test"
+    )
 
-    parser.add_argument("--avg", action="store_true", default=False)
-    parser.add_argument("--roll_avg", type=int, default=None)
+    group = parser.add_mutually_exclusive_group()
+
+    group.add_argument("--avg", action="store_true", default=False)
+    group.add_argument("--roll_avg", type=int, default=None)
+    parser.add_argument("--batch_test", type=int, default=None)
+
     parser.add_argument("--delta", type=int, default=4)
 
     parser.add_argument("--tabulate", action="store_true", default=False)
     parser.add_argument("--benchmark", action="store_true", default=False)
-    parser.add_argument("--batch_test", type=int, default=None)
     parser.add_argument("--visualize_conf", default=None)
     parser.add_argument("--view_benchmark", default=None)
 
     parser.add_argument("--filter_sample", action="store_true", default=False)
     parser.add_argument("--compare_init", action="store_true", default=False)
-    parser.add_argument("--metric", default="prec")
-    parser.add_argument("--metric2", default=None)
+
+    metric_names = ["prec", "acc", "recall", "conf", "conf_std", "detect_conf_std"]
+    parser.add_argument("--metric", choices=metric_names, default="prec")
+    parser.add_argument("--metric2", choices=metric_names, default=None)
 
     opt = parser.parse_args()
     config = utils.parse_retrain_config(opt.config)
@@ -85,9 +94,6 @@ def get_benchmark_suffix(opt):
 
 
 def main():
-    opt, config = get_args()
-    bench_suffix = get_benchmark_suffix(opt)
-
     prefixes = ["init"] + list(get_sample_methods().keys())
 
     # Delete this array for production; used for easy analysis purposes only
@@ -105,6 +111,9 @@ def main():
         "random",
         "true-random",
     ]
+
+    opt, config = get_args(prefixes)
+    bench_suffix = get_benchmark_suffix(opt)
 
     if opt.benchmark:
         if opt.prefix is not None:
