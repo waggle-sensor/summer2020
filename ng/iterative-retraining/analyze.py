@@ -40,7 +40,15 @@ def get_args(prefixes):
     parser.add_argument("--filter_sample", action="store_true", default=False)
     parser.add_argument("--compare_init", action="store_true", default=False)
 
-    metric_names = ["prec", "acc", "recall", "conf", "conf_std", "detect_conf_std"]
+    metric_names = [
+        "prec",
+        "acc",
+        "recall",
+        "conf",
+        "conf_std",
+        "detect_conf_std",
+        "epochs_trained",
+    ]
     parser.add_argument("--metric", choices=metric_names, default="prec")
     parser.add_argument("--metric2", choices=metric_names, default=None)
 
@@ -56,13 +64,13 @@ def benchmark_all(prefixes, config, opt):
     series_args = list()
     for prefix in prefixes:
         batch_args.append((prefix, config, opt.roll_avg))
-        series_args.append((config, prefix, opt.delta, opt.avg, opt.roll_avg))
+        series_args.append((config, opt, prefix))
 
         if not config["parallel"]:
-            bench.benchmark_batch_set(*batch_args[-1])
+            bench.benchmark_next_batch(*batch_args[-1])
             bench.series_benchmark(*series_args[-1])
     if config["parallel"]:
-        parallelize.run_parallel(bench.benchmark_batch_set, batch_args)
+        parallelize.run_parallel(bench.benchmark_next_batch, batch_args)
         parallelize.run_parallel(bench.series_benchmark, series_args, False)
 
 
@@ -117,8 +125,8 @@ def main():
 
     if opt.benchmark:
         if opt.prefix is not None:
-            bench.benchmark_batch_set(opt.prefix, config, opt.roll_avg)
-            bench.series_benchmark(config, opt.prefix, avg=opt.avg, roll=opt.roll_avg)
+            bench.benchmark_next_batch(opt.prefix, config, opt.roll_avg)
+            bench.series_benchmark(config, opt, opt.prefix)
         elif opt.batch_test is None:
             benchmark_all(prefixes, config, opt)
         else:

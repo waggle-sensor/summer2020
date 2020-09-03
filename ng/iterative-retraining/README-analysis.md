@@ -17,4 +17,4 @@ python3 analyze.py --config <retrain config file> [--benchmark [--avg --roll <ep
 	[--filter_sample --compare_init --batch_test <test set size>] [--metric <metric name> --metric2 <metric name>]
 ```
 
-The only required argument is 
+The only required argument is `--config` along with the path to the pipeline configuration file, 
