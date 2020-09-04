@@ -16,6 +16,8 @@ If the `--reload` option is passed in with checkpoint model weights (matching th
 
 User-defined parts of this pipeline (formalized in the parameters section) are italicized
 
+![pipeline diagram](assets/pipeline.png)
+
 1. An *initial data set* labeled with bounding boxes in the Darknet format is provided, based on a *provided class list*. This is separated into `data/images` and `data/labels` folders.
 2. This data set is randomly split into training, validation, and test sets, stratified by class with *a certain proportion*
 3. Data augmentation is performed on the training set, with a target of a *particular number of samples per class* to prevent class imbalance. Classes with fewer images will thus have more augmentations for a given training image. 1-2 "minor transformations" (e.g. RGB, HSV, and brightness/contrast shifts) are applied, with the option of *"major" transformations* (e.g. distortions, random crops, affine transforms).

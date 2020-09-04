@@ -102,7 +102,7 @@ class ClassResults:
             row["conf"] = float(row["conf"])
             try:
                 row["conf_std"] = float(row["conf_std"])
-            except KeyError:
+            except (KeyError, ValueError):
                 row["conf_std"] = 0
             if row["conf"] >= conf_thresh:
                 if row["hit"] == "True":

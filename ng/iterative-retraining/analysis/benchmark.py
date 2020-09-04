@@ -327,7 +327,6 @@ def series_benchmark(config, opt, prefix):
     #    4a. plot the overall test set performance as a function of epoch number
     # 5. (optional) serialize results of the overall test set as JSON for improved speed
     #    when using averages
-
     test_sets = get_test_sets(config, prefix)
     epoch_splits = utils.get_epoch_splits(config, prefix, True)
 
@@ -343,6 +342,7 @@ def series_benchmark(config, opt, prefix):
         out_folder += "-roll-avg" if opt.roll_avg else "-avg"
     os.makedirs(out_folder, exist_ok=True)
 
+    num_ckpts = get_num_ckpts(config, opt)
     for i, split in enumerate(epoch_splits):
         if i == 0:
             if "baseline" not in prefix or prefix != "init":
@@ -367,16 +367,18 @@ def series_benchmark(config, opt, prefix):
 
                 if opt.roll_avg:
                     result_df = benchmark_avg(
-                        img_folder, prefix, 1, epoch, opt.roll_avg, config, roll=True
+                        img_folder, prefix, 1, epoch, num_ckpts, config, roll=True
                     )
                 elif opt.avg:
-                    result_df = benchmark_avg(img_folder, prefix, 1, epoch, 5, config)
+                    result_df = benchmark_avg(
+                        img_folder, prefix, 1, epoch, num_ckpts, config
+                    )
                 else:
                     result_df = benchmark(img_folder, prefix, epoch, config)
                 save_results(result_df, out_name)
 
 
-def benchmark_next_batch(prefix, config, roll=None):
+def benchmark_next_batch(prefix, config, opt):
     """See initial training performance on batch splits."""
     out_dir = config["output"]
     num_classes = len(utils.load_classes(config["class_list"]))
@@ -390,12 +392,12 @@ def benchmark_next_batch(prefix, config, roll=None):
 
     def get_filename(i, end_epoch):
         filename = f"{out_dir}/{prefix}{i}_benchmark_"
-        filename += "roll_" if roll else "avg_"
+        filename += "roll_" if opt.roll_avg else "avg_"
         filename += f"1_{end_epoch}.csv"
         return filename
 
     benchmark_batch_splits(
-        prefix, batch_folders, epoch_splits, get_filename, config, roll
+        prefix, batch_folders, epoch_splits, get_filename, config, opt
     )
 
 
@@ -416,7 +418,7 @@ def get_batch_test_set(config, reserve_batches):
     return LabeledSet(test_imgs, num_classes), batches_removed
 
 
-def benchmark_batch_test_set(prefix, config, reserve_batches=0, roll=None):
+def benchmark_batch_test_set(prefix, config, opt, reserve_batches=0):
     """Benchmark against a test set created from a specified number of batch sets,
     using a rolling average of epochs."""
     test_folder, batches_removed = get_batch_test_set(config, reserve_batches)
@@ -427,31 +429,42 @@ def benchmark_batch_test_set(prefix, config, reserve_batches=0, roll=None):
 
     def get_filename(i, end_epoch):
         filename = f"{config['output']}/{prefix}{i}_benchmark_"
-        if roll is None:
+        if opt.roll_avg is None:
             filename += "avg_"
         filename += f"test_{end_epoch}.csv"
         return filename
 
     batch_folders = [test_folder] * len(epoch_splits)
     benchmark_batch_splits(
-        prefix, batch_folders, epoch_splits, get_filename, config, roll
+        prefix, batch_folders, epoch_splits, get_filename, config, opt
     )
 
 
+def get_num_ckpts(config, opt):
+    if opt.roll_avg is not None:
+        return opt.roll_avg
+    if opt.avg == "" or opt.avg is False:
+        return config["conf_check_num"]
+
+    return opt.avg
+
+
 def benchmark_batch_splits(
-    prefix, batch_sets, epoch_splits, filename_func, config, roll=None
+    prefix, batch_sets, epoch_splits, filename_func, config, opt
 ):
+    num_ckpts = get_num_ckpts(config, opt)
+
     for i, (batch_set, end_epoch) in enumerate(zip(batch_sets, epoch_splits)):
         if len(batch_set) < config["sampling_batch"]:
             break
-        num_ckpts = roll if roll is not None else config["conf_check_num"]
+
         filename = filename_func(i, end_epoch)
 
         if os.path.exists(filename):
             continue
-        if roll is not None:
+        if opt.roll_avg is not None:
             results = benchmark_avg(
-                batch_set, prefix, 1, end_epoch, num_ckpts, config, roll=True
+                batch_set, prefix, 1, end_epoch, num_ckpts, config, roll=opt.roll_avg
             )
         else:
             results = benchmark_avg(batch_set, prefix, 1, end_epoch, num_ckpts, config)

@@ -26,7 +26,7 @@ def get_args(prefixes):
 
     group = parser.add_mutually_exclusive_group()
 
-    group.add_argument("--avg", action="store_true", default=False)
+    group.add_argument("--avg", type=int, action="store", nargs="?", default=False)
     group.add_argument("--roll_avg", type=int, default=None)
     parser.add_argument("--batch_test", type=int, default=None)
 
@@ -62,23 +62,19 @@ def benchmark_all(prefixes, config, opt):
     # Benchmark the inference results before the start of each sample batch
     # and as a time series
     batch_args = list()
-    series_args = list()
     for prefix in prefixes:
-        batch_args.append((prefix, config, opt.roll_avg))
-        series_args.append((config, opt, prefix))
-
+        batch_args.append((prefix, config, opt))
         if not config["parallel"]:
             bench.benchmark_next_batch(*batch_args[-1])
-            bench.series_benchmark(*series_args[-1])
+
     if config["parallel"]:
         parallelize.run_parallel(bench.benchmark_next_batch, batch_args)
-        parallelize.run_parallel(bench.series_benchmark, series_args, False)
 
 
 def benchmark_batch_test(prefixes, config, opt, num_batches):
     batch_args = list()
     for prefix in prefixes:
-        batch_args.append((prefix, config, num_batches, opt.roll_avg))
+        batch_args.append((prefix, config, opt, num_batches))
         if not config["parallel"]:
             bench.benchmark_batch_test_set(*batch_args[-1])
     if config["parallel"]:
@@ -105,28 +101,13 @@ def get_benchmark_suffix(opt):
 def main():
     prefixes = ["init"] + list(get_sample_methods().keys())
 
-    # Delete this array for production; used for easy analysis purposes only
-    prefixes = [
-        "init",
-        "median-below-thresh",
-        "median-thresh",
-        "normal",
-        "iqr",
-        "mid-thresh",
-        "mid-below-thresh",
-        "mid-normal",
-        "bin-quintile",
-        "bin-normal",
-        "random",
-        "true-random",
-    ]
-
     opt, config = get_args(prefixes)
     bench_suffix = get_benchmark_suffix(opt)
 
     if opt.benchmark:
         if opt.prefix is not None:
             prefixes = [opt.prefix]
+            bench.series_benchmark(config, opt, opt.prefix)
         if opt.batch_test is None:
             benchmark_all(prefixes, config, opt)
         else:

@@ -119,8 +119,7 @@ def show_overall_hist(results):
     plt.hist(hit_miss[1], bins=20, color=colors[1], range=(0.0, 1.0))
     plt.show()
     title = (
-        f"Confidence Distribution on Binned Normal PDF\n(acc={acc}, "
-        + f"prec={prec}, n={results[-1].pop})"
+        f"Confidence Distribution\n(acc={acc}, " + f"prec={prec}, n={results[-1].pop})"
     )
     plt.title(title)
     plt.xlabel("Confidence")
@@ -312,16 +311,17 @@ def compare_benchmarks(
     init_vals.columns = sample_results["init"].columns
     sample_results["init"] = init_vals[metric]
 
-    if compare_init and metric2 is None:
-        for prefix, result in sample_results.items():
-            if prefix == "init":
-                continue
-            sample_results[prefix] = result - sample_results["init"]
+    if metric2 is None:
+        if compare_init:
+            for prefix, result in sample_results.items():
+                if prefix == "init":
+                    continue
+                sample_results[prefix] = result - sample_results["init"]
 
-    df = pd.DataFrame.from_dict(sample_results, orient="index")
-    print(df)
+        df = pd.DataFrame.from_dict(sample_results, orient="index")
+        print(df)
 
-    if metric2 is not None:
+    else:
         agg_str = "median" if use_median else "mean"
         df = pd.DataFrame(
             columns=["Method", f"{agg_str} {metric}", f"{agg_str} {metric2}"]
