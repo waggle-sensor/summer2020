@@ -1,8 +1,8 @@
 __pycache__/
 logs/
 outputs/
-output/
-checkpoints/
+output
+checkpoints
 data/
 data
 *.out
