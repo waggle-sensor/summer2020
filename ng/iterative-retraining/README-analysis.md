@@ -32,7 +32,7 @@ Aside from filename differences, all benchmark files have contents that follow t
 
 Additional flags that affect benchmarking include:
 
-* `--prefix`: if this is specified, benchmarking will on
+* `--prefix`: if this is specified, benchmarking will only occur on the specified sampling method.
 * `--avg`:
 * `--roll_avg <epoch span>`:
 * `--delta`:

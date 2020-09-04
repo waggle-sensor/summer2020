@@ -32,14 +32,17 @@ User-defined parts of this pipeline (formalized in the parameters section) are i
 
 ## Configuration Parameters
 
-These are stored in [`retrain.cfg`](./config/retrain.cfg) (or moved to the file of your choice) and should remain consistent for a given training and sample set
+Parameters for training are stored in [`retrain.cfg`](./config/retrain.cfg) (or moved to the file of your choice) and should remain consistent for a given training and sample set. All parameters listed here must be present in the configuration file.
+
+
+**To inherit parameters from a "parent" configuration,** specify the `inherit` property and provide the relative filepath from the directory executing the program to the parent configuration (e.g. `config/retrain.cfg`). All parameter values from the specified configuration will be used, except for those in the current file. See [`cars-retrain-60.cfg`](./config/cars-retrain-60.cfg) for an example.
 
 **Overall Parameters**
 
 High-level parameters affecting both initial training and retraining
 
 * `class_list`: list of classes, terminated with a blank line
-* `model_config`: YOLOv3 model definition file with hyperparameters
+* `model_config`: YOLOv3 model architecture file with hyperparameters (see [here](https://github.com/alexeyab/darknet#how-to-train-to-detect-your-custom-objects) for guidance)
 * `images_per_class`: target number of images per class for executing augmentation and retraining
 * `aug_compose`: boolean value (0 or 1) for using major transformations alongside minor ones
 * `early_stop`: boolean value to determine if early stopping will be used
@@ -186,14 +189,34 @@ If the function returns more images than the number specified in the configurati
 
 The arguments in the functions provided in `sampling.py` also allow for flexibility without needing to create your own sampling methods from scratch. For example, the function `in_range_sample(results, min_val, max_val)` allows you to create simple cutoffs, which you can place in the dictionary returned in `get_sample_methods()`.
 
-The function `prob_sample(result, desired, prob_func, *func_args, **func_kwargs)` also allows you to define your own probability curve `prob_func`, which takes in an input confidence in [0, 1) and returns the probability of choosing that image. By listing `prob_sample` in the dictionary along with the appropriate arguments, you can easily sample along any probability density function.
+The function `prob_sample(result, desired, prob_func, *func_args, **func_kwargs)` also allows you to define your own probability curve `prob_func`, which takes in an input confidence in [0, 1) and returns the probability of choosing that image. By listing `prob_sample` along with the appropriate arguments in the dictionary returned by `get_sample_methods()`, you can easily sample along any probability density function.
+
+Sampling methods may also be omitted by commenting out the relevant entries in `get_sample_methods()`.
 
 
 ## Architecture Modifications
 
-Many of the pipeline's scripts rely on a modified [PyTorch implementation of YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) included in the `yolov3` package. However, if you want to expand it to other image network architectures, you may want to modify [`benchmark_avg()` in `benchmark.py`](./analysis/benchmark.py#L147) and its related functions to create a similar dataframe of results with inferred labels and confidences. Training functions in the [main module](./__main__.py) and [`retrain.py`](./retrain/retrain.py) would also have to be substituted, though sampling functions could remain unchanged.
+Many of the pipeline's scripts rely on a modified [PyTorch implementation of YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) included in the `yolov3` package. However, if you want to expand it to other image network architectures, you may want to modify [`benchmark_avg()` in `benchmark.py`](./analysis/benchmark.py#L147) and its related functions to create a similar dataframe of results with inferred labels and confidences. Training functions in the [main module](./__main__.py) and [`retrain.py`](./retrain/retrain.py) would also have to be substituted, though sampling functions may remain unchanged.
 
 For sampling other types of data beyond images, you will need to modify the `ImageFolder` and `LabeledSet` class objects in [`dataloader.py`](./retrain/dataloader.py) to generate splits and fetch data.
+
+## Docker Plugin Usage
+
+This repository includes a Dockerfile for deploying the pipeline on Sage nodes. After adding configuration files and modifying the pipeline architecture as needed, run
+
+```
+docker build -t bandwidth-aware-learning .
+```
+
+to build your image.
+
+To run your image and begin training, execute
+
+```
+docker run bandwidth-aware-learning --config <config path>
+```
+
+Reloading from a baseline model is currently not supported, as data and models would need to be uploaded to a Sage storage bucket and fetched in the pipeline code. These features are still under development.
 
 ## Further Information
 
