@@ -12,7 +12,8 @@ Aside from the [main module](./__main__.py) for starting the sampling and retrai
 To use the script, execute the following:
 
 ```
-python3 analyze.py --config <retrain config file> [--benchmark [--avg | --roll <epoch span> --delta <epoch span>]] \
+python3 analyze.py --config <retrain config file> \
+        [--benchmark [--delta <epoch span>] [--avg [<epoch span>] | --roll <epoch span>]] \
 	(--prefix <sampling method> | --tabulate | --visualize <benchmark> | --view_benchmark <benchmark>) \
 	[--filter_sample --compare_init --batch_test <test set size> --aggr_median] \
 	[--metric <metric name> --metric2 <metric name>]
@@ -77,7 +78,8 @@ python3 analyze.py --config config/cars-retrain-60.cfg --prefix random --avg
 
 Output:
 
-![series benchmark](assets/series_display_avg.png)
+<img src="assets/series_display_avg.png" width="50%">
+
 
 ```
 python3 analyze.py --config config/cars-retrain-60.cfg --prefix random 
@@ -85,7 +87,7 @@ python3 analyze.py --config config/cars-retrain-60.cfg --prefix random
 
 Output:
 
-![series benchmark](assets/series_display.png)
+<img src="assets/series_display.png" width="50%">
 
 
 ## Sampling Method Metric Tables
@@ -198,7 +200,7 @@ mid-thresh            0.650371   0.694701
 R^2: 0.1990793189260579
 ```
 
-![](assets/regression1.png)
+<img src="assets/regression1.png" width="50%">
 
 Regression with median aggregate and comparison to baseline, using batch test set benchmarks:
 
@@ -224,7 +226,7 @@ bin-quintile                0.241153     0.507647
 R^2: 0.40822675442337875
 ```
 
-![](assets/regression2.png)
+<img src="assets/regression2.png" width="50%">
 
 
 ## Benchmark Metric Table
@@ -257,22 +259,25 @@ Use the `--filter_sample` flag to filter by the images in the sample if (and onl
 **Sample Usage**
 
 ```
-python3 analyze.py --config config/cars-retrain-75.cfg --visualize_conf output/bw-75/true-random0_benchmark_avg_1_154.csv
+python3 analyze.py --config config/cars-retrain-75.cfg \
+    --visualize_conf output/bw-75/true-random0_benchmark_avg_1_154.csv
 ```
 
-![](assets/hist1.png)
+<img src="assets/hist1.png" width="50%">
 
 Contents of `output/bw-75/true-random0_benchmark_avg_1_154_conf.csv`:
 
-![](assets/conf.png)
+<img src="assets/conf.png" width="50%">
 
 Usage where samples are filtered:
 
 ```
-python3 analyze.py --config config/cars-retrain-75.cfg --visualize_conf output/bw-75/bin-normal5_benchmark_avg_1_330.csv --filter_sample --prefix bin-normal
+python3 analyze.py --config config/cars-retrain-75.cfg \ 
+    --visualize_conf output/bw-75/bin-normal5_benchmark_avg_1_330.csv \
+    --filter_sample --prefix bin-normal
 ```
 
-![](assets/hist2.png)
+<img src="assets/hist2.png" width="50%">
 
 Contents of `output/bw-75/bin-normal5_benchmark_avg_1_330_prec.csv`
 
@@ -290,10 +295,10 @@ conf	rolling precision	N
 0.775	0.913978494623656	93
 0.825	0.974358974358974	39
 0.875	0.888888888888889	18
-0.925	1					9
-0.975	1					1
+0.925	1			9
+0.975	1			1
 ```
 
 Contents of `output/bw-75/bin-normal5_benchmark_avg_1_330_viz.csv`
 
-![](assets/hist3.png)
+<img src="assets/hist3.png" width="50%">
