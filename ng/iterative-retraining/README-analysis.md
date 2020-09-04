@@ -205,7 +205,8 @@ R^2: 0.1990793189260579
 Regression with median aggregate and comparison to baseline, using batch test set benchmarks:
 
 ```
-python3 analyze.py --config config/cars-retrain-75.cfg --tabulate --metric conf_std --metric2 prec --batch_test 2 --compare --aggr_median
+python3 analyze.py --config config/cars-retrain-75.cfg --tabulate --metric conf_std \
+    --metric2 prec --batch_test 2 --compare --aggr_median
 ```
 
 ```
@@ -263,11 +264,11 @@ python3 analyze.py --config config/cars-retrain-75.cfg \
     --visualize_conf output/bw-75/true-random0_benchmark_avg_1_154.csv
 ```
 
-<img src="assets/hist1.png" width="50%">
+<img src="assets/hist1.png" width="40%">
 
 Contents of `output/bw-75/true-random0_benchmark_avg_1_154_conf.csv`:
 
-<img src="assets/conf.png" width="50%">
+<img src="assets/conf.png" height="150">
 
 Usage where samples are filtered:
 
@@ -277,7 +278,7 @@ python3 analyze.py --config config/cars-retrain-75.cfg \
     --filter_sample --prefix bin-normal
 ```
 
-<img src="assets/hist2.png" width="50%">
+<img src="assets/hist2.png" width="40%">
 
 Contents of `output/bw-75/bin-normal5_benchmark_avg_1_330_prec.csv`
 
