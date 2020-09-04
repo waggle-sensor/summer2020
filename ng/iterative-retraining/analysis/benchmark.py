@@ -339,8 +339,8 @@ def series_benchmark(config, opt, prefix):
 
     # Begin benchmarking
     out_folder = f"{config['output']}/{prefix}-series"
-    if opt.avg or opt.roll:
-        out_folder += "-roll-avg" if opt.roll else "-avg"
+    if opt.avg or opt.roll_avg:
+        out_folder += "-roll-avg" if opt.roll_avg else "-avg"
     os.makedirs(out_folder, exist_ok=True)
 
     for i, split in enumerate(epoch_splits):
@@ -365,9 +365,9 @@ def series_benchmark(config, opt, prefix):
                 if os.path.exists(out_name):
                     continue
 
-                if opt.roll:
+                if opt.roll_avg:
                     result_df = benchmark_avg(
-                        img_folder, prefix, 1, epoch, opt.roll, config, roll=True
+                        img_folder, prefix, 1, epoch, opt.roll_avg, config, roll=True
                     )
                 elif opt.avg:
                     result_df = benchmark_avg(img_folder, prefix, 1, epoch, 5, config)

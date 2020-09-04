@@ -281,6 +281,7 @@ def compare_benchmarks(
     bench_suffix=None,
     compare_init=False,
     filter_sample=False,
+    use_median=False,
 ):
     """Compares benchmarks on sample sets (before retraining) for sample methods."""
     sample_results = dict()
@@ -321,8 +322,9 @@ def compare_benchmarks(
     print(df)
 
     if metric2 is not None:
+        agg_str = "median" if use_median else "mean"
         df = pd.DataFrame(
-            columns=["Method", f"avg. {metric}", f"batch avg. {metric2}"]
+            columns=["Method", f"{agg_str} {metric}", f"{agg_str} {metric2}"]
         ).set_index("Method")
 
         print(f"Baseline avg {metric2}: ", init_vals[metric2][1:].mean())
@@ -348,8 +350,8 @@ def compare_benchmarks(
                 y_series -= init_vals[metric2]
 
             df.loc[prefix] = [
-                indep_var[metric][:-1].mean(),
-                y_series[1:].mean(),
+                getattr(indep_var[metric][:-1], agg_str)(),
+                getattr(y_series[1:], agg_str)(),
             ]
 
         print(df.sort_values(df.columns[0]))

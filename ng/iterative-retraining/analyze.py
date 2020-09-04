@@ -39,6 +39,7 @@ def get_args(prefixes):
 
     parser.add_argument("--filter_sample", action="store_true", default=False)
     parser.add_argument("--compare_init", action="store_true", default=False)
+    parser.add_argument("--aggr_median", action="store_true", default=False)
 
     metric_names = [
         "prec",
@@ -152,6 +153,7 @@ def main():
                 bench_suffix,
                 compare_init=opt.compare_init,
                 filter_sample=opt.filter_sample,
+                use_median=opt.aggr_median,
             )
 
     elif opt.visualize_conf:

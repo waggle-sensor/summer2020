@@ -12,9 +12,9 @@ Aside from the [main module](./__main__.py) for starting the sampling and retrai
 To use the script, execute the following:
 
 ```
-python3 analyze.py --config <retrain config file> [--benchmark [--avg --roll <epoch span> --delta <epoch span>]] \
+python3 analyze.py --config <retrain config file> [--benchmark [--avg | --roll <epoch span> --delta <epoch span>]] \
 	(--prefix <sampling method> | --tabulate | --visualize <benchmark> | --view_benchmark <benchmark>) \
-	[--filter_sample --compare_init --batch_test <test set size>] [--metric <metric name> --metric2 <metric name>]
+	[--filter_sample --compare_init --batch_test <test set size> --aggr_median] [--metric <metric name> --metric2 <metric name>]
 ```
 
 The only required argument is `--config` along with the path to the pipeline configuration file. However, for the script to produce a visual output, one of the additional flags in parentheses must be specified. The `--benchmark` flag may also be set to generate benchmark files if they have not yet been generated.
