@@ -344,15 +344,20 @@ def series_benchmark(config, opt, prefix):
     os.makedirs(out_folder, exist_ok=True)
 
     for i, split in enumerate(epoch_splits):
-        start = epoch_splits[i - 1] if i else 0
+        if i == 0:
+            if "baseline" not in prefix or prefix != "init":
+                # No need to benchmark initial series again
+                continue
+            else:
+                start = 1
+        else:
+            start = epoch_splits[i - 1]
 
         for epoch in tqdm(range(start, split + 1, opt.delta)):
             for name, img_folder in test_sets.items():
                 # Benchmark both iterations sets at the split mark
-                if (
-                    not epoch
-                    or (epoch == start and "cur_iter" not in name)
-                    or ("cur_iter" in name and name != f"cur_iter{i}")
+                if (epoch == start and "cur_iter" not in name) or (
+                    "cur_iter" in name and name != f"cur_iter{i}"
                 ):
                     continue
 

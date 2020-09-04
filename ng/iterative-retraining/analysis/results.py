@@ -100,7 +100,10 @@ class ClassResults:
 
         for row in output_rows:
             row["conf"] = float(row["conf"])
-            row["conf_std"] = float(row["conf_std"])
+            try:
+                row["conf_std"] = float(row["conf_std"])
+            except KeyError:
+                row["conf_std"] = 0
             if row["conf"] >= conf_thresh:
                 if row["hit"] == "True":
                     result = "true_pos"

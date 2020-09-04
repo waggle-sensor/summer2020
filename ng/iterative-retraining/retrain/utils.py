@@ -39,7 +39,7 @@ def get_epoch_splits(config, prefix, incl_last_epoch=False):
 
 
 def sort_by_epoch(pattern):
-    files = sorted(glob.glob(pattern))
+    files = [file for file in sorted(glob.glob(pattern)) if file[-5] in "0123456789"]
     return sorted(files, key=get_epoch)
 
 

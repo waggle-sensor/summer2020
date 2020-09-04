@@ -108,7 +108,7 @@ If your dataset is already cleaned and labeled, with labels having a `.txt` exte
   * If the sample set contains leftover images (i.e. `sampling_batch` doesn't evenly divide the number of labeled images), the last batch split with fewer images will be generated but will not be used for sampling
   * Batches are randomly generated, without stratifying by class
 * Benchmarks: CSV files containing the inferencing results from averaging a set of linearly-spaced models generated prior to the batch split we are inferencing on. This file is named `<sampling method><batch number>_benchmark_avg_1_<last epoch>.csv`.
-  * Columns contain the image path for an inference, the detected label, the ground truth label (if available), output confidence as an average of all detections, standard deviation of the confidences when taking the average, and if the detection was a "hit" (true positive or false negative, in contrast to FP/TN)
+  * Columns contain the image path of an inference, the detected label, the ground truth label (if available), output confidence as an average of all detections, standard deviation of the confidences when taking the average, and if the detection's label was a "hit" (true positive or false negative, in contrast to FP/TN)
   * If the ground truth bounding box doesn't overlap with the detected box by more than `iou_thres`, the ground truth and inferred label will be listed in two separate rows
   * Different types of benchmarks may be generated with the analysis tool, aside from the one output by training
 * Sample sets: unlabeled lists of images that are "sent back" from the edge based on benchmark results, named as `<sampling method><batch number>_sample_<epoch number>.txt`. These are later split into train/validation/test sets

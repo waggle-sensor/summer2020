@@ -43,6 +43,7 @@ class ImageFolder(Dataset):
             if os.path.isfile(src):
                 self.imgs = get_lines(src)
             else:
+                self.imgs = list()
                 print(f"{src} is an invalid file. Ignoring...")
         elif os.path.isdir(src):
             self.imgs = get_images(src)

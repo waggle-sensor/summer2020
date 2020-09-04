@@ -17,4 +17,34 @@ python3 analyze.py --config <retrain config file> [--benchmark [--avg --roll <ep
 	[--filter_sample --compare_init --batch_test <test set size>] [--metric <metric name> --metric2 <metric name>]
 ```
 
-The only required argument is `--config` along with the path to the pipeline configuration file, 
+The only required argument is `--config` along with the path to the pipeline configuration file. However, for the script to produce a visual output, one of the additional flags in parentheses must be specified. The `--benchmark` flag may also be set to generate benchmark files if they have not yet been generated.
+
+Many flags also have additional optional parameters for filtering out data.
+
+## Benchmarking
+
+There are two main types of benchmarking, both of which are conducted when the `--benchmark` flag is specified:
+
+* **Series benchmarking**
+* **Batch split benchmarking**
+
+Aside from filename differences, all benchmark files have contents that follow the [benchmarks generated from the sampling pipeline](./README.md#training-output).
+
+Additional flags that affect benchmarking include:
+
+* `--prefix`: if this is specified, benchmarking will on
+* `--avg`:
+* `--roll_avg <epoch span>`:
+* `--delta`:
+* `--batch_test <test set size>`:
+
+
+## Training Curves
+
+## Sampling Method Metric Tables
+
+### Comparing Metrics
+
+## Benchmark Metric Table
+
+## Benchmark Confidence Histogram

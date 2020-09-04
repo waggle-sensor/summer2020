@@ -125,9 +125,8 @@ def main():
 
     if opt.benchmark:
         if opt.prefix is not None:
-            bench.benchmark_next_batch(opt.prefix, config, opt.roll_avg)
-            bench.series_benchmark(config, opt, opt.prefix)
-        elif opt.batch_test is None:
+            prefixes = [opt.prefix]
+        if opt.batch_test is None:
             benchmark_all(prefixes, config, opt)
         else:
             benchmark_batch_test(prefixes, config, opt, opt.batch_test)

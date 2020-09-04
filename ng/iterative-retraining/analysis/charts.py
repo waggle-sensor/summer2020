@@ -22,7 +22,7 @@ def linear_regression(df):
 
     plt.scatter(x, y)
     plt.xlabel(f"sample {df.columns[0]}")
-    plt.ylabel(f"next iteration benchmark {df.columns[1]}")
+    plt.ylabel(f"batch test set {df.columns[1]} incr.")
     plt.plot(x, y_pred, color="r")
     plt.show()
 
@@ -119,7 +119,7 @@ def show_overall_hist(results):
     plt.hist(hit_miss[1], bins=20, color=colors[1], range=(0.0, 1.0))
     plt.show()
     title = (
-        f"Confidence Distribution on Sample Batch\n(acc={acc}, "
+        f"Confidence Distribution on Binned Normal PDF\n(acc={acc}, "
         + f"prec={prec}, n={results[-1].pop})"
     )
     plt.title(title)
@@ -155,6 +155,8 @@ def display_series(config, opt):
     ]
     epoch_splits = utils.get_epoch_splits(config, opt.prefix, True)
     names += [f"cur_iter{i}" for i in range(len(epoch_splits))]
+    if opt.batch_test is not None:
+        names.append("batch_test")
 
     results = list()
 
@@ -162,7 +164,8 @@ def display_series(config, opt):
     if opt.avg or opt.roll_avg:
         out_folder += "-roll-avg" if opt.roll_avg else "-avg"
     for name in names:
-        start_epoch = 1 if opt.prefix == "init" else epoch_splits[0]
+        is_baseline = opt.prefix == "init" or "baseline" in opt.prefix
+        start_epoch = 1 if is_baseline else epoch_splits[0]
         for i in range(start_epoch, epoch_splits[-1], opt.delta):
             out_name = f"{out_folder}/{name}_{i}.csv"
 
@@ -209,6 +212,8 @@ def visualize_conf(prefix, benchmark, filter_sample=False, pos_thres=0.5):
     results, conf_mat = rload.load_data(
         benchmark, by_actual=False, conf_thresh=pos_thres, **kwargs
     )
+
+    results[-1].generate_prec_distrib(benchmark[:-4] + "_prec.csv")
 
     conf_mat_file = benchmark[:-4] + "_conf.csv"
     classes = [result.name for result in results]
@@ -259,7 +264,7 @@ def tabulate_batch_samples(
 
         data.append(new_row)
     data = pd.DataFrame.from_dict(data, orient="columns")
-    data.set_index("batch")
+    # data.set_index("batch")
 
     if not silent:
         print("=== Metrics on Batch ===")
@@ -371,3 +376,4 @@ def display_benchmark(file, config):
 
     df.loc["Overall"] = [df["N"].sum(), *df.loc[:, "Prec":"Conf Std"].mean(axis=0)]
     print(df)
+    df.to_csv(file[:-4] + "_stats.csv")
