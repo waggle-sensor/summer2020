@@ -13,7 +13,7 @@ This project is built on top of [Nanonets Object Tracking](https://github.com/ab
 This tracking model is a typical tracking-by-detection model, and for detection part, [YOLOv3](https://github.com/nandinib1999/object-detection-yolo-opencv) is used.
 
 
-![vehicle_tracking_demo](/readmes/result_YT.gif)
+![vehicle_tracking_demo](/Han/readmes/result_YT.gif)
 Tracking with the [random traffic video from YouTube](https://youtu.be/UM0hX7nomi8)
 
 
@@ -27,7 +27,7 @@ The model is built on top of Nanonets_object_tracking repo, which uses DeepSORT 
 
 
 
-![vehicle_tracking_demo](/readmes/demo.gif)
+![vehicle_tracking_demo](/Han/readmes/demo.gif)
 
 # How to run
 **Folder Description**
@@ -50,7 +50,7 @@ Below is the environment where the code was tested (NVIDIA GPU and CUDA are requ
  * Python 3.6
  * CUDA 10.1
 
-Minimum requirements are listed in [requirements.txt](../requirements.txt)
+Minimum requirements are listed in [requirements.txt](/Han/requirements.txt)
 You can use the command below to install all the necessary packages.
 However, you may want to install each package by running individual commands with specified package versions that works for your machine or environment.
 
