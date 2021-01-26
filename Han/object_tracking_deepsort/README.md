@@ -106,7 +106,7 @@ Since, the primary objective is to track objects, We assume that the detections 
 
 ## Structure
 
-![system_flow](/readmes/system_flow.png)
+![system_flow](/Han/object_tracking_deepsort/readmes/system_flow.png)
 
 
 
