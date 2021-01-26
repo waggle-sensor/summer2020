@@ -1,4 +1,22 @@
-# Vehicle Tracking
+# Vehicle Tracking at the Edge
+
+This is a computer vision and deep learning based multiple-vehicle tracking model, which is still under development.
+
+
+The ultimate goal of this project is to enable vehicle tracking at the edge of smart sensor network. 
+and expand the model at the edge of multiple nodes.
+
+
+This project is built on top of [Nanonets Object Tracking](https://github.com/abhyantrika/nanonets_object_tracking), which is built on top of [DeepSORT](https://github.com/nwojke/deep_sort).
+
+
+This tracking model is a typical tracking-by-detection model, and for detection part, [YOLOv3](https://github.com/nandinib1999/object-detection-yolo-opencv) is used.
+
+
+![vehicle_tracking_demo](/readmes/result_YT.gif)
+Tracking with the [random traffic video from YouTube](https://youtu.be/UM0hX7nomi8)
+
+
 
 The goal of this project is to track vehicles given the traffic video using deep learning based methods, affinity calculation, and some association 
 
@@ -9,10 +27,66 @@ The model is built on top of Nanonets_object_tracking repo, which uses DeepSORT 
 
 
 
-![vehicle_tracking_demo](readmes/demo.gif)
+![vehicle_tracking_demo](/readmes/demo.gif)
 
+# How to run
+**Folder Description**
+* **detection**: Python based YOLOv3 Inference Code. Creates bounding box information.
+* **det**: Bounding box information is saved in this folder. txt files.
+* **ckpts**: Feature Extractor model checkpoints are saved in this folder. You can either train your own Feature Extractor or use ckpts in this folder to extract features from images.
+* **feature extractor**: Siamese CNN code. It can be used for building a featrue extractor.
+* **deep_sort**: original DeepSORT code.
+
+**How to test run?**
+1. Have the video you want to perform tracking in the ```videos``` folder.
+2. Run detection to create bouding box information. Result of detection would be saved in ```det``` folder.
+3. Run ```test_on_video.py``` for tracking and generating a video with tracking boxes.
 
 ## Installation
+
+Below is the environment where the code was tested (NVIDIA GPU and CUDA are required):
+ 
+ * Ubuntu 18.04
+ * Python 3.6
+ * CUDA 10.1
+
+Minimum requirements are listed in [requirements.txt](../requirements.txt)
+You can use the command below to install all the necessary packages.
+However, you may want to install each package by running individual commands with specified package versions that works for your machine or environment.
+
+```sh
+pip install -r requirements.txt
+```
+
+Here are the commands I used to install required packages on Ubuntu 18.04 with CUDA 10.01 :
+
+```sh
+pip install opencv-python
+pip install matplotlib
+pip install scipy
+pip install numpy
+pip install --upgrade tensorflow
+pip install torch==1.5.1+cu101 torchvision==0.6.1+cu101 -f https://download.pytorch.org/whl/torch_stable.html
+pip install imgaug
+pip install Pillow
+pip install nonechucks
+pip3 install scikit-learn==0.22.2
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 For installation instruction, please refer to [INSTALL.md]()
 
 
@@ -29,6 +103,13 @@ Since, the primary objective is to track objects, We assume that the detections 
 
 ```deepsort.py``` is our bridge class that utilizes the original deep sort implementation, with our custom configs. We simply need to specify the encoder (feature extractor) we want to use and pass on the detection outputs to get the tracked bounding boxes. 
 ```test_on_video.py``` is our example code, that runs deepsort on a video whose detection bounding boxes are already given to us. 
+
+## Structure
+
+![system_flow](/readmes/system_flow.png)
+
+
+
 
 # A simplified overview:
 ```sh
