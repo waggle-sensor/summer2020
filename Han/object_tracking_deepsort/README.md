@@ -39,7 +39,7 @@ The model is built on top of Nanonets_object_tracking repo, which uses DeepSORT 
 
 **How to test run?**
 1. Have the video you want to perform tracking on in the ```videos``` folder.
-2. Run detection to create bouding box information. Result of detection would be saved in ```det``` folder.
+2. Run detection to create bouding box information. Result of detection should be saved in ```det``` folder.
 3. Run ```test_on_video.py``` for tracking and generating a video with tracking boxes.
 
 ## Installation
