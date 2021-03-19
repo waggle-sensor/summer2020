@@ -39,7 +39,7 @@ oauthlib==3.1.0
 opencv-contrib-python==4.3.0.36
 opencv-python==4.2.0.34
 opt-einsum==3.2.1
-Pillow==7.1.2
+Pillow==8.1.1
 portalocker==1.7.1
 progressbar2==3.51.4
 protobuf==3.11.3
