@@ -72,7 +72,7 @@ tifffile==2020.6.3
 torch==1.5.1
 torchvision==0.6.1
 tqdm==4.48.0
-urllib3==1.25.9
+urllib3==1.26.5
 Werkzeug==1.0.1
 wrapt==1.12.1
 yacs==0.1.7
