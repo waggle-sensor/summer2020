@@ -420,7 +420,7 @@ class TemporalClassifierFFT(Classifier):
 
         # Check trained length of FFT signals to warn about truncation
         if x.shape[1] != self.classifier.n_features_:
-            print('[WARNING] Segmentation received more frames (%d) than necessary for FFT segmentation (%d)' %
+            print('[WARNING] Segmentation received a different number of frames (%d) than necessary for FFT segmentation (%d)' %
                   (x.shape[1], self.classifier.n_features_))
             x = x[:, :self.classifier.n_features_]
 
@@ -533,7 +533,7 @@ class TextureTemporalClassifier(Classifier):
         lbp_x = TextureClassifierLBP.lbp_process_frames_multiproc(x.reshape((-1, img_y, img_x))).reshape(x.shape)
         self.temporal_classifier.train(lbp_x, y, prefer=prefer, unit_normalize=unit_normalize)
 
-    def segment(self, x: np.ndarray, prob_mode=False, avg_frames=2):
+    def segment(self, x: np.ndarray, prob_mode=False):
         if len(x.shape) > 4:
             print('Converting 3-channel HSV images to grayscale')
             x = x[..., 2]

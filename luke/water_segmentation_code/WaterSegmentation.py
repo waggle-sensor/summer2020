@@ -7,7 +7,7 @@ import os
 # os.environ['MKL_NUM_THREADS'] = '1'
 # os.environ['NUMEXPR_NUM_THREADS'] = '2'
 
-from TrainingSet import TrainingSet
+from TrainingSet import TrainingSet, TrainingSequence
 from Classifiers import TextureTemporalClassifier, TextureClassifierLBP
 import pickle
 import numpy as np
@@ -19,6 +19,7 @@ from sklearn.svm import SVC
 N_PROCESSES = 10
 plt.ioff()
 
+
 def test_maximize_ensemble_accuracy():
     # Load TT classifier training with a 50fps sampling rate
     tt_classifier = pickle.load(open('test_framerate_classifiers.bin', 'rb'))[1]
@@ -27,7 +28,7 @@ def test_maximize_ensemble_accuracy():
     # Load training images
     training_obj = TrainingSet.init_many('/home/cc/ww/videos', '/home/cc/ww/masks')
     vid_paths = [vid.input_sequence for vid in training_obj.vids]
-    all_x = mydia.Videos(target_size=(800, 600), to_gray=True, num_frames=3).read(vid_paths, workers=N_PROCESSES)[..., 0]
+    all_x = mydia.Videos(target_size=(800, 600), to_gray=True, num_frames=60).read(vid_paths, workers=N_PROCESSES)[..., 0]
     all_y = training_obj.get_masks()
     # frames = np.frombuffer(open('frames.bin', 'rb').read(), dtype=np.uint8).reshape((-1, 60, 600, 800, 3))
     # masks = np.frombuffer(open('masks.bin', 'rb').read(), dtype=bool).reshape((-1, 600, 800))
@@ -41,10 +42,11 @@ def test_maximize_ensemble_accuracy():
     # pickle.dump(lbp_classifier, open('lbp_classifier_fully_trained_%d.bin' % int(time.time()), 'wb+'))
     print('done')
 
+
 def train_multiframerate_tt_classifiers():
     VIDEOS_FPS = 50
     FRAMES_TO_READ = 60
-    sampling_tests = [50, 10, 2, 1]  # FPS: 50fps, 25fps, 5fps, 1fps
+    sampling_tests = [50, 10, 2, 1]  # FPS: 1fps, 5fps, 25fps, 50fps
 
     # classifiers = pickle.load(open('test_framerate_classifiers.bin', 'rb'))
     classifiers = {rate: TextureTemporalClassifier() for rate in sampling_tests}
@@ -80,14 +82,15 @@ def train_multiframerate_tt_classifiers():
     pickle.dump(classifiers, open('many_framerates_tt_classifiers.model', 'wb+'))
     print('done')
 
+
 def test_classifiers():
-    # testing_set = '/home/cc/alternate_data/'
-    # testset = TrainingSet([TrainingSequence(os.path.join(testing_set, vid_path),
-    #                                         category=TrainingSequence.CAT_UNLABELED, fps=30)
-    #                        for vid_path in os.listdir(testing_set)])
+    training_set = '/home/cc/alternate_data/'
+    training_set = TrainingSet([TrainingSequence(os.path.join(training_set, vid_path),
+                                            category=TrainingSequence.CAT_UNLABELED, fps=30)
+                           for vid_path in os.listdir(training_set)])
 
     print('Loading video frames into memory')
-    testset = TrainingSet.init_many('/home/cc/ww/videos', '/home/cc/ww/masks')
+    testset = TrainingSet.init_many('/home/cc/ww/videos', '/home/cc/ww/masks')  # TODO Fix outdated init_many reference
     training_x = training_set.load_all(in_color=True, combine=True, dims=(600, 800), max_n=120)
 
     random_vids = np.random.choice(len(training_x), size=50)
@@ -103,7 +106,13 @@ def test_classifiers():
 
     print('done')
 
+
 def compute_on_chameleon():
+    """
+    This was my main training loop for my classifiers. Note that this should only be run on a machine with enough memory
+    to fit an ndarray of [N videos, 60 frames, 600, 800, 3 color channels].
+    """
+
     USE_PREVIOUS = True
     FOLDER_WATER_VIDEO_DATASET = '/home/cc/ww/'
     VIDEOS_FOLDER = FOLDER_WATER_VIDEO_DATASET + 'videos'
@@ -160,6 +169,7 @@ def compute_on_chameleon():
 
     # WaterSet.visualize_classifiers(n_vids=8, prob_mode=True)
     print('completed program')
+
 
 if __name__ == '__main__':
     # compute_on_chameleon()

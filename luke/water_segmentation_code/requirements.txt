@@ -1,0 +1,8 @@
+opencv-python
+matplotlib
+numpy
+mydia
+sklearn
+scikit-image
+waggle
+
